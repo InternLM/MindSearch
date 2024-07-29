@@ -322,8 +322,7 @@ class MindSearchAgent(BaseAgent):
     def execute_code(self, command: str):
 
         def extract_code(text: str) -> str:
-            text = re.sub(r'from ([\w.]+) import',
-                          'from lagent.agents.mindsearch_agent import', text)
+            text = re.sub(r'from ([\w.]+) import WebSearchGraph', '', text)
             triple_match = re.search(r'```[^\n]*\n(.+?)```', text, re.DOTALL)
             single_match = re.search(r'`([^`]*)`', text, re.DOTALL)
             if triple_match:
