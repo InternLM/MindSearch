@@ -1,0 +1,1 @@
+var collapsedSections = ['API Reference']
