@@ -1,6 +1,7 @@
 ## 开始
 ### 准备node.js开发环境
 如需安装环境，可参照：https://nodejs.org/zh-cn/download/package-manager，从官网下载对应平台的安装程序并安装。
+
 如环境已经准备好，跳转下一步
 
 ### 安装依赖
@@ -8,6 +9,7 @@ npm install
 
 ### 启动
 npm start
+
 启动成功后，界面将出现可访问的本地url
 
 ### 配置
