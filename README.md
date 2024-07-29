@@ -3,7 +3,7 @@
 <div align="center">
 
 <img width=500 src="docs/imgs/mindsearch_logo.png"><br>
-[Research Preview](https://mindsearch.netlify.app/) | [Paper]() | [Blog](https://mindsearch.netlify.app/mindsearch)
+[Project Page](https://mindsearch.netlify.app/) | [Paper]() | [Demo](https://mindsearch.openxlab.org.cn/)
 </div>
 
 <div align="center">
@@ -22,17 +22,13 @@
 
 <img src="docs/imgs/teaser.gif">
 
-## ✨ MindSearch: Mimicking Human Minds is the Secret of Deep AI Searcher
+## ✨ MindSearch: Mimicking Human Minds Elicits Deep AI Searcher
 
 MindSearch is an open-source AI Search Engine Framework with Perplexity.ai Pro performance. You can simply deploy it with your own perplexity.ai style search engine with either close-source LLMs (GPT, Claude) or open-source LLMs (InternLM2.5-7b-chat). It owns following features:
 - 🤔 **Ask everything you want to know**: MindSearch is designed to solve any question in your life and use web knowledge.
 - 📚 **In-depth Knowledge Discovery**: MindSearch browses hundreds of web pages to answer your question, providing deeper and wider knowledge base answer.
 - 🔍 **Detailed Solution Path**: MindSearch exposes all details, allowing users to check everything they want. This greatly improves the credibility of its final response as well as usability.
 - 💻 **Optimized UI Experimence**: Providing all kinds of interfaces for users, including React, Gradio, Streamlit and Terminal. Choose any type based on your need.
-
-<div align="center">
-https://github.com/user-attachments/assets/c2619971-3822-4ed4-a5ee-fdec0ec9c1b0
-</div>
 
 ## ⚡️ MindSearch vs other AI Search Engines
 
@@ -44,11 +40,17 @@ Comparison on human preference based on depth, breadth, factuality of the respon
 
 ## ⚽️ Getting Started
 
-### Lagent Installation
+Here is an online demo of MindSearch. If you want to deploy it by yourself, just follow the following steps:
+
+<div align="center">
+https://github.com/user-attachments/assets/c2619971-3822-4ed4-a5ee-fdec0ec9c1b0
+</div>
+
+### Step1: Lagent Installation
 
 MindSearch backend with Lagent, please see the [overview](docs/en/get_started/overview.md) for the general introduction of Lagent. Meanwhile, we provide extremely simple code for quick start. You may refer to [examples](examples/) for more details.
 
-### MindSearch
+### Step2: Deploy MindSearch
 
 #### React Interface
 
