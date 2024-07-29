@@ -8,21 +8,23 @@
 
 ### 安装依赖
 
+```bash
 npm install
+```
 
 ### 启动
-
+```bash
 npm start
-
+```
 启动成功后，界面将出现可访问的本地url
 
 ### 配置
 
 #### 接口请求配置
 
-- 如您需要配置的服务支持跨域，可至/src/config/cgi.ts中修改请求链接，请求链接为http://ip:port/path;
+- 如您需要配置的服务支持跨域，可至[cgi.ts](/src/config/cgi.ts)中修改请求链接，请求链接为http://ip:port/path;
 
-- 如您需要配置的服务不支持跨域，可至vite.config.ts中配置proxy，示例如下
+- 如您需要配置的服务不支持跨域，可至 [vue.config.ts](frontend\React\vite.config.ts) 中配置proxy，示例如下
 
   ```
     server: {
@@ -35,6 +37,7 @@ npm start
       }
     }
   ```
+
 
 ### 知悉
 
