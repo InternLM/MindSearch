@@ -1,9 +1,9 @@
 import styles from './index.module.less';
 import classNames from 'classnames';
 
-// 递归组件用于渲染mindMap中的节点  
+// 递归组件用于渲染mindMap中的节点
 const MindMapItem = ({ item, isEnd }: any) => {
-  // 递归渲染子节点  
+  // 递归渲染子节点
   const renderChildren = () => {
     if (item.children && item.children.length > 0) {
       return (

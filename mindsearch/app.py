@@ -11,7 +11,7 @@ from lagent.schema import AgentStatusCode
 from pydantic import BaseModel
 from sse_starlette.sse import EventSourceResponse
 
-from src.agent import init_agent
+from mindsearch.agent import init_agent
 
 app = FastAPI(docs_url='/')
 
