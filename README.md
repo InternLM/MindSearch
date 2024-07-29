@@ -6,12 +6,12 @@
 
 [Project Page](https://mindsearch.netlify.app/) | [Paper](<>) | [Demo](https://mindsearch.openxlab.org.cn/)
 
-<!-- English | [简体中文](README_zh-CN.md) -->
+English | [简体中文](README_zh-CN.md)
+
+https://github.com/user-attachments/assets/0e5bdfa1-dad9-4f17-968d-2b812e64bf15
 
 </div>
 </p>
-
-<img src="assets/teaser.gif">
 
 ## ✨ MindSearch: Mimicking Human Minds Elicits Deep AI Searcher
 
@@ -22,9 +22,13 @@ MindSearch is an open-source AI Search Engine Framework with Perplexity.ai Pro p
 - 🔍 **Detailed Solution Path**: MindSearch exposes all details, allowing users to check everything they want. This greatly improves the credibility of its final response as well as usability.
 - 💻 **Optimized UI Experimence**: Providing all kinds of interfaces for users, including React, Gradio, Streamlit and Terminal. Choose any type based on your need.
 
+<!-- 动态规划图 -->
+
+- 🧠 **Dynamic Graph Construction Process**: MindSearch decomposes the user query into atomic sub-questions as nodes in the graph and progressively extends the graph based on the search result from WebSearcher. Tasked with each sub-question, WebSearcher performs hierarchical information retrieval with search engines and collects valuable information for WebPlanner.
+
 <div align="center">
 
-https://github.com/user-attachments/assets/0e5bdfa1-dad9-4f17-968d-2b812e64bf15
+<img src="assets/teaser.gif">
 
 </div>
 
@@ -42,23 +46,25 @@ Comparison on human preference based on depth, breadth, factuality of the respon
 ### Dependencies Installation
 
 ```bash
-pip install lagent>=0.3.0
+pip install -r requirements.txt
 ```
 
-### Setup MindSearch Server
+### Setup MindSearch API
 
-- Use LMDeploy `pipeline` to deploy your own LLMs.
+Setup FastAPI Server.
 
 ```bash
-python app.py --backend hf --lang cn
+python src/app.py
 ```
 
 ### Setup MindSearch Frontend
 
+Providing following frontend interfaces:
+
 - React
 
 ```bash
-cd frontend
+cd frontend/React
 npm install
 npm start
 ```
@@ -66,19 +72,19 @@ npm start
 - Gradio
 
 ```bash
-python gradio.py
+python frontend/gradio.py
 ```
 
 - Streamlit
 
 ```bash
-streamlit run streamlit.py
+streamlit run frontend/streamlit.py
 ```
 
 - Terminal
 
 ```bash
-python terminal.py
+python frontend/terminal.py
 ```
 
 ## License
