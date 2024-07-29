@@ -18,7 +18,7 @@ export const isInWhiteList = (url: string = "", list: string[] = []) => {
 
 export const replaceStr = (str: string) => {
   return str.replace(/\[\[(\d+)\]\]/g, (match: any, number: any) => {
-    // 创建一个带有class为'fnn2'的span元素，并将数字作为文本内容  
+    // 创建一个带有class为'fnn2'的span元素，并将数字作为文本内容
     return `<i class='f'>${number}</i>`;
   });
 };

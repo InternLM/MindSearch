@@ -3,9 +3,10 @@ from datetime import datetime
 
 from lagent.actions import ActionExecutor, BingBrowser
 
-import src.agent.models as llm_factory
-from src.agent.mindsearch_agent import MindSearchAgent, MindSearchProtocol
-from src.agent.mindsearch_prompt import (
+import mindsearch.agent.models as llm_factory
+from mindsearch.agent.mindsearch_agent import (MindSearchAgent,
+                                               MindSearchProtocol)
+from mindsearch.agent.mindsearch_prompt import (
     FINAL_RESPONSE_CN, FINAL_RESPONSE_EN, GRAPH_PROMPT_CN, GRAPH_PROMPT_EN,
     searcher_context_template_cn, searcher_context_template_en,
     searcher_input_template_cn, searcher_input_template_en,

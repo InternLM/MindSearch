@@ -1,4 +1,4 @@
-exclude: ^(tests/data|scripts|ftdp/protocols|ftdp/template_configs|ftdp/tool_dicts)/
+exclude: ^(tests/data|scripts|frontend/React)/
 repos:
   - repo: https://github.com/PyCQA/flake8
     rev: 7.0.0
