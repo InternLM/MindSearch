@@ -4,7 +4,7 @@
 
 <img src="assets/logo.svg" style="width: 50%; height: auto;">
 
-[🌐 Project Page](https://mindsearch.netlify.app/) | [📃 Paper]() | [💻 Playground](https://mindsearch.openxlab.org.cn/)
+[🌐 Project Page](https://mindsearch.netlify.app/) | [📃 Paper](<>) | [💻 Playground](https://mindsearch.openxlab.org.cn/)
 
 English | [简体中文](README_zh-CN.md)
 
@@ -51,7 +51,7 @@ pip install -r requirements.txt
 Setup FastAPI Server.
 
 ```bash
-python src/app.py
+python mindsearch/app.py
 ```
 
 ### Setup MindSearch Frontend
@@ -78,10 +78,10 @@ python frontend/gradio.py
 streamlit run frontend/streamlit.py
 ```
 
-- Terminal
+## 🐞 Debug in Locally
 
 ```bash
-python frontend/terminal.py
+python mindsearch/terminal.py
 ```
 
 ## License
