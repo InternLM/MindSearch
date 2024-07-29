@@ -79,7 +79,7 @@ const RenderTest = () => {
       }
 
       if (node.children) {
-        // 递归地在子节点中查找  
+        // 递归地在子节点中查找
         node.children = findAndUpdateStatus(node.children, targetNode);
       }
 
@@ -88,20 +88,20 @@ const RenderTest = () => {
   }
 
   const generateEndStyle = () => {
-    // 获取所有class为endline的div元素  
+    // 获取所有class为endline的div元素
     const endlineDivs = document.getElementsByClassName('endline');
     const mindMap = document.getElementById("mindMap");
-    // 确保至少有两个元素  
+    // 确保至少有两个元素
     if (endlineDivs.length >= 2 && mindMap) {
-      // 获取第一个和最后一个元素的边界框（bounding rectangle）  
+      // 获取第一个和最后一个元素的边界框（bounding rectangle）
       const firstRect = endlineDivs[0].getBoundingClientRect();
       const lastRect = endlineDivs[endlineDivs.length - 1].getBoundingClientRect();
       const mindMapRect = mindMap?.getBoundingClientRect();
-      // 计算y值的差值  
+      // 计算y值的差值
       const yDiff = lastRect.top - firstRect.top;
       // const top = firstRect.top - mindMapRect.top;
-      // 如果需要包含元素的完整高度（不仅仅是顶部位置），可以加上元素的高度  
-      // const yDiffWithHeight = yDiff + (lastRect.height - firstRect.height); 
+      // 如果需要包含元素的完整高度（不仅仅是顶部位置），可以加上元素的高度
+      // const yDiffWithHeight = yDiff + (lastRect.height - firstRect.height);
       return {
         top: firstRect.top - mindMapRect.top,
         height: yDiff + 1
@@ -116,7 +116,7 @@ const RenderTest = () => {
 
   const generateWidth = () => {
     const articles = document.querySelectorAll('article');
-    // 确保至少有两个元素  
+    // 确保至少有两个元素
     if (articles?.length) {
       let maxRight = 0;
       articles.forEach((item, index) => {
@@ -137,20 +137,20 @@ const RenderTest = () => {
 
   // 逐字渲染
   const renderDraft = (str: string, type: string, endCallback: () => void) => {
-    // 已经输出的字符数量  
+    // 已经输出的字符数量
     let outputIndex = 0;
 
-    // 输出字符的函数  
+    // 输出字符的函数
     const outputText = () => {
       // 给出高亮后draft输出的结束标志
       if (type === 'stepDraft-1' && outputIndex + 3 > str?.length) {
         nodeDraftRender.current = true;
       }
-      // 如果还有字符未输出  
+      // 如果还有字符未输出
       if (outputIndex < str?.length) {
-        // 获取接下来要输出的1个字符（或剩余字符，如果不足3个）  
+        // 获取接下来要输出的1个字符（或剩余字符，如果不足3个）
         let chunk = str.slice(outputIndex, Math.min(outputIndex + 10, str.length));
-        // 更新已输出字符的索引  
+        // 更新已输出字符的索引
         outputIndex += chunk.length;
         if (type === 'thought') {
           setDraft(str.slice(0, outputIndex));
@@ -164,13 +164,13 @@ const RenderTest = () => {
           setResponse(str.slice(0, outputIndex));
         }
       } else {
-        // 如果没有更多字符需要输出，则清除定时器  
+        // 如果没有更多字符需要输出，则清除定时器
         clearInterval(intervalId);
         endCallback && endCallback()
       }
     }
 
-    // 设定定时器ID  
+    // 设定定时器ID
     let intervalId = setInterval(outputText, TEXT_INTERVAL);
   }
 
@@ -191,7 +191,7 @@ const RenderTest = () => {
         clearInterval(intervalId);
       }
     };
-    // 设定定时器ID  
+    // 设定定时器ID
     let intervalId = setInterval(outputText, SEARCHLIST_INTERVAL);
   };
 
@@ -210,16 +210,16 @@ const RenderTest = () => {
       if (item1.highLight === item2.highLight) {
         return 0;
       }
-      // 如果item1是highlight，放在前面  
+      // 如果item1是highlight，放在前面
       if (item1.highLight) {
         return -1;
       }
-      // 如果item2是highlight，放在后面  
+      // 如果item2是highlight，放在后面
       return 1;
     })
     setSearchList(highlightArr);
     renderDraft(currentNode.actions[1].thought, `stepDraft-1`, () => { });
-    hasHighlight.current = true; // 标记为高亮已执行 
+    hasHighlight.current = true; // 标记为高亮已执行
   };
 
   // 渲染结论
@@ -274,12 +274,12 @@ const RenderTest = () => {
 
   // 渲染过程中保持渲染文字可见
   const keepScrollTop = (divA: any, divB: any) => {
-    // 获取 divB 的当前高度  
+    // 获取 divB 的当前高度
     const bHeight = divB.offsetHeight;
 
-    // 检查 divA 是否需要滚动（即 divB 的高度是否大于 divA 的可视高度）  
+    // 检查 divA 是否需要滚动（即 divB 的高度是否大于 divA 的可视高度）
     if (bHeight > divA.offsetHeight) {
-      // 滚动到 divB 的底部在 divA 的可视区域内  
+      // 滚动到 divB 的底部在 divA 的可视区域内
       divA.scrollTop = bHeight - divA.offsetHeight;
     }
   };
@@ -392,12 +392,12 @@ const RenderTest = () => {
         setShowEndNode(true);
       }, 300);
     } else if (responseTimer.current) {
-      // 如果 isEnd 变为 false，清除定时器  
+      // 如果 isEnd 变为 false，清除定时器
       clearInterval(responseTimer.current);
       responseTimer.current = null;
     }
 
-    // 返回清理函数，确保组件卸载时清除定时器  
+    // 返回清理函数，确保组件卸载时清除定时器
     return () => {
       if (responseTimer.current) {
         clearInterval(responseTimer.current);
@@ -514,7 +514,7 @@ const RenderTest = () => {
 
   const abortEventSource = () => {
     if (eventSource) {
-      eventSource.close(); // 或使用其他方法关闭连接，具体取决于库的API  
+      eventSource.close(); // 或使用其他方法关闭连接，具体取决于库的API
       eventSource = null;
       console.log('EventSource connection aborted due to timeout.');
       message.error('连接中断，2s后即将刷新页面---');

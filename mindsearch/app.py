@@ -11,9 +11,7 @@ from lagent.schema import AgentStatusCode
 from pydantic import BaseModel
 from sse_starlette.sse import EventSourceResponse
 
-from src.agent import init_agent
-
-# agent = os.environ.get('agent_cfg', dict())
+from mindsearch.agent import init_agent
 
 app = FastAPI(docs_url='/')
 
@@ -95,10 +93,10 @@ async def run(request: GenerationParams):
             # yield f'data: {response_json}\n\n'
 
     inputs = request.inputs
-    agent = init_agent(request.agent_cfg)
+    agent = init_agent(**request.agent_cfg)
     return EventSourceResponse(generate())
 
 
 if __name__ == '__main__':
     import uvicorn
-    uvicorn.run(app, host='0.0.0.0', port=8090, log_level='info')
+    uvicorn.run(app, host='0.0.0.0', port=8002, log_level='info')
