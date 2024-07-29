@@ -1,6 +1,7 @@
 import asyncio
 import json
 import logging
+from copy import deepcopy
 from dataclasses import asdict
 from typing import Dict, List, Union
 
@@ -73,12 +74,15 @@ async def run(request: GenerationParams):
                 else:
                     agent_return = response
                     node_name = None
+                origin_adj = deepcopy(agent_return.adjacency_list)
                 adjacency_list = convert_adjacency_to_tree(
                     agent_return.adjacency_list, 'root')
                 assert adjacency_list[
                     'name'] == 'root' and 'children' in adjacency_list
                 agent_return.adjacency_list = adjacency_list['children']
-                response_json = json.dumps(dict(response=asdict(agent_return),
+                agent_return = asdict(agent_return)
+                agent_return['adj'] = origin_adj
+                response_json = json.dumps(dict(response=agent_return,
                                                 current_node=node_name),
                                            ensure_ascii=False)
                 yield {'data': response_json}
