@@ -1,0 +1,9 @@
+duckduckgo_search==5.3.1b1
+fastapi
+git+https://github.com/InternLM/lagent.git@mind-search
+janus
+lmdeploy==0.2.3
+pyvis
+sse-starlette
+termcolor
+uvicorn
