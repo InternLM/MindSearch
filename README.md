@@ -51,7 +51,7 @@ pip install -r requirements.txt
 Setup FastAPI Server.
 
 ```bash
-python mindsearch/app.py
+python -m mindsearch.app 
 ```
 
 ### Setup MindSearch Frontend

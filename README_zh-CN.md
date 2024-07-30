@@ -51,7 +51,7 @@ pip install -r requirements.txt
 启动 FastAPI 服务器
 
 ```bash
-python mindsearch/app.py
+python -m mindsearch.app
 ```
 
 ### 启动 MindSearch 前端
