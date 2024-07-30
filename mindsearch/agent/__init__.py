@@ -21,6 +21,7 @@ def init_agent(lang='cn', model_format='internlm_server'):
         llm_cfg = getattr(llm_factory, model_format)
         if llm_cfg is None:
             raise NotImplementedError
+        llm_cfg = llm_cfg.copy()
         llm = llm_cfg.pop('type')(**llm_cfg)
         LLM[model_format] = llm
 
@@ -35,9 +36,10 @@ def init_agent(lang='cn', model_format='internlm_server'):
         searcher_cfg=dict(
             llm=llm,
             plugin_executor=ActionExecutor(
-                BingBrowser(topk=6,
+                BingBrowser(searcher_type='DuckDuckGoSearch',
+                            topk=6,
                             api_key=os.environ.get('BING_API_KEY',
-                                                   'YOUR_BING_API'))),
+                                                   'YOUR BING API'))),
             protocol=MindSearchProtocol(
                 meta_prompt=datetime.now().strftime(
                     'The current date is %Y-%m-%d.'),
