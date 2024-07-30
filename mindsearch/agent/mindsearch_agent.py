@@ -185,7 +185,7 @@ class MindSearchAgent(BaseAgent):
                  llm,
                  searcher_cfg,
                  protocol=MindSearchProtocol(),
-                 max_turn=3):
+                 max_turn=10):
         self.local_dict = {}
         self.ptr = 0
         self.llm = llm

@@ -579,7 +579,7 @@ const RenderTest = () => {
           发送
         </button>
       </div>
-      <div className={styles.notice}>如果想要更丝滑的体验，请在本地搭建-<a href='https://github.com/InternLM/lagent' target='_blank'>Lagent <IconFont type='icon-GithubFilled' /></a></div>
+      <div className={styles.notice}>如果想要更丝滑的体验，请在本地搭建-<a href='https://github.com/InternLM/MindSearch' target='_blank'>MindSearch <IconFont type='icon-GithubFilled' /></a></div>
     </div>
     {showRight && <div className={styles.progressContent}>
       {

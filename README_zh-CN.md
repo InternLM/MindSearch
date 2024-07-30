@@ -51,8 +51,14 @@ pip install -r requirements.txt
 启动 FastAPI 服务器
 
 ```bash
-python -m mindsearch.app
+python -m mindsearch.app --lang en --model_format internlm_server
 ```
+
+- `--lang`: 模型的语言，`en` 为英语，`zh` 为中文。
+- `--model_format`: 模型的格式。
+  `internlm_server` 为 InternLM2.5-7b-chat 本地服务器。
+  `gpt4` 为 GPT4。
+  如果您想使用其他模型，请修改 [models](mindsearch\agent\models.py)
 
 ### 启动 MindSearch 前端
 
@@ -61,6 +67,12 @@ python -m mindsearch.app
 - React
 
 ```bash
+# 安装 Node.js 和 npm
+# 对于 Ubuntu
+sudo apt install nodejs npm
+# 对于 Windows
+# 从 https://nodejs.org/zh-cn/download/prebuilt-installer 下载
+
 cd frontend/React
 npm install
 npm start
@@ -94,12 +106,12 @@ python mindsearch/terminal.py
 
 ```
 @misc{chen2024mindsearchmimickinghumanminds,
-      title={MindSearch: Mimicking Human Minds Elicits Deep AI Searcher}, 
+      title={MindSearch: Mimicking Human Minds Elicits Deep AI Searcher},
       author={Zehui Chen and Kuikun Liu and Qiuchen Wang and Jiangning Liu and Wenwei Zhang and Kai Chen and Feng Zhao},
       year={2024},
       eprint={2407.20183},
       archivePrefix={arXiv},
       primaryClass={cs.CL},
-      url={https://arxiv.org/abs/2407.20183}, 
+      url={https://arxiv.org/abs/2407.20183},
 }
 ```

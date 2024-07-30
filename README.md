@@ -51,8 +51,14 @@ pip install -r requirements.txt
 Setup FastAPI Server.
 
 ```bash
-python -m mindsearch.app 
+python -m mindsearch.app --lang en --model_format internlm_server
 ```
+
+- `--lang`: language of the model, `en` for English and `zh` for Chinese.
+- `--model_format`: format of the model.
+  `internlm_server` for InternLM2.5-7b-chat with local server.
+  `gpt4` for GPT4.
+  if you want to use other models, please modify [models](mindsearch\agent\models.py)
 
 ### Setup MindSearch Frontend
 
@@ -61,6 +67,15 @@ Providing following frontend interfaces:
 - React
 
 ```bash
+# Install Node.js and npm
+# for Ubuntu
+sudo apt install nodejs npm
+
+# for windows
+# download from https://nodejs.org/zh-cn/download/prebuilt-installer
+
+# Install dependencies
+
 cd frontend/React
 npm install
 npm start
@@ -94,12 +109,12 @@ If you find this project useful in your research, please consider cite:
 
 ```
 @misc{chen2024mindsearchmimickinghumanminds,
-      title={MindSearch: Mimicking Human Minds Elicits Deep AI Searcher}, 
+      title={MindSearch: Mimicking Human Minds Elicits Deep AI Searcher},
       author={Zehui Chen and Kuikun Liu and Qiuchen Wang and Jiangning Liu and Wenwei Zhang and Kai Chen and Feng Zhao},
       year={2024},
       eprint={2407.20183},
       archivePrefix={arXiv},
       primaryClass={cs.CL},
-      url={https://arxiv.org/abs/2407.20183}, 
+      url={https://arxiv.org/abs/2407.20183},
 }
 ```
