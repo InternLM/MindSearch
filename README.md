@@ -93,7 +93,7 @@ python frontend/mindsearch_gradio.py
 streamlit run frontend/mindsearch_streamlit.py
 ```
 
-## 🐞 Debug in Locally
+## 🐞 Debug Locally
 
 ```bash
 python -m mindsearch.terminal
