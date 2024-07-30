@@ -94,7 +94,7 @@ Homebrew会自动下载Node.js的安装包，并处理相关的依赖项和安�
 完成以上步骤后，你应该能在你的 Windows、Linux 或 macOS 系统上成功安装并运行 Node.js。
 
 ### 更多
-如需了解更多，可参照：https://nodejs.org/zh-cn/download/package-manager
+如需了解更多，可参照：https://nodejs.org/en
 
 如环境已经准备好，跳转下一步
 
