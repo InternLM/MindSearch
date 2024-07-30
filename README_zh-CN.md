@@ -8,7 +8,7 @@
 
 [English](README.md) | 简体中文
 
-<https://github.com/user-attachments/assets/0e5bdfa1-dad9-4f17-968d-2b812e64bf15>
+<https://github.com/user-attachments/assets/b4312e9c-5b40-43e5-8c69-929c373e4965>
 
 </div>
 </p>
