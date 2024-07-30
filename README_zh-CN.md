@@ -8,7 +8,7 @@
 
 [English](README.md) | 简体中文
 
-https://github.com/user-attachments/assets/0e5bdfa1-dad9-4f17-968d-2b812e64bf15
+<https://github.com/user-attachments/assets/0e5bdfa1-dad9-4f17-968d-2b812e64bf15>
 
 </div>
 </p>
@@ -51,7 +51,7 @@ pip install -r requirements.txt
 启动 FastAPI 服务器
 
 ```bash
-python mindsearch/app.py
+python -m mindsearch.app
 ```
 
 ### 启动 MindSearch 前端
@@ -69,13 +69,13 @@ npm start
 - Gradio
 
 ```bash
-python frontend/gradio.py
+python frontend/mindsearch_gradio.py
 ```
 
 - Streamlit
 
 ```bash
-streamlit run frontend/streamlit.py
+streamlit run frontend/mindsearch_streamlit.py
 ```
 
 ## 🐞 本地调试
@@ -87,3 +87,19 @@ python mindsearch/terminal.py
 ## 📝 许可证
 
 该项目按照 [Apache 2.0 许可证](LICENSE) 发行。
+
+## 学术引用
+
+如果此项目对您的研究有帮助，请参考如下方式进行引用：
+
+```
+@misc{chen2024mindsearchmimickinghumanminds,
+      title={MindSearch: Mimicking Human Minds Elicits Deep AI Searcher}, 
+      author={Zehui Chen and Kuikun Liu and Qiuchen Wang and Jiangning Liu and Wenwei Zhang and Kai Chen and Feng Zhao},
+      year={2024},
+      eprint={2407.20183},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/2407.20183}, 
+}
+```
