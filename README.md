@@ -96,7 +96,7 @@ streamlit run frontend/mindsearch_streamlit.py
 ## 🐞 Debug in Locally
 
 ```bash
-python mindsearch/terminal.py
+python -m mindsearch.terminal
 ```
 
 ## 📝 License
