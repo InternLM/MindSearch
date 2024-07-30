@@ -56,7 +56,7 @@ python -m mindsearch.app --lang en --model_format internlm_server
 
 - `--lang`: language of the model, `en` for English and `zh` for Chinese.
 - `--model_format`: format of the model.
-  `internlm_server` for InternLM2.5-7b-chat with local server.
+  `internlm_server` for InternLM2.5-7b-chat with local server. (For InternLM2.5-7b-chat, its performance in English is not as good as in Chinese.)
   `gpt4` for GPT4.
   if you want to use other models, please modify [models](./mindsearch/agent/models.py)
 
