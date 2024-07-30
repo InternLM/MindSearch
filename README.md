@@ -58,7 +58,7 @@ python -m mindsearch.app --lang en --model_format internlm_server
 - `--model_format`: format of the model.
   `internlm_server` for InternLM2.5-7b-chat with local server.
   `gpt4` for GPT4.
-  if you want to use other models, please modify [models](mindsearch\agent\models.py)
+  if you want to use other models, please modify [models](./mindsearch/agent/models.py)
 
 ### Step3: Setup MindSearch Frontend
 
@@ -93,10 +93,10 @@ python frontend/mindsearch_gradio.py
 streamlit run frontend/mindsearch_streamlit.py
 ```
 
-## 🐞 Debug in Locally
+## 🐞 Debug Locally
 
 ```bash
-python mindsearch/terminal.py
+python -m mindsearch.terminal
 ```
 
 ## 📝 License
