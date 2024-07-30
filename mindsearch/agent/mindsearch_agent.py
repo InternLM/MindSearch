@@ -215,6 +215,7 @@ class MindSearchAgent(BaseAgent):
                                                  model_state.name)
                     yield deepcopy(agent_return)
                     return
+                response = response.replace('<|plugin|>', '<|interpreter|>')
                 _, language, action = self._protocol.parse(response)
                 if not language and not action:
                     continue
