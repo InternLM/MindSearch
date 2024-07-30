@@ -8,7 +8,7 @@
 
 English | [简体中文](README_zh-CN.md)
 
-https://github.com/user-attachments/assets/0e5bdfa1-dad9-4f17-968d-2b812e64bf15
+<https://github.com/user-attachments/assets/0e5bdfa1-dad9-4f17-968d-2b812e64bf15>
 
 </div>
 </p>
@@ -69,13 +69,13 @@ npm start
 - Gradio
 
 ```bash
-python frontend/gradio.py
+python frontend/mindsearch_gradio.py
 ```
 
 - Streamlit
 
 ```bash
-streamlit run frontend/streamlit.py
+streamlit run frontend/mindsearch_streamlit.py
 ```
 
 ## 🐞 Debug in Locally
@@ -87,3 +87,19 @@ python mindsearch/terminal.py
 ## License
 
 This project is released under the [Apache 2.0 license](LICENSE).
+
+## Citation
+
+If you find this project useful in your research, please consider cite:
+
+```
+@misc{chen2024mindsearchmimickinghumanminds,
+      title={MindSearch: Mimicking Human Minds Elicits Deep AI Searcher}, 
+      author={Zehui Chen and Kuikun Liu and Qiuchen Wang and Jiangning Liu and Wenwei Zhang and Kai Chen and Feng Zhao},
+      year={2024},
+      eprint={2407.20183},
+      archivePrefix={arXiv},
+      primaryClass={cs.CL},
+      url={https://arxiv.org/abs/2407.20183}, 
+}
+```
