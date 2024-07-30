@@ -78,6 +78,8 @@ npm install
 npm start
 ```
 
+更多细节请参考 [React](./frontend/React/README.md)
+
 - Gradio
 
 ```bash
