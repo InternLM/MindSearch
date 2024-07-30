@@ -22,9 +22,9 @@ npm start
 
 #### 接口请求配置
 
-- 如您需要配置的服务支持跨域，可至[cgi.ts](/src/config/cgi.ts)中修改请求链接，请求链接为http://ip:port/path;
+- 如您需要配置的服务支持跨域，可至[cgi.ts](./src/config/cgi.ts)中修改请求链接，请求链接为http://ip:port/path;
 
-- 如您需要配置的服务不支持跨域，可至 [vue.config.ts](frontend\React\vite.config.ts) 中配置proxy，示例如下
+- 如您需要配置的服务不支持跨域，可至 [vue.config.ts](./vite.config.ts) 中配置proxy，示例如下
 
   ```
     server: {
