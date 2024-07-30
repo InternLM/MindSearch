@@ -58,7 +58,7 @@ python -m mindsearch.app --lang en --model_format internlm_server
 - `--model_format`: 模型的格式。
   `internlm_server` 为 InternLM2.5-7b-chat 本地服务器。
   `gpt4` 为 GPT4。
-  如果您想使用其他模型，请修改 [models](mindsearch\agent\models.py)
+  如果您想使用其他模型，请修改 [models](./mindsearch/agent/models.py)
 
 ### 步骤3: 启动 MindSearch 前端
 
