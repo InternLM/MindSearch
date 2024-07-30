@@ -35,8 +35,9 @@ def init_agent(lang='cn', model_format='internlm_server'):
         searcher_cfg=dict(
             llm=llm,
             plugin_executor=ActionExecutor(
-                BingBrowser(
-                    api_key=os.environ.get('BING_API_KEY', 'YOUR_BING_API'))),
+                BingBrowser(topk=6,
+                            api_key=os.environ.get('BING_API_KEY',
+                                                   'YOUR_BING_API'))),
             protocol=MindSearchProtocol(
                 meta_prompt=datetime.now().strftime(
                     'The current date is %Y-%m-%d.'),
@@ -46,5 +47,6 @@ def init_agent(lang='cn', model_format='internlm_server'):
             template=dict(input=searcher_input_template_cn
                           if lang == 'cn' else searcher_input_template_en,
                           context=searcher_context_template_cn
-                          if lang == 'cn' else searcher_context_template_en)))
+                          if lang == 'cn' else searcher_context_template_en)),
+        max_turn=10)
     return agent

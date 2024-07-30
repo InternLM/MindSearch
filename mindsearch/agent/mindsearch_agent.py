@@ -1,6 +1,7 @@
 import json
 import logging
 import queue
+import random
 import re
 import threading
 import uuid
@@ -42,7 +43,10 @@ class SearcherAgent(Internlm2Agent):
                 ]
                 message = '\n'.join(parent_response + [message])
         print(colored(f'current query: {message}', 'green'))
-        for agent_return in super().stream_chat(message, **kwargs):
+        for agent_return in super().stream_chat(message,
+                                                session_id=random.randint(
+                                                    0, 999999),
+                                                **kwargs):
             agent_return.type = 'searcher'
             agent_return.content = question
             yield deepcopy(agent_return)
@@ -202,11 +206,10 @@ class MindSearchAgent(BaseAgent):
         agent_return.nodes = {}
         agent_return.adjacency_list = {}
         agent_return.inner_steps = deepcopy(inner_history)
-
         for _ in range(self.max_turn):
             prompt = self._protocol.format(inner_step=inner_history)
             for model_state, response, _ in self.llm.stream_chat(
-                    prompt, **kwargs):
+                    prompt, session_id=random.randint(0, 999999), **kwargs):
                 if model_state.value < 0:
                     agent_return.state = getattr(AgentStatusCode,
                                                  model_state.name)
@@ -227,9 +230,10 @@ class MindSearchAgent(BaseAgent):
             print(colored(response, 'blue'))
 
             if code:
-                yield from self._process_code(agent_return,
-                                              inner_history, code,
-                                              kwargs.get('as_dict', False))
+                yield from self._process_code(
+                    agent_return, inner_history, code,
+                    kwargs.get('as_dict', False),
+                    kwargs.get('return_early', False))
             else:
                 agent_return.state = AgentStatusCode.END
                 yield deepcopy(agent_return)
@@ -246,8 +250,14 @@ class MindSearchAgent(BaseAgent):
                 if agent_return.nodes and 'response' in agent_return.nodes else
                 AgentStatusCode.STREAM_ING)
 
-    def _process_code(self, agent_return, inner_history, code, as_dict=False):
-        for node_name, node, adj in self.execute_code(code):
+    def _process_code(self,
+                      agent_return,
+                      inner_history,
+                      code,
+                      as_dict=False,
+                      return_early=False):
+        for node_name, node, adj in self.execute_code(
+                code, return_early=return_early):
             if as_dict and 'detail' in node:
                 node['detail'] = asdict(node['detail'])
             if not adj:
@@ -319,7 +329,7 @@ class MindSearchAgent(BaseAgent):
             references.append(updated_ref)
         return '\n'.join(references), references_url
 
-    def execute_code(self, command: str):
+    def execute_code(self, command: str, return_early=False):
 
         def extract_code(text: str) -> str:
             text = re.sub(r'from ([\w.]+) import WebSearchGraph', '', text)
@@ -375,10 +385,13 @@ class MindSearchAgent(BaseAgent):
                     if not active_node and ordered_nodes:
                         active_node = ordered_nodes[0]
                     while active_node and responses[active_node]:
-                        if 'detail' in responses[active_node][-1][
-                                1] and responses[active_node][-1][1][
-                                    'detail'].state == AgentStatusCode.END:
-                            item = responses[active_node][-1]
+                        if return_early:
+                            if 'detail' in responses[active_node][-1][
+                                    1] and responses[active_node][-1][1][
+                                        'detail'].state == AgentStatusCode.END:
+                                item = responses[active_node][-1]
+                            else:
+                                item = responses[active_node].pop(0)
                         else:
                             item = responses[active_node].pop(0)
                         if 'detail' in item[1] and item[1][
