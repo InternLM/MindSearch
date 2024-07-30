@@ -4,7 +4,7 @@
 
 <img src="assets/logo.svg" style="width: 50%; height: auto;">
 
-[🌐 Project Page](https://mindsearch.netlify.app/) | [📃 Paper](<>) | [💻 Playground](https://mindsearch.openxlab.org.cn/)
+[🌐 Project Page](https://mindsearch.netlify.app/) | [📃 Paper](https://arxiv.org/abs/2407.20183) | [💻 Playground](https://mindsearch.openxlab.org.cn/)
 
 [English](README.md) | 简体中文
 
@@ -40,13 +40,13 @@ MindSearch 是一个开源的 AI 搜索引擎框架，具有与 Perplexity.ai Pr
 
 ## ⚽️ 构建您自己的 MindSearch
 
-### 依赖安装
+### 步骤1: 依赖安装
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 启动 MindSearch API
+### 步骤2: 启动 MindSearch API
 
 启动 FastAPI 服务器
 
@@ -60,7 +60,7 @@ python -m mindsearch.app --lang en --model_format internlm_server
   `gpt4` 为 GPT4。
   如果您想使用其他模型，请修改 [models](mindsearch\agent\models.py)
 
-### 启动 MindSearch 前端
+### 步骤3: 启动 MindSearch 前端
 
 提供以下几种前端界面：
 
