@@ -4,7 +4,7 @@
 
 <img src="assets/logo.svg" style="width: 50%; height: auto;">
 
-[🌐 Project Page](https://mindsearch.netlify.app/) | [📃 Paper](<>) | [💻 Playground](https://mindsearch.openxlab.org.cn/)
+[🌐 Project Page](https://mindsearch.netlify.app/) | [📃 Paper](https://arxiv.org/abs/2407.20183) | [💻 Playground](https://mindsearch.openxlab.org.cn/)
 
 English | [简体中文](README_zh-CN.md)
 
@@ -40,13 +40,13 @@ Comparison on human preference based on depth, breadth, factuality of the respon
 
 ## ⚽️ Build Your Own MindSearch
 
-### Dependencies Installation
+### Step1: Dependencies Installation
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### Setup MindSearch API
+### Step2: Setup MindSearch API
 
 Setup FastAPI Server.
 
@@ -60,7 +60,7 @@ python -m mindsearch.app --lang en --model_format internlm_server
   `gpt4` for GPT4.
   if you want to use other models, please modify [models](mindsearch\agent\models.py)
 
-### Setup MindSearch Frontend
+### Step3: Setup MindSearch Frontend
 
 Providing following frontend interfaces:
 
@@ -99,7 +99,7 @@ streamlit run frontend/mindsearch_streamlit.py
 python mindsearch/terminal.py
 ```
 
-## License
+## 📝 License
 
 This project is released under the [Apache 2.0 license](LICENSE).
 
