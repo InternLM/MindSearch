@@ -56,9 +56,9 @@ python -m mindsearch.app --lang en --model_format internlm_server
 
 - `--lang`: 模型的语言，`en` 为英语，`zh` 为中文。
 - `--model_format`: 模型的格式。
-  `internlm_server` 为 InternLM2.5-7b-chat 本地服务器。
-  `gpt4` 为 GPT4。
-  如果您想使用其他模型，请修改 [models](./mindsearch/agent/models.py)
+  - `internlm_server` 为 InternLM2.5-7b-chat 本地服务器。
+  - `gpt4` 为 GPT4。
+    如果您想使用其他模型，请修改 [models](./mindsearch/agent/models.py)
 
 ### 步骤3: 启动 MindSearch 前端
 
@@ -77,6 +77,8 @@ cd frontend/React
 npm install
 npm start
 ```
+
+更多细节请参考 [React](./frontend/React/README.md)
 
 - Gradio
 

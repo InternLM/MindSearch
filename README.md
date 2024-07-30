@@ -56,13 +56,13 @@ python -m mindsearch.app --lang en --model_format internlm_server
 
 - `--lang`: language of the model, `en` for English and `zh` for Chinese.
 - `--model_format`: format of the model.
-  `internlm_server` for InternLM2.5-7b-chat with local server. (For InternLM2.5-7b-chat, its performance in English is not as good as in Chinese.)
-  `gpt4` for GPT4.
-  if you want to use other models, please modify [models](./mindsearch/agent/models.py)
+  - `internlm_server` for InternLM2.5-7b-chat with local server. (InternLM2.5-7b-chat has been better optimized for Chinese.)
+  - `gpt4` for GPT4.
+    if you want to use other models, please modify [models](./mindsearch/agent/models.py)
 
 ### Step3: Setup MindSearch Frontend
 
-Providing following frontend interfaces:
+Providing following frontend interfaces,
 
 - React
 
@@ -80,6 +80,8 @@ cd frontend/React
 npm install
 npm start
 ```
+
+Details can be found in [React](./frontend/React/README.md)
 
 - Gradio
 
