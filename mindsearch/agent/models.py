@@ -4,7 +4,7 @@ from lagent.llms import (GPTAPI, INTERNLM2_META, HFTransformerCasualLM,
                          LMDeployClient, LMDeployServer)
 
 internlm_server = dict(type=LMDeployServer,
-                       path='internlm/internlm2_5-7b',
+                       path='internlm/internlm2_5-7b-chat',
                        model_name='internlm2',
                        meta_template=INTERNLM2_META,
                        top_p=0.8,
@@ -15,7 +15,7 @@ internlm_server = dict(type=LMDeployServer,
                        stop_words=['<|im_end|>'])
 
 internlm_client = dict(type=LMDeployClient,
-                       model_name='internlm2_5-7b',
+                       model_name='internlm2_5-7b-chat',
                        url='http://127.0.0.1:23333',
                        meta_template=INTERNLM2_META,
                        top_p=0.8,
@@ -26,7 +26,7 @@ internlm_client = dict(type=LMDeployClient,
                        stop_words=['<|im_end|>'])
 
 internlm_hf = dict(type=HFTransformerCasualLM,
-                   path='internlm/internlm2_5-7b',
+                   path='internlm/internlm2_5-7b-chat',
                    meta_template=INTERNLM2_META,
                    top_p=0.8,
                    top_k=None,
