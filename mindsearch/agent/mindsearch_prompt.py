@@ -33,6 +33,28 @@ Your thought process...<|action_start|><|plugin|>{{"name": "tool_name", "paramet
 - Based on the search results of the "current problem", write a detailed and complete reply to answer the "current problem".
 """
 
+fewshot_example_cn = """
+## 样例
+
+### search
+当我希望搜索"当前美国总统"时，我会按照以下格式进行操作:
+现在是2024年，因此我应该搜索美国总统关键词<|action_start|><|plugin|>{{"name": "FastWebBrowser.search", "parameters": {{"query": ["美国总统", "2024年现任美国总统"]}}}}<|action_end|>
+
+### select
+为了找到汤晓鸥教授的学生名单，我需要寻找提及他的学生或者实验室成员的网页。初步浏览网页后，发现网页0提到汤晓鸥团队在计算机视觉会议上发表论文，但没有具体提及学生名单。网页3提到“门生已是AI领军人物”，有可能提及学生名单。网页13提到“香港中文大学多媒体实验室”，可能包含实验室成员的信息。因此，我选择了网页3和网页13进行进一步阅读。<|action_start|><|plugin|>{{"name": "FastWebBrowser.select", "parameters": {{"index": [3, 13]}}}}<|action_end|>
+"""
+
+fewshot_example_en = """
+## Example
+
+### search
+When I want to search for "current US president", I will operate in the following format:
+Now it is 2024, so I should search for the keyword of the US president<|action_start|><|plugin|>{{"name": "FastWebBrowser.search", "parameters": {{"query": ["US president", "current US president in 2024"]}}}}<|action_end|>
+
+### select
+To find the list of students of Professor Tang Xiaoou, I need to find the webpage that mentions his students or lab members. After browsing the webpages, I found that webpage 0 mentioned that Professor Tang Xiaoou's team published papers at a computer vision conference, but did not specifically mention the list of students. Webpage 3 mentioned that "students are leading figures in AI", which may mention the list of students. Webpage 13 mentioned "Multimedia Laboratory of the Chinese University of Hong Kong", which may contain information about lab members. Therefore, I chose webpages 3 and 13 for further reading.<|action_start|><|plugin|>{{"name": "FastWebBrowser.select", "parameters": {{"index": [3, 13]}}}}<|action_end|>
+"""
+
 searcher_input_template_en = """## Final Problem
 {topic}
 ## Current Problem
@@ -151,11 +173,11 @@ def node(self, node_name: str) -> str
 3. 同样的问题不要重复提问，可以在已有问题的基础上继续提问
 4. 添加 response 节点的时候，要单独添加，不要和其他节点一起添加，不能同时添加 response 节点和其他节点
 5. 一次输出中，不要包含多个代码块，每次只能有一个代码块
-6. 每个代码块应该放置在一个代码块标记中，同时生成完代码后添加一个<end>标志，如下所示：
+6. 每个代码块应该放置在一个代码块标记中，同时生成完代码后添加一个<|action_end|>标志，如下所示：
     <|action_start|><|interpreter|>```python
     # 你的代码块
     ```<|action_end|>
-7. 最后一次回复应该是添加 response 节点，必须添加 response 节点，不要添加其他节点
+7. 最后一次回复应该是添加node_name为'response'的 response 节点，必须添加 response 节点，不要添加其他节点
 """
 
 GRAPH_PROMPT_EN = """## Character Profile
@@ -221,7 +243,7 @@ Resets nodes and edges.
 
 #### Method: node
 
-Retrieves node information.
+Get node information.
 
 python
 def node(self, node_name: str) -> str
@@ -244,12 +266,49 @@ By breaking down a question into sub-questions that can be answered through sear
 3. Do not repeat the same question; continue asking based on existing questions.
 4. When adding a response node, add it separately; do not add a response node and other nodes simultaneously.
 5. In a single output, do not include multiple code blocks; only one code block per output.
-6. Each code block should be placed within a code block marker, and after generating the code, add an <end> tag as shown below:
+6. Each code block should be placed within a code block marker, and after generating the code, add an <|action_end|> tag as shown below:
     <|action_start|><|interpreter|>
     ```python
-    # Your code block
+    # Your code block (Note that the 'Get new added node information' logic must be added at the end of the code block, such as 'graph.node('...')')
     ```<|action_end|>
-7. The final response should add a response node, and no other nodes should be added.
+7. The final response should add a response node with node_name 'response', and no other nodes should be added.
+"""
+
+graph_fewshot_example_cn = """
+## 返回格式示例
+<|action_start|><|interpreter|>```python
+graph = WebSearchGraph()
+graph.add_root_node(node_content="哪家大模型API最便宜?", node_name="root") # 添加原始问题作为根节点
+graph.add_node(
+        node_name="大模型API提供商", # 节点名称最好有意义
+        node_content="目前有哪些主要的大模型API提供商？")
+graph.add_node(
+        node_name="sub_name_2", # 节点名称最好有意义
+        node_content="content of sub_name_2")
+...
+graph.add_edge(start_node="root", end_node="sub_name_1")
+...
+graph.node("大模型API提供商"), graph.node("sub_name_2"), ...
+```<|action_end|>
+"""
+
+graph_fewshot_example_en = """
+## Response Format
+<|action_start|><|interpreter|>```python
+graph = WebSearchGraph()
+graph.add_root_node(node_content="Which large model API is the cheapest?", node_name="root") # Add the original question as the root node
+graph.add_node(
+        node_name="Large Model API Providers", # The node name should be meaningful
+        node_content="Who are the main large model API providers currently?")
+graph.add_node(
+        node_name="sub_name_2", # The node name should be meaningful
+        node_content="content of sub_name_2")
+...
+graph.add_edge(start_node="root", end_node="sub_name_1")
+...
+# Get node info
+graph.node("Large Model API Providers"), graph.node("sub_name_2"), ...
+```<|action_end|>
 """
 
 FINAL_RESPONSE_CN = """基于提供的问答对，撰写一篇详细完备的最终回答。
