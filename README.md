@@ -43,8 +43,11 @@ Comparison on human preference based on depth, breadth, factuality of the respon
 ### Step1: Dependencies Installation
 
 ```bash
+# Clone Repo
 git clone https://github.com/InternLM/MindSearch
 cd MindSearch
+
+# Install requirements
 pip install -r requirements.txt
 ```
 
