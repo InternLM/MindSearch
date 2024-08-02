@@ -210,6 +210,7 @@ class MindSearchAgent(BaseAgent):
         agent_return.inner_steps = deepcopy(inner_history)
         for _ in range(self.max_turn):
             prompt = self._protocol.format(inner_step=inner_history)
+            code = None
             for model_state, response, _ in self.llm.stream_chat(
                     prompt, session_id=random.randint(0, 999999), **kwargs):
                 if model_state.value < 0:

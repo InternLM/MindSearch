@@ -38,3 +38,21 @@ internlm_hf = dict(type=HFTransformerCasualLM,
 gpt4 = dict(type=GPTAPI,
             model_type='gpt-4-turbo',
             key=os.environ.get('OPENAI_API_KEY', 'YOUR OPENAI API KEY'))
+
+url = 'https://dashscope.aliyuncs.com/api/v1/services/aigc/text-generation/generation'
+qwen = dict(type=GPTAPI,
+            model_type='qwen-turbo',
+            key=os.environ.get('QWEN_API_KEY', 'YOUR QWEN API KEY'),
+            openai_api_base=url,
+            meta_template=[
+                dict(role='system', api_role='system'),
+                dict(role='user', api_role='user'),
+                dict(role='assistant', api_role='assistant'),
+                dict(role='environment', api_role='tool')
+            ],
+            top_p=0.8,
+            top_k=1,
+            temperature=0,
+            max_new_tokens=8192,
+            repetition_penalty=1.02,
+            stop_words=['<|im_end|>'])

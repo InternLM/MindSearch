@@ -29,7 +29,7 @@ def init_agent(lang='cn', model_format='internlm_server'):
 
     interpreter_prompt = GRAPH_PROMPT_CN if lang == 'cn' else GRAPH_PROMPT_EN
     plugin_prompt = searcher_system_prompt_cn if lang == 'cn' else searcher_system_prompt_en
-    if model_format == 'gpt4':
+    if not model_format.lower().startswith('internlm'):
         interpreter_prompt += graph_fewshot_example_cn if lang == 'cn' else graph_fewshot_example_en
         plugin_prompt += fewshot_example_cn if lang == 'cn' else fewshot_example_en
 
