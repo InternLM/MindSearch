@@ -198,6 +198,8 @@ class MindSearchAgent(BaseAgent):
             message = [{'role': 'user', 'content': message}]
         elif isinstance(message, dict):
             message = [message]
+        as_dict = kwargs.pop('as_dict', False)
+        return_early = kwargs.pop('return_early', False)
         self.local_dict.clear()
         self.ptr = 0
         inner_history = message[:]
@@ -231,10 +233,8 @@ class MindSearchAgent(BaseAgent):
             print(colored(response, 'blue'))
 
             if code:
-                yield from self._process_code(
-                    agent_return, inner_history, code,
-                    kwargs.get('as_dict', False),
-                    kwargs.get('return_early', False))
+                yield from self._process_code(agent_return, inner_history,
+                                              code, as_dict, return_early)
             else:
                 agent_return.state = AgentStatusCode.END
                 yield deepcopy(agent_return)
