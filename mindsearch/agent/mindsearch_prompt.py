@@ -37,22 +37,22 @@ fewshot_example_cn = """
 ## 样例
 
 ### search
-当我希望搜索"当前美国总统"时，我会按照以下格式进行操作:
-现在是2024年，因此我应该搜索美国总统关键词<|action_start|><|plugin|>{{"name": "FastWebBrowser.search", "parameters": {{"query": ["美国总统", "2024年现任美国总统"]}}}}<|action_end|>
+当我希望搜索"王者荣耀现在是什么赛季"时，我会按照以下格式进行操作:
+现在是2024年，因此我应该搜索王者荣耀赛季关键词<|action_start|><|plugin|>{{"name": "FastWebBrowser.search", "parameters": {{"query": ["王者荣耀 赛季", "2024年王者荣耀赛季"]}}}}<|action_end|>
 
 ### select
-为了找到汤晓鸥教授的学生名单，我需要寻找提及他的学生或者实验室成员的网页。初步浏览网页后，发现网页0提到汤晓鸥团队在计算机视觉会议上发表论文，但没有具体提及学生名单。网页3提到“门生已是AI领军人物”，有可能提及学生名单。网页13提到“香港中文大学多媒体实验室”，可能包含实验室成员的信息。因此，我选择了网页3和网页13进行进一步阅读。<|action_start|><|plugin|>{{"name": "FastWebBrowser.select", "parameters": {{"index": [3, 13]}}}}<|action_end|>
+为了找到王者荣耀s36赛季最强射手，我需要寻找提及王者荣耀s36射手的网页。初步浏览网页后，发现网页0提到王者荣耀s36赛季的信息，但没有具体提及射手的相关信息。网页3提到“s36最强射手出现？”，有可能包含最强射手信息。网页13提到“四大T0英雄崛起，射手荣耀降临”，可能包含最强射手的信息。因此，我选择了网页3和网页13进行进一步阅读。<|action_start|><|plugin|>{{"name": "FastWebBrowser.select", "parameters": {{"index": [3, 13]}}}}<|action_end|>
 """
 
 fewshot_example_en = """
 ## Example
 
 ### search
-When I want to search for "current US president", I will operate in the following format:
-Now it is 2024, so I should search for the keyword of the US president<|action_start|><|plugin|>{{"name": "FastWebBrowser.search", "parameters": {{"query": ["US president", "current US president in 2024"]}}}}<|action_end|>
+When I want to search for "What season is Honor of Kings now", I will operate in the following format:
+Now it is 2024, so I should search for the keyword of the Honor of Kings<|action_start|><|plugin|>{{"name": "FastWebBrowser.search", "parameters": {{"query": ["Honor of Kings Season", "season for Honor of Kings in 2024"]}}}}<|action_end|>
 
 ### select
-To find the list of students of Professor Tang Xiaoou, I need to find the webpage that mentions his students or lab members. After browsing the webpages, I found that webpage 0 mentioned that Professor Tang Xiaoou's team published papers at a computer vision conference, but did not specifically mention the list of students. Webpage 3 mentioned that "students are leading figures in AI", which may mention the list of students. Webpage 13 mentioned "Multimedia Laboratory of the Chinese University of Hong Kong", which may contain information about lab members. Therefore, I chose webpages 3 and 13 for further reading.<|action_start|><|plugin|>{{"name": "FastWebBrowser.select", "parameters": {{"index": [3, 13]}}}}<|action_end|>
+In order to find the strongest shooters in Honor of Kings in season s36, I needed to look for web pages that mentioned shooters in Honor of Kings in season s36. After an initial browse of the web pages, I found that web page 0 mentions information about Honor of Kings in s36 season, but there is no specific mention of information about the shooter. Webpage 3 mentions that “the strongest shooter in s36 has appeared?”, which may contain information about the strongest shooter. Webpage 13 mentions “Four T0 heroes rise, archer's glory”, which may contain information about the strongest archer. Therefore, I chose webpages 3 and 13 for further reading.<|action_start|><|plugin|>{{"name": "FastWebBrowser.select", "parameters": {{"index": [3, 13]}}}}<|action_end|>
 """
 
 searcher_input_template_en = """## Final Problem
