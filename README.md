@@ -56,7 +56,7 @@ Setup FastAPI Server.
 python -m mindsearch.app --lang en --model_format internlm_server
 ```
 
-- `--lang`: language of the model, `en` for English and `zh` for Chinese.
+- `--lang`: language of the model, `en` for English and `cn` for Chinese.
 - `--model_format`: format of the model.
   - `internlm_server` for InternLM2.5-7b-chat with local server. (InternLM2.5-7b-chat has been better optimized for Chinese.)
   - `gpt4` for GPT4.

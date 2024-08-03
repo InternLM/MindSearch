@@ -54,7 +54,7 @@ pip install -r requirements.txt
 python -m mindsearch.app --lang en --model_format internlm_server
 ```
 
-- `--lang`: 模型的语言，`en` 为英语，`zh` 为中文。
+- `--lang`: 模型的语言，`en` 为英语，`cn` 为中文。
 - `--model_format`: 模型的格式。
   - `internlm_server` 为 InternLM2.5-7b-chat 本地服务器。
   - `gpt4` 为 GPT4。
