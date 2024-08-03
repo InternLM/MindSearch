@@ -5,6 +5,7 @@ import random
 import re
 import threading
 import uuid
+import time
 from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from copy import deepcopy
@@ -366,7 +367,12 @@ class MindSearchAgent(BaseAgent):
 
         while True:
             try:
-                item = self.local_dict.get('graph').searcher_resp_queue.get(
+                graph = self.local_dict.get('graph')
+                if not graph:
+                    print('Initial code not executed yet, waiting...')
+                    time.sleep(1)
+                    continue
+                item = graph.searcher_resp_queue.get(
                     timeout=60)
                 if item is WebSearchGraph.end_signal:
                     for node_name in ordered_nodes:
