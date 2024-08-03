@@ -1,0 +1,36 @@
+version: "3.8"
+
+services:
+  backend:
+    build:
+      context: ..
+      dockerfile: docker/backend.dockerfile
+    image: mindsearch-backend:latest
+    ports:
+      - "8002:8002"
+    environment:
+      - PYTHONUNBUFFERED=1
+    command: python -m mindsearch.app --lang ${LANG:-zh} --model_format ${MODEL_FORMAT:-internlm_server}
+    volumes:
+      - ../mindsearch:/root/mindsearch
+      - /root/.cache:/root/.cache
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+
+  frontend:
+    build:
+      context: ..
+      dockerfile: docker/frontend.dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      - NODE_ENV=production
+      - API_URL=http://0.0.0.0:8002
+      - SERVE_PORT=8080
+    depends_on:
+      - backend
