@@ -1,4 +1,5 @@
 duckduckgo_search==5.3.1b1
+einops
 fastapi
 git+https://github.com/InternLM/lagent.git
 gradio

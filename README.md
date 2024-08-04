@@ -8,7 +8,7 @@
 
 English | [简体中文](README_zh-CN.md)
 
-<https://github.com/user-attachments/assets/0e5bdfa1-dad9-4f17-968d-2b812e64bf15>
+<https://github.com/user-attachments/assets/44ffe4b9-be26-4b93-a77b-02fed16e33fe>
 
 </div>
 </p>
@@ -43,6 +43,8 @@ Comparison on human preference based on depth, breadth, factuality of the respon
 ### Step1: Dependencies Installation
 
 ```bash
+git clone https://github.com/InternLM/MindSearch
+cd MindSearch
 pip install -r requirements.txt
 ```
 
@@ -56,13 +58,13 @@ python -m mindsearch.app --lang en --model_format internlm_server
 
 - `--lang`: language of the model, `en` for English and `zh` for Chinese.
 - `--model_format`: format of the model.
-  `internlm_server` for InternLM2.5-7b-chat with local server.
-  `gpt4` for GPT4.
-  if you want to use other models, please modify [models](mindsearch\agent\models.py)
+  - `internlm_server` for InternLM2.5-7b-chat with local server. (InternLM2.5-7b-chat has been better optimized for Chinese.)
+  - `gpt4` for GPT4.
+    if you want to use other models, please modify [models](./mindsearch/agent/models.py)
 
 ### Step3: Setup MindSearch Frontend
 
-Providing following frontend interfaces:
+Providing following frontend interfaces,
 
 - React
 
@@ -81,6 +83,8 @@ npm install
 npm start
 ```
 
+Details can be found in [React](./frontend/React/README.md)
+
 - Gradio
 
 ```bash
@@ -93,10 +97,10 @@ python frontend/mindsearch_gradio.py
 streamlit run frontend/mindsearch_streamlit.py
 ```
 
-## 🐞 Debug in Locally
+## 🐞 Debug Locally
 
 ```bash
-python mindsearch/terminal.py
+python -m mindsearch.terminal
 ```
 
 ## 📝 License

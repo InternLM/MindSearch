@@ -198,6 +198,8 @@ class MindSearchAgent(BaseAgent):
             message = [{'role': 'user', 'content': message}]
         elif isinstance(message, dict):
             message = [message]
+        as_dict = kwargs.pop('as_dict', False)
+        return_early = kwargs.pop('return_early', False)
         self.local_dict.clear()
         self.ptr = 0
         inner_history = message[:]
@@ -208,6 +210,7 @@ class MindSearchAgent(BaseAgent):
         agent_return.inner_steps = deepcopy(inner_history)
         for _ in range(self.max_turn):
             prompt = self._protocol.format(inner_step=inner_history)
+            code = None
             for model_state, response, _ in self.llm.stream_chat(
                     prompt, session_id=random.randint(0, 999999), **kwargs):
                 if model_state.value < 0:
@@ -215,6 +218,7 @@ class MindSearchAgent(BaseAgent):
                                                  model_state.name)
                     yield deepcopy(agent_return)
                     return
+                response = response.replace('<|plugin|>', '<|interpreter|>')
                 _, language, action = self._protocol.parse(response)
                 if not language and not action:
                     continue
@@ -230,10 +234,8 @@ class MindSearchAgent(BaseAgent):
             print(colored(response, 'blue'))
 
             if code:
-                yield from self._process_code(
-                    agent_return, inner_history, code,
-                    kwargs.get('as_dict', False),
-                    kwargs.get('return_early', False))
+                yield from self._process_code(agent_return, inner_history,
+                                              code, as_dict, return_early)
             else:
                 agent_return.state = AgentStatusCode.END
                 yield deepcopy(agent_return)

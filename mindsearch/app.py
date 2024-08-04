@@ -67,14 +67,20 @@ async def run(request: GenerationParams):
                 try:
                     for response in agent.stream_chat(inputs):
                         queue.sync_q.put(response)
-                except KeyError as e:
-                    logging.error(f'KeyError in sync_generator_wrapper: {e}')
+                except Exception as e:
+                    logging.exception(
+                        f'Exception in sync_generator_wrapper: {e}')
+                finally:
+                    # 确保在发生异常时队列中的所有元素都被消费
+                    queue.sync_q.put(None)
 
             async def async_generator_wrapper():
                 loop = asyncio.get_event_loop()
                 loop.run_in_executor(None, sync_generator_wrapper)
                 while True:
                     response = await queue.async_q.get()
+                    if response is None:  # 确保消费完所有元素
+                        break
                     yield response
                     if not isinstance(
                             response,
@@ -108,6 +114,9 @@ async def run(request: GenerationParams):
                 ensure_ascii=False)
             yield {'data': response_json}
             # yield f'data: {response_json}\n\n'
+        finally:
+            queue.close()
+            await queue.wait_closed()
 
     inputs = request.inputs
     agent = init_agent(lang=args.lang, model_format=args.model_format)
