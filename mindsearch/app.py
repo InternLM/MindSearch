@@ -66,13 +66,17 @@ async def run(request: GenerationParams):
             def sync_generator_wrapper():
                 try:
                     for response in agent.stream_chat(inputs):
-                        queue.sync_q.put(response)
+                        if not queue.sync_q.closed:
+                            queue.sync_q.put(response)
+                        else:
+                            logging.warning("Attempted to put a response into a closed queue.")
+                            break
                 except Exception as e:
-                    logging.exception(
-                        f'Exception in sync_generator_wrapper: {e}')
+                    logging.exception(f'Exception in sync_generator_wrapper: {e}')
                 finally:
                     # 确保在发生异常时队列中的所有元素都被消费
-                    queue.sync_q.put(None)
+                    if not queue.sync_q.closed:
+                        queue.sync_q.put(None)
 
             async def async_generator_wrapper():
                 loop = asyncio.get_event_loop()
