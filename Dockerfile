@@ -6,21 +6,25 @@ ENV OPENAI_API_KEY=${OPENAI_API_KEY}
 ARG BING_API_KEY
 ENV BING_API_KEY=${BING_API_KEY}
 
-# 设置环境变量
+# Setting environment variables
 ENV PATH=/opt/conda/bin:$PATH
 
-# 克隆git仓库
+# Cloning the git repository
 RUN git clone https://github.com/InternLM/MindSearch.git /app
 
 WORKDIR /app
 
-# 创建并激活 fastapi 环境，并安装依赖包
+# Create and activate the fastapi environment and install dependencies
 RUN conda create --name fastapi python=3.10 -y && \
     conda run -n fastapi pip install -r requirements.txt && \
     conda clean --all -f -y
 
-# 暴露 FastAPI 默认端口
-EXPOSE 8000
+# Exposing the FastAPI Default Port
+EXPOSE 8002
 
-# 启动 FastAPI 服务
-CMD ["conda", "run", "--no-capture-output", "-n", "fastapi", "uvicorn", "mindsearch.app:app", "--host", "0.0.0.0", "--port", "8002"]
+# Copy the entry point script and set permissions
+COPY entrypoint.sh /app/entrypoint.sh
+RUN chmod +x /app/entrypoint.sh
+
+# Setting up the entry point
+ENTRYPOINT ["/app/entrypoint.sh"]
