@@ -1,16 +1,16 @@
-version: '3.8'
+version: '3.3'
 
 services:
-  fastapi-app:
+  mindsearch-bc:
     build: .
+    # image: mindsearch:latest
     ports:
       - "8002:8002"
     environment:
       - OPENAI_API_KEY=your_openai_api_key_here
+      - QWEN_API_KEY=your_qwen_api_key_here
       - BING_API_KEY=your_bing_api_key_here
     command: [
-      "--lang", "cn",
-      "--model_format", "internlm_server",
-      "--host", "0.0.0.0",
-      "--port", "8002"
+      "--lang=cn",
+      "--model_format=internlm_server"
     ]

@@ -23,4 +23,4 @@ RUN conda create --name fastapi python=3.10 -y && \
 EXPOSE 8002
 
 # Setting up the entry point
-ENTRYPOINT ["sh", "-c", "source /opt/conda/etc/profile.d/conda.sh && conda activate fastapi && python -m mindsearch.app \"$@\" && exec uvicorn mindsearch.app:app --host 0.0.0.0 --port 8002"]
+ENTRYPOINT ["/bin/bash", "-c", "source /opt/conda/etc/profile.d/conda.sh && conda activate fastapi && python -m mindsearch.app \"$@\" && exec uvicorn mindsearch.app:app --host 0.0.0.0 --port 8002"]
