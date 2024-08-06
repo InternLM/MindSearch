@@ -5,12 +5,15 @@ services:
       context: ..
       dockerfile: docker/backend.dockerfile
     image: mindsearch/backend:latest
+    restart: unless-stopped
     # 如果想强制使用本地构建，取消下面这行的注释
     # pull: never
     ports:
       - "8002:8002"
     environment:
       - PYTHONUNBUFFERED=1
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - OPENAI_API_BASE=${OPENAI_API_BASE:-https://api.openai.com/v1}
     command: python -m mindsearch.app --lang ${LANG:-zh} --model_format ${MODEL_FORMAT:-internlm_server}
     volumes:
       - /root/.cache:/root/.cache
@@ -48,6 +51,7 @@ services:
       context: ..
       dockerfile: docker/frontend.dockerfile
     image: mindsearch/frontend:latest
+    restart: unless-stopped
     # 如果想强制使用本地构建，取消下面这行的注释
     # pull: never
     ports:
