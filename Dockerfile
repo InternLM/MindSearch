@@ -22,9 +22,5 @@ RUN conda create --name fastapi python=3.10 -y && \
 # Exposing the FastAPI Default Port
 EXPOSE 8002
 
-# Copy the entry point script and set permissions
-COPY entrypoint.sh /app/entrypoint.sh
-RUN chmod +x /app/entrypoint.sh
-
 # Setting up the entry point
-ENTRYPOINT ["/app/entrypoint.sh"]
+ENTRYPOINT ["sh", "-c", "source /opt/conda/etc/profile.d/conda.sh && conda activate fastapi && python -m mindsearch.app \"$@\" && exec uvicorn mindsearch.app:app --host 0.0.0.0 --port 8002"]
