@@ -56,7 +56,7 @@ Setup FastAPI Server.
 python -m mindsearch.app --lang en --model_format internlm_server
 ```
 
-- `--lang`: language of the model, `en` for English and `zh` for Chinese.
+- `--lang`: language of the model, `en` for English and `cn` for Chinese.
 - `--model_format`: format of the model.
   - `internlm_server` for InternLM2.5-7b-chat with local server. (InternLM2.5-7b-chat has been better optimized for Chinese.)
   - `gpt4` for GPT4.
@@ -112,13 +112,18 @@ This project is released under the [Apache 2.0 license](LICENSE).
 If you find this project useful in your research, please consider cite:
 
 ```
-@misc{chen2024mindsearchmimickinghumanminds,
-      title={MindSearch: Mimicking Human Minds Elicits Deep AI Searcher},
-      author={Zehui Chen and Kuikun Liu and Qiuchen Wang and Jiangning Liu and Wenwei Zhang and Kai Chen and Feng Zhao},
-      year={2024},
-      eprint={2407.20183},
-      archivePrefix={arXiv},
-      primaryClass={cs.CL},
-      url={https://arxiv.org/abs/2407.20183},
+@article{chen2024mindsearch,
+  title={MindSearch: Mimicking Human Minds Elicits Deep AI Searcher},
+  author={Chen, Zehui and Liu, Kuikun and Wang, Qiuchen and Liu, Jiangning and Zhang, Wenwei and Chen, Kai and Zhao, Feng},
+  journal={arXiv preprint arXiv:2407.20183},
+  year={2024}
 }
 ```
+
+## Our Projects
+
+Explore our additional research on large language models, focusing on LLM agents.
+
+- [Lagent](https://github.com/InternLM/lagent): A lightweight framework for building LLM-based agents
+- [AgentFLAN](https://github.com/InternLM/Agent-FLAN): An innovative approach for constructing and training with high-quality agent datasets (ACL 2024 Findings)
+- [T-Eval](https://github.com/open-compass/T-Eval): A Fine-grained tool utilization evaluation benchmark (ACL 2024)

@@ -54,7 +54,7 @@ pip install -r requirements.txt
 python -m mindsearch.app --lang en --model_format internlm_server
 ```
 
-- `--lang`: 模型的语言，`en` 为英语，`zh` 为中文。
+- `--lang`: 模型的语言，`en` 为英语，`cn` 为中文。
 - `--model_format`: 模型的格式。
   - `internlm_server` 为 InternLM2.5-7b-chat 本地服务器。
   - `gpt4` 为 GPT4。
@@ -107,13 +107,18 @@ python mindsearch/terminal.py
 如果此项目对您的研究有帮助，请参考如下方式进行引用：
 
 ```
-@misc{chen2024mindsearchmimickinghumanminds,
-      title={MindSearch: Mimicking Human Minds Elicits Deep AI Searcher},
-      author={Zehui Chen and Kuikun Liu and Qiuchen Wang and Jiangning Liu and Wenwei Zhang and Kai Chen and Feng Zhao},
-      year={2024},
-      eprint={2407.20183},
-      archivePrefix={arXiv},
-      primaryClass={cs.CL},
-      url={https://arxiv.org/abs/2407.20183},
+@article{chen2024mindsearch,
+  title={MindSearch: Mimicking Human Minds Elicits Deep AI Searcher},
+  author={Chen, Zehui and Liu, Kuikun and Wang, Qiuchen and Liu, Jiangning and Zhang, Wenwei and Chen, Kai and Zhao, Feng},
+  journal={arXiv preprint arXiv:2407.20183},
+  year={2024}
 }
 ```
+
+## 相关项目
+
+关注我们其他在大语言模型上的一些探索，主要为LLM智能体方向。
+
+- [Lagent](https://github.com/InternLM/lagent): 一个轻便简洁的大语言模型智能体框架
+- [AgentFLAN](https://github.com/InternLM/Agent-FLAN): 一套构建高质量智能体语料和训练模型的方法 (ACL 2024 Findings)
+- [T-Eval](https://github.com/open-compass/T-Eval): 一个细粒度评估LLM调用工具能力的评测及 (ACL 2024)
