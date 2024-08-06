@@ -1,18 +1,18 @@
-version: "3.8"
-
 services:
   backend:
+    container_name: mindsearch-backend
     build:
       context: ..
       dockerfile: docker/backend.dockerfile
-    image: mindsearch-backend:latest
+    image: mindsearch/backend:latest
+    # 如果想强制使用本地构建，取消下面这行的注释
+    # pull: never
     ports:
       - "8002:8002"
     environment:
       - PYTHONUNBUFFERED=1
     command: python -m mindsearch.app --lang ${LANG:-zh} --model_format ${MODEL_FORMAT:-internlm_server}
     volumes:
-      - ../mindsearch:/root/mindsearch
       - /root/.cache:/root/.cache
     deploy:
       resources:
@@ -21,11 +21,35 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
+    # GPU 支持说明：
+    # 当前配置针对 NVIDIA GPU 进行了测试。如果你使用其他类型的 GPU，可能需要调整配置。
+    # 对于 AMD GPU，你可以尝试使用 ROCm 驱动，修改配置如下：
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: amd
+    #           count: 1
+    #           capabilities: [gpu]
+    #
+    # 对于其他 GPU 类型，你可能需要查阅相应的 Docker GPU 支持文档。
+    # 理论上，只要 PyTorch 支持的 GPU，都应该能在这里配置使用。
+    # 如果遇到问题，可以尝试以下步骤：
+    # 1. 确保主机上安装了正确的 GPU 驱动
+    # 2. 检查 Docker 版本是否支持你的 GPU 类型
+    # 3. 在 Dockerfile 中安装必要的 GPU 相关库
+    # 4. 调整这里的 deploy 配置以匹配你的 GPU 类型
+    #
+    # 注意：更改 GPU 配置后，可能需要重新构建镜像。
 
   frontend:
+    container_name: mindsearch-frontend
     build:
       context: ..
       dockerfile: docker/frontend.dockerfile
+    image: mindsearch/frontend:latest
+    # 如果想强制使用本地构建，取消下面这行的注释
+    # pull: never
     ports:
       - "8080:8080"
     environment:
