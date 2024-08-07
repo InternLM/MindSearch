@@ -308,25 +308,37 @@ class MindSearchAgent(BaseAgent):
         references = []
         references_url = dict()
         for node_name in node_list:
+            ref_results = None
+            ref2url = None
             if as_dict:
-                ref_results = agent_return.nodes[node_name]['detail'][
-                    'actions'][0]['result'][0]['content']
+                actions = agent_return.nodes[node_name]['detail']['actions']
             else:
-                ref_results = agent_return.nodes[node_name]['detail'].actions[
-                    0].result[0]['content']
-            ref_results = json.loads(ref_results)
-            ref2url = {idx: item['url'] for idx, item in ref_results.items()}
+                actions = agent_return.nodes[node_name]['detail'].actions
+            if actions:
+                ref_results = actions[0]['result'][0][
+                    'content'] if as_dict else actions[0].result[0]['content']
+            if ref_results:
+                ref_results = json.loads(ref_results)
+                ref2url = {
+                    idx: item['url']
+                    for idx, item in ref_results.items()
+                }
+
             ref = f"## {node_name}\n\n{agent_return.nodes[node_name]['response']}\n"
             updated_ref = re.sub(
                 r'\[\[(\d+)\]\]',
                 lambda match: f'[[{int(match.group(1)) + self.ptr}]]', ref)
             numbers = [int(n) for n in re.findall(r'\[\[(\d+)\]\]', ref)]
             if numbers:
-                assert all(str(elem) in ref2url for elem in numbers)
-                references_url.update({
-                    str(idx + self.ptr): ref2url[str(idx)]
-                    for idx in set(numbers)
-                })
+                try:
+                    assert all(str(elem) in ref2url for elem in numbers)
+                except Exception as exc:
+                    logger.info(f'Illegal reference id: {str(exc)}')
+                if ref2url:
+                    references_url.update({
+                        str(idx + self.ptr): ref2url[str(idx)]
+                        for idx in set(numbers)
+                    })
                 self.ptr += max(numbers) + 1
             references.append(updated_ref)
         return '\n'.join(references), references_url
