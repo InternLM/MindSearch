@@ -6,7 +6,7 @@
 
 [🌐 Project Page](https://mindsearch.netlify.app/) | [📃 Paper](https://arxiv.org/abs/2407.20183) | [💻 Playground](https://mindsearch.openxlab.org.cn/)
 
-[English](README.md) | 简体中文
+[English](README.md) | 简体中文 | [日本語](README_ja.md)
 
 <https://github.com/user-attachments/assets/b4312e9c-5b40-43e5-8c69-929c373e4965>
 
