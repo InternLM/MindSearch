@@ -354,6 +354,7 @@ class MindSearchAgent(BaseAgent):
                 plan_graph.searcher_resp_queue.put(plan_graph.end_signal)
             except Exception as e:
                 logger.exception(f'Error executing code: {e}')
+                raise
 
         command = extract_code(command)
         producer_thread = threading.Thread(target=run_command,
