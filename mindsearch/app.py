@@ -61,8 +61,9 @@ async def run(request: GenerationParams):
     async def generate():
         try:
             queue = janus.Queue()
+            stop_event = asyncio.Event()
 
-            # 使用 run_in_executor 将同步生成器包装成异步生成器
+            # Wrapping a sync generator as an async generator using run_in_executor
             def sync_generator_wrapper():
                 try:
                     for response in agent.stream_chat(inputs):
@@ -71,7 +72,7 @@ async def run(request: GenerationParams):
                     logging.exception(
                         f'Exception in sync_generator_wrapper: {e}')
                 finally:
-                    # 确保在发生异常时队列中的所有元素都被消费
+                    # Notify async_generator_wrapper that the data generation is complete.
                     queue.sync_q.put(None)
 
             async def async_generator_wrapper():
@@ -79,13 +80,14 @@ async def run(request: GenerationParams):
                 loop.run_in_executor(None, sync_generator_wrapper)
                 while True:
                     response = await queue.async_q.get()
-                    if response is None:  # 确保消费完所有元素
+                    if response is None:  # Ensure that all elements are consumed
                         break
                     yield response
                     if not isinstance(
                             response,
                             tuple) and response.state == AgentStatusCode.END:
                         break
+                stop_event.set()  # Inform sync_generator_wrapper to stop
 
             async for response in async_generator_wrapper():
                 if isinstance(response, tuple):
@@ -115,6 +117,8 @@ async def run(request: GenerationParams):
             yield {'data': response_json}
             # yield f'data: {response_json}\n\n'
         finally:
+            await stop_event.wait(
+            )  # Waiting for async_generator_wrapper to stop
             queue.close()
             await queue.wait_closed()
 
