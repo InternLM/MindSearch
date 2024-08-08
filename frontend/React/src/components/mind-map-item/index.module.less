@@ -1,0 +1,117 @@
+  article {
+    padding: 6px 16px;
+    border-radius: 8px;
+    height: 38px;
+    border: 1px solid transparent;
+    background: #FFF;
+    color: #121316;
+    text-align: center;
+    font-size: 14px;
+    line-height: 24px;
+    position: relative;
+    box-sizing: border-box;
+
+    &.loading {
+      line-height: 20px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid transparent;
+      padding: 4px;
+
+      span {
+        color: #2126C0;
+        background-color: #fff;
+        border-radius: 4px;
+        line-height: 24px;
+        padding: 2px 12px;
+      }
+
+      .looping {
+        --border-width: 4px;
+        --follow-panel-linear-border: linear-gradient(91deg,
+            #5551FF 0.58%,
+            #FF87DE 100.36%);
+
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: calc(100% + var(--border-width) * 2 - 8px);
+        height: calc(100%);
+        background: var(--follow-panel-linear-border);
+        background-size: 300% 300%;
+        background-position: 0 50%;
+        animation: moveGradient 4s alternate infinite;
+      }
+    }
+
+    &.disabled {
+      border-radius: 8px;
+      border: 1px solid #D7D8DD;
+      color: rgba(18, 19, 22, 0.35);
+    }
+
+    &.finished {
+      cursor: pointer;
+      border: 1px solid #2126C0;
+
+      .finishDot {
+        position: absolute;
+        top: 6px;
+        right: 6px;
+        width: 6px;
+        height: 6px;
+        background-color: #C9C0FE;
+        border-radius: 50%;
+      }
+    }
+
+    &.init {
+      border: 1px solid transparent;
+      cursor: auto;
+    }
+
+    span {
+      display: block;
+      white-space: nowrap;
+      max-width: 160px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      position: relative;
+      z-index: 20;
+    }
+
+    span.status {
+      color: #4082FE;
+    }
+
+  }
+
+  ul.onlyone {
+    &:before {
+      opacity: 0;
+    }
+
+    >li {
+      margin-left: 0px;
+    }
+
+    &>li:after {
+      opacity: 0;
+    }
+
+    &>li:before {
+      // left: 0;
+    }
+  }
+
+  .endLine {
+    border-bottom: 1px solid #D7D8DD;
+    width: 3000px;
+    transition: width 1s ease-in-out;
+  }
+
+  @keyframes moveGradient {
+    50% {
+      background-position: 100% 50%;
+    }
+  }
