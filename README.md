@@ -20,7 +20,7 @@ MindSearch is an open-source AI Search Engine Framework with Perplexity.ai Pro p
 - 🤔 **Ask everything you want to know**: MindSearch is designed to solve any question in your life and use web knowledge.
 - 📚 **In-depth Knowledge Discovery**: MindSearch browses hundreds of web pages to answer your question, providing deeper and wider knowledge base answer.
 - 🔍 **Detailed Solution Path**: MindSearch exposes all details, allowing users to check everything they want. This greatly improves the credibility of its final response as well as usability.
-- 💻 **Optimized UI Experimence**: Providing all kinds of interfaces for users, including React, Gradio, Streamlit and Terminal. Choose any type based on your need.
+- 💻 **Optimized UI Experience**: Providing all kinds of interfaces for users, including React, Gradio, Streamlit and Terminal. Choose any type based on your need.
 - 🧠 **Dynamic Graph Construction Process**: MindSearch decomposes the user query into atomic sub-questions as nodes in the graph and progressively extends the graph based on the search result from WebSearcher.
 
 <div align="center">
