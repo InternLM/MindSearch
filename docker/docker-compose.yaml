@@ -1,0 +1,64 @@
+services:
+  backend:
+    container_name: mindsearch-backend
+    build:
+      context: ..
+      dockerfile: docker/backend.dockerfile
+    image: mindsearch/backend:latest
+    restart: unless-stopped
+    # Uncomment the following line to force using local build
+    # pull: never
+    ports:
+      - "8002:8002"
+    environment:
+      - PYTHONUNBUFFERED=1
+      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      - OPENAI_API_BASE=${OPENAI_API_BASE:-https://api.openai.com/v1}
+    command: python -m mindsearch.app --lang ${LANG:-zh} --model_format ${MODEL_FORMAT:-internlm_server}
+    volumes:
+      - /root/.cache:/root/.cache
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    # GPU support explanation:
+    # The current configuration has been tested with NVIDIA GPUs. If you use other types of GPUs, you may need to adjust the configuration.
+    # For AMD GPUs, you can try using the ROCm driver by modifying the configuration as follows:
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: amd
+    #           count: 1
+    #           capabilities: [gpu]
+    #
+    # For other GPU types, you may need to consult the respective Docker GPU support documentation.
+    # In theory, any GPU supported by PyTorch should be configurable here.
+    # If you encounter issues, try the following steps:
+    # 1. Ensure the correct GPU drivers are installed on the host
+    # 2. Check if your Docker version supports your GPU type
+    # 3. Install necessary GPU-related libraries in the Dockerfile
+    # 4. Adjust the deploy configuration here to match your GPU type
+    #
+    # Note: After changing GPU configuration, you may need to rebuild the image.
+
+  frontend:
+    container_name: mindsearch-frontend
+    build:
+      context: ..
+      dockerfile: docker/frontend.dockerfile
+    image: mindsearch/frontend:latest
+    restart: unless-stopped
+    # Uncomment the following line to force using local build
+    # pull: never
+    ports:
+      - "8080:8080"
+    environment:
+      - NODE_ENV=production
+      - API_URL=http://0.0.0.0:8002
+      - SERVE_PORT=8080
+    depends_on:
+      - backend
