@@ -1,3 +1,5 @@
+# MindSearch Docker Compose User Guide
+
 ## 🚀 Quick Start with Docker Compose
 
 MindSearch now supports quick deployment and startup using Docker Compose. This method simplifies the environment configuration process, allowing you to easily run the entire system.
@@ -7,7 +9,7 @@ MindSearch now supports quick deployment and startup using Docker Compose. This 
 - Docker installed (Docker Compose V2 is integrated into Docker)
 - NVIDIA GPU and NVIDIA Container Toolkit (required for NVIDIA GPU support)
 
-Note: Recent versions of Docker have integrated Docker Compose V2, so you can use the `docker compose` command directly without installing docker-compose separately.
+Note: Newer versions of Docker have integrated Docker Compose V2, so you can directly use the `docker compose` command without installing docker-compose separately.
 
 ### First-time Startup
 
@@ -20,7 +22,7 @@ docker compose up --build -d
 
 This will build the necessary Docker images and start the services in the background.
 
-### Daily Usage
+### Daily Use
 
 Start services:
 
@@ -41,10 +43,10 @@ Stop services:
 docker compose down
 ```
 
-### Configuration Guide
+### Configuration Instructions
 
-1. **Environment Variables**:
-   The system automatically reads and passes the following variables from your environment to the containers:
+1. **Environment Variable Settings**:
+   The system will automatically read the following variables from your environment and pass them to the containers:
 
    - `OPENAI_API_KEY`: Your OpenAI API key (required when using GPT models)
    - `OPENAI_API_BASE`: Base URL for OpenAI API (default is https://api.openai.com/v1)
@@ -62,18 +64,50 @@ docker compose down
    ```
 
 2. **Model Cache**:
-   The container maps the `/root/.cache:/root/.cache` path. If you use the local large model mode (`internlm_server`), model files will be downloaded to this directory. To change the storage location, modify the corresponding configuration in docker-compose.yaml.
+   The container maps the `/root/.cache:/root/.cache` path. If you use the local large model mode (`internlm_server`), model files will be downloaded to this directory. To change the storage location, please modify the corresponding configuration in docker-compose.yaml.
 
 3. **GPU Support**:
-   The current configuration is set up for NVIDIA GPUs by default. For other GPU types (such as AMD or Apple M series), please refer to the comments in docker-compose.yaml for appropriate adjustments.
+   The current configuration defaults to using NVIDIA GPUs. For other GPU types (such as AMD or Apple M series), please refer to the comments in docker-compose.yaml for appropriate adjustments.
 
 4. **Service Ports**:
-   The default API service address is `http://0.0.0.0:8002`. To change this, modify the corresponding configuration in docker-compose.yaml.
+   The default API service address is `http://0.0.0.0:8002`. To change this, please modify the corresponding configuration in docker-compose.yaml.
 
-### Important Notes
+### Notes
 
 - During the first run, depending on your chosen model and network conditions, it may take some time to download the necessary model files.
-- Ensure you have sufficient disk space to store the model files and Docker images.
+- Ensure you have sufficient disk space to store model files and Docker images.
 - If you encounter permission issues, you may need to use sudo to run Docker commands.
 
-By using Docker Compose, you can quickly deploy MindSearch without worrying about complex environment configurations. This method is particularly suitable for rapid testing and production environment deployment.
+### Cross-Origin Access Considerations
+
+When accessing the frontend, it's important to be aware of potential cross-origin issues. The current Docker Compose configuration is a starting point for the project but doesn't fully resolve all cross-origin problems that might be encountered in a production environment. Please note the following points:
+
+1. **API Service Address Consistency**:
+   Ensure that the API service address matches the address you use to access the frontend. For example:
+
+   - For local deployment: Use `0.0.0.0` or `127.0.0.1`
+   - For LAN or public network deployment: Use the same IP address or domain name
+
+2. **Current Limitations**:
+   The current configuration is primarily suitable for development and testing environments. You may still encounter cross-origin issues in certain deployment scenarios.
+
+3. **Future Improvements**:
+   To enhance the system's robustness and adapt to more deployment scenarios, we plan to implement the following improvements in future versions:
+
+   - Modify server-side code to properly configure CORS (Cross-Origin Resource Sharing)
+   - Adjust client-side code to handle API requests more flexibly
+   - Consider introducing reverse proxy solutions
+
+4. **Temporary Solutions**:
+   Before we implement these improvements, if you encounter cross-origin issues in specific environments, you can consider using browser plugins to temporarily disable cross-origin restrictions (for testing purposes only) or using a simple reverse proxy server.
+
+5. **Docker Environment Settings**:
+   In the `docker-compose.yaml` file, ensure that the `API_URL` environment variable is set correctly, for example:
+   ```yaml
+   environment:
+     - API_URL=http://your-server-address:8002
+   ```
+
+We appreciate your understanding and patience. MindSearch is still in its early stages, and we are working hard to improve various aspects of the system. Your feedback is very important to us as it helps us continually refine the project. If you encounter any issues or have any suggestions during use, please feel free to provide feedback.
+
+By using Docker Compose, you can quickly deploy MindSearch without worrying about complex environment configurations. This method is particularly suitable for rapid testing and development environment deployments. If you encounter any problems during deployment, please refer to our troubleshooting guide or seek community support.
