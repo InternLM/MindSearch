@@ -143,7 +143,7 @@ const ChatRight = ({ nodeInfo, stashInfo = null, historyNode = null, toggleRight
       const nodeDetail = nodeInfo?.response?.nodes?.[nodeInfo.current_node]?.detail;
       // console.log('nodeInfo-------', nodeDetail);
       if (nodeDetail?.state === 0) {
-        console.log('node node is end------', nodeInfo);
+        console.log('node is end------', nodeInfo);
         resetStatus();
       }
       nodeDetail?.content && setSubQuestion(nodeDetail?.content);
