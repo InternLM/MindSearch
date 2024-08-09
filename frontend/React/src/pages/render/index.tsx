@@ -1,15 +1,15 @@
 import styles from './index.module.less';
-import { useEffect, useState, useRef, Children } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import SendIcon from '@/assets/sendIcon.svg';
-import { Tooltip, Input, message } from 'antd';
+import { Input, message } from 'antd';
 import IconFont from '@/components/iconfont';
 import ShowRightIcon from "@/assets/show-right-icon.png";
-import classNames from 'classnames';
 import { fetchEventSource } from '@microsoft/fetch-event-source';
 import { GET_SSE_DATA } from '@/config/cgi';
 import { replaceStr } from '@/utils/tools';
 import ChatRight from '@/components/chat-right';
 import Answer from '@/components/answer';
+import Loading from '@/components/loading';
 
 const RenderTest = () => {
   const [isWaiting, setIsWaiting] = useState(false);
@@ -180,7 +180,6 @@ const RenderTest = () => {
     // 当前节点渲染结束
     if (nodeName && nodeName !== currentNode?.current_node && progressEnd && !isEnd) {
       resetNode(nodeName);
-      // setMapWidth(generateWidth());
     }
   }, [nodeName, currentNode, progressEnd, isEnd]);
 
@@ -221,6 +220,24 @@ const RenderTest = () => {
     window.localStorage.setItem('nodeRes', '');
     window.localStorage.setItem('finishedNodes', '');
   }, [question]);
+
+  useEffect(() => {
+    // 设置beforeunload事件监听器  
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {  
+      // message.warning('离开可能导致SSE重连，确认离开吗？'); 
+      const msg = "离开可能导致SSE重连，确认离开吗？";  
+      event.preventDefault(); // 大多数现代浏览器会忽略这一行  
+      (event as any).returnValue = msg;
+    };  
+  
+    // 添加事件监听器  
+    window.addEventListener('beforeunload', handleBeforeUnload);  
+  
+    // 清理函数，确保组件卸载时移除事件监听器  
+    return () => {  
+      window.removeEventListener('beforeunload', handleBeforeUnload);  
+    };
+  }, []);
 
   const resetNode = (targetNode: string) => {
     if (targetNode === 'response') return; // 如果开始response了，所有节点都渲染完了，不需要reset
@@ -344,6 +361,9 @@ const RenderTest = () => {
     const stashedObj = window.localStorage.getItem('nodesInfo') && JSON.parse(window.localStorage.getItem('nodesInfo') || '{}') || {};
     const info = stashedObj[node];
     console.log('handleHistory---------------', info);
+    if(!info) {
+      message.error('没有读取到节点的历史记录信息');
+    }
     setHistoryNode(info);
     setShowRight(true);
   };
@@ -357,7 +377,7 @@ const RenderTest = () => {
               <span>{question}</span>
             </div>
           }
-          {isWaiting && <>loading....</>}
+          {isWaiting && <Loading />}
           {
             (draft || response || renderData?.length > 0) &&
             <Answer

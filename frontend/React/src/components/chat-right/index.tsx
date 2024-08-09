@@ -7,6 +7,7 @@ import IconFont from '@/components/iconfont';
 import { replaceStr } from '@/utils/tools';
 import PackIcon from '@/assets/pack-up.svg';
 import { Tooltip } from 'antd';
+import Loading from '../loading';
 interface IProps {
   nodeInfo: any;
   stashInfo?: any;
@@ -126,6 +127,8 @@ const ChatRight = ({ nodeInfo, stashInfo = null, historyNode = null, toggleRight
   }, [conclusion, currentStep]);
 
   useEffect(() => {
+    // 如果是response节点就不要处理了，跟右边没关系
+    if (nodeInfo?.current_node === 'response') return;
     if (nodeInfo && !currentNode) {
       setIsLoading(true);
     }
@@ -297,7 +300,7 @@ const ChatRight = ({ nodeInfo, stashInfo = null, historyNode = null, toggleRight
     }
 
     {
-      isLoading && <div className={styles.loading99}></div>
+      isLoading && <Loading />
     }
   </div>
 };
