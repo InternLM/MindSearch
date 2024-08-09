@@ -1,17 +1,21 @@
-# 使用 openmmlab/lmdeploy:test-cu12 作为基础镜像
-FROM openmmlab/lmdeploy:test-cu12
+# Use openmmlab/lmdeploy:latest-cu12 as the base image
+# Note: Before using this Dockerfile, you should visit https://hub.docker.com/r/openmmlab/lmdeploy/tags
+# to select a base image that's compatible with your specific GPU architecture.
+# The 'latest-cu12' tag is used here as an example, but you should choose the most 
+# appropriate tag for your setup (e.g., cu11 for CUDA 11, cu12 for CUDA 12, etc.)
+FROM openmmlab/lmdeploy:latest-cu12
 
-# 设置工作目录
+# Set the working directory
 WORKDIR /root
 
-# 安装 Git
+# Install Git
 RUN apt-get update && apt-get install -y git && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# 复制 mindsearch 文件夹到容器的 /root 目录
+# Copy the mindsearch folder to the /root directory of the container
 COPY mindsearch /root/mindsearch
 
-# 安装指定的依赖包
-# 其中lmdeploy依赖已经被基础镜像包含了, 无需重复安装
+# Install specified dependency packages
+# Note: lmdeploy dependency is already included in the base image, no need to reinstall
 RUN pip install --no-cache-dir \
     duckduckgo_search==5.3.1b1 \
     einops \

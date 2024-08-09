@@ -6,7 +6,7 @@ services:
       dockerfile: docker/backend.dockerfile
     image: mindsearch/backend:latest
     restart: unless-stopped
-    # 如果想强制使用本地构建，取消下面这行的注释
+    # Uncomment the following line to force using local build
     # pull: never
     ports:
       - "8002:8002"
@@ -24,9 +24,9 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
-    # GPU 支持说明：
-    # 当前配置针对 NVIDIA GPU 进行了测试。如果你使用其他类型的 GPU，可能需要调整配置。
-    # 对于 AMD GPU，你可以尝试使用 ROCm 驱动，修改配置如下：
+    # GPU support explanation:
+    # The current configuration has been tested with NVIDIA GPUs. If you use other types of GPUs, you may need to adjust the configuration.
+    # For AMD GPUs, you can try using the ROCm driver by modifying the configuration as follows:
     # deploy:
     #   resources:
     #     reservations:
@@ -35,15 +35,15 @@ services:
     #           count: 1
     #           capabilities: [gpu]
     #
-    # 对于其他 GPU 类型，你可能需要查阅相应的 Docker GPU 支持文档。
-    # 理论上，只要 PyTorch 支持的 GPU，都应该能在这里配置使用。
-    # 如果遇到问题，可以尝试以下步骤：
-    # 1. 确保主机上安装了正确的 GPU 驱动
-    # 2. 检查 Docker 版本是否支持你的 GPU 类型
-    # 3. 在 Dockerfile 中安装必要的 GPU 相关库
-    # 4. 调整这里的 deploy 配置以匹配你的 GPU 类型
+    # For other GPU types, you may need to consult the respective Docker GPU support documentation.
+    # In theory, any GPU supported by PyTorch should be configurable here.
+    # If you encounter issues, try the following steps:
+    # 1. Ensure the correct GPU drivers are installed on the host
+    # 2. Check if your Docker version supports your GPU type
+    # 3. Install necessary GPU-related libraries in the Dockerfile
+    # 4. Adjust the deploy configuration here to match your GPU type
     #
-    # 注意：更改 GPU 配置后，可能需要重新构建镜像。
+    # Note: After changing GPU configuration, you may need to rebuild the image.
 
   frontend:
     container_name: mindsearch-frontend
@@ -52,7 +52,7 @@ services:
       dockerfile: docker/frontend.dockerfile
     image: mindsearch/frontend:latest
     restart: unless-stopped
-    # 如果想强制使用本地构建，取消下面这行的注释
+    # Uncomment the following line to force using local build
     # pull: never
     ports:
       - "8080:8080"

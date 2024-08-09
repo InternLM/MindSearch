@@ -1,38 +1,38 @@
-# 使用 Node.js 18 作为基础镜像
+# Use Node.js 18 as the base image
 FROM node:18-alpine AS build
 
-# 设置工作目录
+# Set the working directory
 WORKDIR /app
 
-# 复制 package.json 和 package-lock.json
+# Copy package.json and package-lock.json
 COPY frontend/React/package*.json ./
 
-# 安装依赖
+# Install dependencies
 RUN npm install
 
-# 复制前端源代码
+# Copy frontend source code
 COPY frontend/React/ ./
 
-# 构建应用
+# Build the application
 RUN npm run build
 
-# 使用 Node.js 来 serve 静态文件
+# Use Node.js to serve static files
 FROM node:18-alpine
 
 WORKDIR /app
 
-# 安装 serve 包和 gettext（用于 envsubst）
+# Install serve package and gettext (for envsubst)
 RUN apk add --no-cache gettext && \
     npm install -g serve
 
-# 复制构建产物
+# Copy build artifacts
 COPY --from=build /app/dist ./dist
 
-# 创建启动脚本
+# Create start script
 RUN echo '#!/bin/sh' > start.sh && \
     echo 'find ./dist -type f -exec sed -i "s|http://127.0.0.1:8002|$API_URL|g" {} +' >> start.sh && \
     echo 'serve -s dist -l $SERVE_PORT' >> start.sh && \
     chmod +x start.sh
 
-# 使用启动脚本
+# Use the start script
 CMD ["/bin/sh", "./start.sh"]
