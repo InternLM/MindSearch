@@ -17,14 +17,27 @@ from lagent.agents.internlm2_agent import Internlm2Protocol
 from lagent.schema import AgentReturn, AgentStatusCode, ModelStatusCode
 from termcolor import colored
 
-# 初始化日志记录
+# Initialize logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
 class SearcherAgent(Internlm2Agent):
+    """
+    A specialized agent for handling search queries.
+
+    Attributes:
+        template (str): The template for formatting queries.
+    """
 
     def __init__(self, template='{query}', **kwargs) -> None:
+        """
+        Initialize the SearcherAgent with a query template.
+
+        Args:
+            template (str): Template for formatting the query.
+            **kwargs: Additional arguments for the parent class.
+        """
         super().__init__(**kwargs)
         self.template = template
 
@@ -33,6 +46,18 @@ class SearcherAgent(Internlm2Agent):
                     root_question: str = None,
                     parent_response: List[dict] = None,
                     **kwargs) -> AgentReturn:
+        """
+        Stream chat responses for a given question.
+
+        Args:
+            question (str): The question to be processed.
+            root_question (str, optional): The root question for context.
+            parent_response (List[dict], optional): Previous responses for context.
+            **kwargs: Additional arguments for the chat.
+
+        Yields:
+            AgentReturn: The response from the agent.
+        """
         message = self.template['input'].format(question=question,
                                                 topic=root_question)
         if parent_response:
@@ -53,6 +78,12 @@ class SearcherAgent(Internlm2Agent):
 
 
 class MindSearchProtocol(Internlm2Protocol):
+    """
+    Protocol for managing the interaction with the MindSearch system.
+
+    Attributes:
+        response_prompt (str): The prompt for generating responses.
+    """
 
     def __init__(
         self,
@@ -78,6 +109,19 @@ class MindSearchProtocol(Internlm2Protocol):
                              end='',
                              fallback_role='environment'),
     ) -> None:
+        """
+        Initialize the MindSearchProtocol with various prompts and configurations.
+
+        Args:
+            meta_prompt (str, optional): Meta prompt for the protocol.
+            interpreter_prompt (str, optional): Interpreter prompt.
+            plugin_prompt (str, optional): Plugin prompt.
+            few_shot (Optional[List], optional): Few-shot examples.
+            response_prompt (str, optional): Response prompt.
+            language (Dict): Language configuration.
+            tool (Dict): Tool configuration.
+            execute (Dict): Execution configuration.
+        """
         self.response_prompt = response_prompt
         super().__init__(meta_prompt=meta_prompt,
                          interpreter_prompt=interpreter_prompt,
@@ -91,6 +135,17 @@ class MindSearchProtocol(Internlm2Protocol):
                inner_step: List[Dict],
                plugin_executor: ActionExecutor = None,
                **kwargs) -> list:
+        """
+        Format the protocol steps for execution.
+
+        Args:
+            inner_step (List[Dict]): Steps to be formatted.
+            plugin_executor (ActionExecutor, optional): Executor for plugin actions.
+            **kwargs: Additional arguments.
+
+        Returns:
+            list: Formatted steps.
+        """
         formatted = []
         if self.meta_prompt:
             formatted.append(dict(role='system', content=self.meta_prompt))
@@ -112,10 +167,20 @@ class MindSearchProtocol(Internlm2Protocol):
 
 
 class WebSearchGraph:
+    """
+    Represents a graph structure for managing web search queries.
+
+    Attributes:
+        end_signal (str): Signal indicating the end of processing.
+        searcher_cfg (dict): Configuration for the searcher agent.
+    """
     end_signal = 'end'
     searcher_cfg = dict()
 
     def __init__(self):
+        """
+        Initialize the WebSearchGraph with default settings.
+        """
         self.nodes = {}
         self.adjacency_list = defaultdict(list)
         self.executor = ThreadPoolExecutor(max_workers=10)
@@ -123,15 +188,32 @@ class WebSearchGraph:
         self.searcher_resp_queue = queue.Queue()
 
     def add_root_node(self, node_content, node_name='root'):
+        """
+        Add a root node to the graph.
+
+        Args:
+            node_content: Content of the root node.
+            node_name (str, optional): Name of the root node.
+        """
         self.nodes[node_name] = dict(content=node_content, type='root')
         self.adjacency_list[node_name] = []
         self.searcher_resp_queue.put((node_name, self.nodes[node_name], []))
 
     def add_node(self, node_name, node_content):
+        """
+        Add a node to the graph.
+
+        Args:
+            node_name: Name of the node.
+            node_content: Content of the node.
+        """
         self.nodes[node_name] = dict(content=node_content, type='searcher')
         self.adjacency_list[node_name] = []
 
         def model_stream_thread():
+            """
+            Thread function to handle streaming of model responses.
+            """
             agent = SearcherAgent(**self.searcher_cfg)
             try:
                 parent_nodes = []
@@ -162,30 +244,73 @@ class WebSearchGraph:
             model_stream_thread)] = f'{node_name}-{node_content}'
 
     def add_response_node(self, node_name='response'):
+        """
+        Add a response node to the graph.
+
+        Args:
+            node_name (str, optional): Name of the response node.
+        """
         self.nodes[node_name] = dict(type='end')
         self.searcher_resp_queue.put((node_name, self.nodes[node_name], []))
 
     def add_edge(self, start_node, end_node):
+        """
+        Add an edge between two nodes in the graph.
+
+        Args:
+            start_node: The starting node.
+            end_node: The ending node.
+        """
         self.adjacency_list[start_node].append(
             dict(id=str(uuid.uuid4()), name=end_node, state=2))
         self.searcher_resp_queue.put((start_node, self.nodes[start_node],
                                       self.adjacency_list[start_node]))
 
     def reset(self):
+        """
+        Reset the graph to its initial state.
+        """
         self.nodes = {}
         self.adjacency_list = defaultdict(list)
 
     def node(self, node_name):
+        """
+        Retrieve a copy of a node's data.
+
+        Args:
+            node_name: The name of the node.
+
+        Returns:
+            dict: A copy of the node's data.
+        """
         return self.nodes[node_name].copy()
 
 
 class MindSearchAgent(BaseAgent):
+    """
+    An agent for managing the search process using a language model.
+
+    Attributes:
+        local_dict (dict): Local dictionary for storing execution context.
+        ptr (int): Pointer for reference management.
+        llm: The language model used for processing.
+        max_turn (int): Maximum number of turns for processing.
+    """
 
     def __init__(self,
                  llm,
                  searcher_cfg,
                  protocol=MindSearchProtocol(),
                  max_turn=10):
+        """
+        Initialize the MindSearchAgent.
+
+        Args:
+            llm: The language model to be used.
+            searcher_cfg: Configuration for the searcher.
+            protocol (MindSearchProtocol, optional): Protocol for managing interactions.
+            max_turn (int, optional): Maximum number of turns.
+        """
         self.local_dict = {}
         self.ptr = 0
         self.llm = llm
@@ -194,6 +319,16 @@ class MindSearchAgent(BaseAgent):
         super().__init__(llm=llm, action_executor=None, protocol=protocol)
 
     def stream_chat(self, message, **kwargs):
+        """
+        Stream chat responses for a given message.
+
+        Args:
+            message: The message to be processed.
+            **kwargs: Additional arguments for the chat.
+
+        Yields:
+            AgentReturn: The response from the agent.
+        """
         if isinstance(message, str):
             message = [{'role': 'user', 'content': message}]
         elif isinstance(message, dict):
@@ -227,7 +362,6 @@ class MindSearchAgent(BaseAgent):
                     model_state, code, agent_return)
                 agent_return.response = language if not code else code
 
-                # if agent_return.state == AgentStatusCode.STREAM_ING:
                 yield deepcopy(agent_return)
 
             inner_history.append({'role': 'language', 'content': language})
@@ -245,6 +379,17 @@ class MindSearchAgent(BaseAgent):
         yield deepcopy(agent_return)
 
     def _determine_agent_state(self, model_state, code, agent_return):
+        """
+        Determine the state of the agent based on the model state and code.
+
+        Args:
+            model_state: The current state of the model.
+            code: The code to be executed.
+            agent_return: The current agent return object.
+
+        Returns:
+            AgentStatusCode: The determined state of the agent.
+        """
         if code:
             return (AgentStatusCode.PLUGIN_START if model_state
                     == ModelStatusCode.END else AgentStatusCode.PLUGIN_START)
@@ -258,6 +403,19 @@ class MindSearchAgent(BaseAgent):
                       code,
                       as_dict=False,
                       return_early=False):
+        """
+        Process the code and update the agent return object.
+
+        Args:
+            agent_return: The current agent return object.
+            inner_history: The history of inner steps.
+            code: The code to be executed.
+            as_dict (bool, optional): Whether to return results as a dictionary.
+            return_early (bool, optional): Whether to return early.
+
+        Yields:
+            AgentReturn: The updated agent return object.
+        """
         for node_name, node, adj in self.execute_code(
                 code, return_early=return_early):
             if as_dict and 'detail' in node:
@@ -299,6 +457,17 @@ class MindSearchAgent(BaseAgent):
         yield deepcopy(agent_return)
 
     def _generate_reference(self, agent_return, code, as_dict):
+        """
+        Generate references from the executed code.
+
+        Args:
+            agent_return: The current agent return object.
+            code: The code to be executed.
+            as_dict (bool): Whether to return results as a dictionary.
+
+        Returns:
+            tuple: A tuple containing the reference string and reference URLs.
+        """
         node_list = [
             node.strip().strip('\"') for node in re.findall(
                 r'graph\.node\("((?:[^"\\]|\\.)*?)"\)', code)
@@ -344,8 +513,27 @@ class MindSearchAgent(BaseAgent):
         return '\n'.join(references), references_url
 
     def execute_code(self, command: str, return_early=False):
+        """
+        Execute the given code command.
+
+        Args:
+            command (str): The code command to be executed.
+            return_early (bool, optional): Whether to return early.
+
+        Yields:
+            tuple: A tuple containing the node name, node data, and adjacency list.
+        """
 
         def extract_code(text: str) -> str:
+            """
+            Extract code from a given text.
+
+            Args:
+                text (str): The text containing code.
+
+            Returns:
+                str: The extracted code.
+            """
             text = re.sub(r'from ([\w.]+) import WebSearchGraph', '', text)
             triple_match = re.search(r'```[^\n]*\n(.+?)```', text, re.DOTALL)
             single_match = re.search(r'`([^`]*)`', text, re.DOTALL)
@@ -356,6 +544,12 @@ class MindSearchAgent(BaseAgent):
             return text
 
         def run_command(cmd):
+            """
+            Run the given command in a separate thread.
+
+            Args:
+                cmd: The command to be executed.
+            """
             try:
                 exec(cmd, globals(), self.local_dict)
                 plan_graph = self.local_dict.get('graph')
@@ -383,12 +577,8 @@ class MindSearchAgent(BaseAgent):
                     timeout=60)
                 if item is WebSearchGraph.end_signal:
                     for node_name in ordered_nodes:
-                        # resp = None
                         for resp in responses[node_name]:
                             yield deepcopy(resp)
-                        # if resp:
-                        #     assert resp[1][
-                        #         'detail'].state == AgentStatusCode.END
                     break
                 node_name, node, adj = item
                 if node_name in ['root', 'response']:

@@ -21,11 +21,11 @@ const RenderTest = () => {
   const [stashQuestion, setStashQuestion] = useState("");
   const [isEnd, setIsEnd] = useState(false);
   const [showEndNode, setShowEndNode] = useState(false);
-  // 一组节点的渲染草稿
+  // A group of nodes rendering draft
   const [draft, setDraft] = useState('');
-  // 一轮完整对话结束
+  // A complete round of conversation ends
   const [chatIsOver, setChatIsOver] = useState(true);
-  // 一组节点的思考草稿是不是打印结束
+  // Whether the draft of a group of nodes is finished printing
   const [draftEnd, setDraftEnd] = useState(false);
 
   const [progress1, setProgress1] = useState('');
@@ -37,17 +37,17 @@ const RenderTest = () => {
 
   const [query, setQuery] = useState([]);
   const [searchList, setSearchList] = useState([]);
-  // 整体的渲染树
+  // Overall rendering tree
   const [renderData, setRenderData] = useState<any[]>([]);
   const [currentNode, setCurrentNode] = useState<any>(null);
-  // 渲染minddata里的第几个item
+  // Rendering the nth item in minddata
   const [renderIndex, setRenderIndex] = useState<number>(0);
   const [response, setResponse] = useState("");
   const [currentStep, setCurrentStep] = useState(0);
-  // steps展开收起的信息
+  // Information about steps expanding and collapsing
   const [collapseInfo, setCollapseInfo] = useState([true, true]);
   const [mapWidth, setMapWidth] = useState(0);
-  // 是否展示右侧内容
+  // Whether to show the right content
   const [showRight, setShowRight] = useState(true);
 
   const [currentNodeRendering, setCurrentNodeRendering] = useState(false);
@@ -79,7 +79,7 @@ const RenderTest = () => {
       }
 
       if (node.children) {
-        // 递归地在子节点中查找
+        // Recursively find in child nodes
         node.children = findAndUpdateStatus(node.children, targetNode);
       }
 
@@ -88,19 +88,18 @@ const RenderTest = () => {
   }
 
   const generateEndStyle = () => {
-    // 获取所有class为endline的div元素
+    // Get all div elements with class 'endline'
     const endlineDivs = document.getElementsByClassName('endline');
     const mindMap = document.getElementById("mindMap");
-    // 确保至少有两个元素
+    // Ensure there are at least two elements
     if (endlineDivs.length >= 2 && mindMap) {
-      // 获取第一个和最后一个元素的边界框（bounding rectangle）
+      // Get the bounding rectangle of the first and last elements
       const firstRect = endlineDivs[0].getBoundingClientRect();
       const lastRect = endlineDivs[endlineDivs.length - 1].getBoundingClientRect();
       const mindMapRect = mindMap?.getBoundingClientRect();
-      // 计算y值的差值
+      // Calculate the difference in y values
       const yDiff = lastRect.top - firstRect.top;
-      // const top = firstRect.top - mindMapRect.top;
-      // 如果需要包含元素的完整高度（不仅仅是顶部位置），可以加上元素的高度
+      // If you need to include the full height of the element (not just the top position), you can add the height of the element
       // const yDiffWithHeight = yDiff + (lastRect.height - firstRect.height);
       return {
         top: firstRect.top - mindMapRect.top,
@@ -116,7 +115,7 @@ const RenderTest = () => {
 
   const generateWidth = () => {
     const articles = document.querySelectorAll('article');
-    // 确保至少有两个元素
+    // Ensure there are at least two elements
     if (articles?.length) {
       let maxRight = 0;
       articles.forEach((item, index) => {
@@ -135,22 +134,22 @@ const RenderTest = () => {
     }
   };
 
-  // 逐字渲染
+  // Render text character by character
   const renderDraft = (str: string, type: string, endCallback: () => void) => {
-    // 已经输出的字符数量
+    // Number of characters already output
     let outputIndex = 0;
 
-    // 输出字符的函数
+    // Function to output characters
     const outputText = () => {
-      // 给出高亮后draft输出的结束标志
+      // Give the end flag for draft output after highlighting
       if (type === 'stepDraft-1' && outputIndex + 3 > str?.length) {
         nodeDraftRender.current = true;
       }
-      // 如果还有字符未输出
+      // If there are still characters not output
       if (outputIndex < str?.length) {
-        // 获取接下来要输出的1个字符（或剩余字符，如果不足3个）
+        // Get the next 1 character to output (or remaining characters if less than 3)
         let chunk = str.slice(outputIndex, Math.min(outputIndex + 10, str.length));
-        // 更新已输出字符的索引
+        // Update the index of the output characters
         outputIndex += chunk.length;
         if (type === 'thought') {
           setDraft(str.slice(0, outputIndex));
@@ -164,17 +163,17 @@ const RenderTest = () => {
           setResponse(str.slice(0, outputIndex));
         }
       } else {
-        // 如果没有更多字符需要输出，则清除定时器
+        // If there are no more characters to output, clear the timer
         clearInterval(intervalId);
         endCallback && endCallback()
       }
     }
 
-    // 设定定时器ID
+    // Set timer ID
     let intervalId = setInterval(outputText, TEXT_INTERVAL);
   }
 
-  // 渲染搜索结果renderSearchList
+  // Render search results renderSearchList
   const renderSearchList = () => {
     let outputIndex = 0;
     const content = JSON.parse(currentNode.actions[currentStep].result[0].content);
@@ -191,11 +190,11 @@ const RenderTest = () => {
         clearInterval(intervalId);
       }
     };
-    // 设定定时器ID
+    // Set timer ID
     let intervalId = setInterval(outputText, SEARCHLIST_INTERVAL);
   };
 
-  // 高亮searchList
+  // Highlight searchList
   const highLightSearchList = (ids: any) => {
     setSelectedIds([]);
     const newStep = currentStep + 1;
@@ -210,19 +209,19 @@ const RenderTest = () => {
       if (item1.highLight === item2.highLight) {
         return 0;
       }
-      // 如果item1是highlight，放在前面
+      // If item1 is highlighted, put it in front
       if (item1.highLight) {
         return -1;
       }
-      // 如果item2是highlight，放在后面
+      // If item2 is highlighted, put it behind
       return 1;
     })
     setSearchList(highlightArr);
     renderDraft(currentNode.actions[1].thought, `stepDraft-1`, () => { });
-    hasHighlight.current = true; // 标记为高亮已执行
+    hasHighlight.current = true; // Mark as highlight executed
   };
 
-  // 渲染结论
+  // Render conclusion
   const renderConclusion = () => {
     const res = window.localStorage.getItem('nodeRes') || '';
     const replaced = replaceStr(res);
@@ -230,14 +229,14 @@ const RenderTest = () => {
     setCollapseInfo([false, false]);
     setConclusion(replaced);
     setstashConclusion(res);
-    // 给出conclusion结束的条件
+    // Give the condition for the end of conclusion
     if (stashConclusion.length + 5 > res.length) {
       conclusionRender.current = true;
       setProgressEnd(true);
     }
   };
 
-  // 渲染query
+  // Render query
   const renderQuery = (endCallback: () => void) => {
     const queries = currentNode.actions[currentStep]?.args?.query;
     setQuery(queries);
@@ -265,21 +264,21 @@ const RenderTest = () => {
     }
   }
 
-  // 展开收起
+  // Expand and collapse
   const toggleCard = (index: number) => {
     const arr = [...collapseInfo];
     arr[index] = !arr[index];
     setCollapseInfo(arr);
   };
 
-  // 渲染过程中保持渲染文字可见
+  // Keep the rendered text visible during rendering
   const keepScrollTop = (divA: any, divB: any) => {
-    // 获取 divB 的当前高度
+    // Get the current height of divB
     const bHeight = divB.offsetHeight;
 
-    // 检查 divA 是否需要滚动（即 divB 的高度是否大于 divA 的可视高度）
+    // Check if divA needs to scroll (i.e., if the height of divB is greater than the visible height of divA)
     if (bHeight > divA.offsetHeight) {
-      // 滚动到 divB 的底部在 divA 的可视区域内
+      // Scroll to the bottom of divB in the visible area of divA
       divA.scrollTop = bHeight - divA.offsetHeight;
     }
   };
@@ -289,7 +288,7 @@ const RenderTest = () => {
       {
         id: 0,
         state: 3,
-        name: '原始问题',
+        name: 'Original Question',
         children: adjList
       }
     ])
@@ -307,7 +306,7 @@ const RenderTest = () => {
 
   useEffect(() => {
     if (nodeOutputEnd && !localStorage.getItem('nodeRes')) {
-      // 如果节点输出结束了，但是response还没有结束，认为节点渲染已结束
+      // If the node output is finished, but the response is not finished, consider the node rendering finished
       conclusionRender.current = true;
       setProgressEnd(true);
       return;
@@ -327,8 +326,8 @@ const RenderTest = () => {
     }
 
     if (obj?.current_node && obj?.response?.state === 3) {
-      // 当node节点的数据可以开始渲染时，给currentnode赋值
-      // update conclusion
+      // When the node data can start rendering, assign currentnode
+      // Update conclusion
       if (obj.response.nodes[obj.current_node]?.detail?.actions?.length === 2 &&
         obj.response.nodes[obj.current_node]?.detail?.state === 1 &&
         obj.response.nodes[obj.current_node]?.detail.response) {
@@ -340,13 +339,13 @@ const RenderTest = () => {
         currentStep === 0 &&
         currentNode?.current_node !== obj?.current_node
       ) {
-        // 更新当前渲染节点
+        // Update the current rendering node
         console.log('update current node----');
         setIsWaiting(false);
         setCurrentNode({ ...obj.response.nodes[obj.current_node]?.detail, current_node: obj.current_node });
       }
 
-      // 设置highlight
+      // Set highlight
       if (!selectedIds.length &&
         obj.response.nodes[obj.current_node]?.detail?.actions?.[1]?.type === 'BingBrowser.select' &&
         (obj.response.nodes[obj.current_node]?.detail?.state === 1)) {
@@ -357,20 +356,20 @@ const RenderTest = () => {
   }, [obj]);
 
   useEffect(() => {
-    // 输出思考过程
+    // Output the thinking process
     if (!currentNode || currentNodeRendering) { return; }
     renderSteps();
   }, [currentNode, currentNodeRendering, selectedIds]);
 
   useEffect(() => {
     if (!hasHighlight.current && selectedIds.length && currentNode?.actions.length === 2) {
-      // 渲染高亮的search信息
+      // Render highlighted search information
       highLightSearchList(selectedIds);
     }
   }, [selectedIds, currentNode]);
 
   useEffect(() => {
-    // 当前节点渲染结束
+    // Current node rendering ends
     if (nodeName && nodeName !== currentNode?.current_node && progressEnd && !isEnd) {
       resetNode(nodeName);
       setMapWidth(generateWidth());
@@ -392,12 +391,12 @@ const RenderTest = () => {
         setShowEndNode(true);
       }, 300);
     } else if (responseTimer.current) {
-      // 如果 isEnd 变为 false，清除定时器
+      // If isEnd becomes false, clear the timer
       clearInterval(responseTimer.current);
       responseTimer.current = null;
     }
 
-    // 返回清理函数，确保组件卸载时清除定时器
+    // Return a cleanup function to ensure the timer is cleared when the component is unmounted
     return () => {
       if (responseTimer.current) {
         clearInterval(responseTimer.current);
@@ -417,8 +416,8 @@ const RenderTest = () => {
   }, [question]);
 
   const resetNode = (targetNode: string) => {
-    if (targetNode === 'response') return; // 如果开始response了，所有节点都渲染完了，不需要reset
-    // 渲染下一个节点前，初始化状态
+    if (targetNode === 'response') return; // If response starts, all nodes are rendered, no need to reset
+    // Initialize state before rendering the next node
     const newData = findAndUpdateStatus(renderData, targetNode);
     console.log('reset node------', targetNode, renderData);
     setCurrentStep(0);
@@ -456,19 +455,19 @@ const RenderTest = () => {
         return;
       }
       if (!obj.current_node && obj.response.state === 1 && !currentNode) {
-        // 有thought，没有node
+        // If there is a thought, but no node
         setDraftEnd(false);
         setDraft(obj.response.response);
       }
       if (!obj.current_node && (obj.response.state !== 1 || obj.response.state !== 0 || obj.response.state !== 9)) {
-        // 有thought，没有node, 不用处理渲染
+        // If there is a thought, but no node, no need to handle rendering
         //console.log('loading-------------', obj);
         setDraftEnd(true);
         setIsWaiting(true);
       }
       if (obj.current_node && obj.response.state === 3) {
         setNodeName(obj.current_node);
-        // 有node
+        // If there is a node
         setObj(obj);
         const newAdjList = obj.response?.adjacency_list;
         if (newAdjList?.length > 0) {
@@ -482,7 +481,7 @@ const RenderTest = () => {
 
   const startEventSource = () => {
     if (!chatIsOver) {
-      message.warning('有对话进行中！');
+      message.warning('There is an ongoing conversation!');
       return;
     }
     setQuestion(stashQuestion);
@@ -514,10 +513,10 @@ const RenderTest = () => {
 
   const abortEventSource = () => {
     if (eventSource) {
-      eventSource.close(); // 或使用其他方法关闭连接，具体取决于库的API
+      eventSource.close(); // Or use other methods to close the connection, depending on the library's API
       eventSource = null;
       console.log('EventSource connection aborted due to timeout.');
-      message.error('连接中断，2s后即将刷新页面---');
+      message.error('Connection interrupted, refreshing page in 2s---');
       setTimeout(() => {
         location.reload();
       }, 2000);
@@ -546,7 +545,7 @@ const RenderTest = () => {
                       {showEndNode &&
                         <div className={styles.end} style={generateEndStyle()}>
                           <div className={styles.node}>
-                            <article>最终回复</article>
+                            <article>Final Reply</article>
                           </div>
                         </div>
                       }
@@ -572,20 +571,20 @@ const RenderTest = () => {
         </div>
       </div>
       <div className={styles.sendArea}>
-        <Input type="text" placeholder='说点什么吧~  Shift+Enter 换行 ； Enter 发送' onChange={(e) => { setStashQuestion(e.target.value) }}
+        <Input type="text" placeholder='Say something~  Shift+Enter for new line ； Enter to send' onChange={(e) => { setStashQuestion(e.target.value) }}
           onPressEnter={startEventSource} />
         <button onClick={startEventSource}>
           <img src={SendIcon} />
-          发送
+          Send
         </button>
       </div>
-      <div className={styles.notice}>如果想要更丝滑的体验，请在本地搭建-<a href='https://github.com/InternLM/MindSearch' target='_blank'>MindSearch <IconFont type='icon-GithubFilled' /></a></div>
+      <div className={styles.notice}>For a smoother experience, please set up locally-<a href='https://github.com/InternLM/MindSearch' target='_blank'>MindSearch <IconFont type='icon-GithubFilled' /></a></div>
     </div>
     {showRight && <div className={styles.progressContent}>
       {
         currentNode && <>
           <div className={styles.toggleIcon} onClick={toggleRight}>
-            <Tooltip placement="top" title="收起">
+            <Tooltip placement="top" title="Collapse">
               <img src={PackIcon} />
             </Tooltip></div>
           <div className={styles.titleNode}>{currentNode?.content || currentNode?.node}</div>
@@ -598,7 +597,7 @@ const RenderTest = () => {
                     item.type === "BingBrowser.search" ? styles.thinking : styles.select
                   )} key={`step-${idx}`}>
                     <div className={styles.title}>
-                      <i></i>{item.type === "BingBrowser.search" ? "思考" : item.type === "BingBrowser.select" ? "信息来源" : "信息整合"}
+                      <i></i>{item.type === "BingBrowser.search" ? "Thinking" : item.type === "BingBrowser.select" ? "Information Source" : "Information Integration"}
                       <div className={styles.open} onClick={() => { toggleCard(idx) }}>
                         <IconFont type={collapseInfo[idx] ? "icon-shouqi" : "icon-xiangxiazhankai"} />
                       </div>
@@ -614,7 +613,7 @@ const RenderTest = () => {
                       }
                       {
                         item.type === "BingBrowser.search" && query.length > 0 && <div className={styles.query}>
-                          <div className={styles.subTitle}><IconFont type="icon-SearchOutlined" />搜索关键词</div>
+                          <div className={styles.subTitle}><IconFont type="icon-SearchOutlined" />Search Keywords</div>
                           {
                             query.map((item, index) => (<div key={`query-item-${item}`} className={classNames(styles.queryItem, styles.fadeIn)}>
                               {item}
@@ -624,7 +623,7 @@ const RenderTest = () => {
                       }
                       {
                         currentStep === idx && searchList.length > 0 && <div className={styles.searchList}>
-                          {item.type === "BingBrowser.search" && <div className={styles.subTitle}><IconFont type="icon-DocOutlined" />信息来源</div>}
+                          {item.type === "BingBrowser.search" && <div className={styles.subTitle}><IconFont type="icon-DocOutlined" />Information Source</div>}
                           {
                             item.type === "BingBrowser.select" && <div className={styles.thought}>
                               <ReactMarkdown rehypePlugins={[rehypeRaw]}>{progress2}</ReactMarkdown>
@@ -660,7 +659,7 @@ const RenderTest = () => {
       {
         conclusion && <div className={styles.steps}>
           <div className={styles.title}>
-            <i></i>信息整合
+            <i></i>Information Integration
           </div>
           <div className={styles.conclusion}>
             <ReactMarkdown rehypePlugins={[rehypeRaw]}>{conclusion}</ReactMarkdown>

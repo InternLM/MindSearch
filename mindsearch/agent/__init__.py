@@ -1,6 +1,8 @@
 import os
+from dotenv import load_dotenv
 from datetime import datetime
-
+# Load environment variables from .env file
+load_dotenv()
 from lagent.actions import ActionExecutor, BingBrowser
 
 import mindsearch.agent.models as llm_factory
@@ -16,6 +18,10 @@ from mindsearch.agent.mindsearch_prompt import (
 
 LLM = {}
 
+
+
+# Load environment variables from .env file
+load_dotenv()
 
 def init_agent(lang='cn', model_format='internlm_server'):
     llm = LLM.get(model_format, None)
@@ -45,8 +51,7 @@ def init_agent(lang='cn', model_format='internlm_server'):
             plugin_executor=ActionExecutor(
                 BingBrowser(searcher_type='DuckDuckGoSearch',
                             topk=6,
-                            api_key=os.environ.get('BING_API_KEY',
-                                                   'YOUR BING API'))),
+                            api_key=os.getenv('BING_API_KEY'))),
             protocol=MindSearchProtocol(
                 meta_prompt=datetime.now().strftime(
                     'The current date is %Y-%m-%d.'),

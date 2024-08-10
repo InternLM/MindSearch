@@ -36,13 +36,13 @@ internlm_hf = dict(type=HFTransformerCasualLM,
                    stop_words=['<|im_end|>'])
 
 gpt4 = dict(type=GPTAPI,
-            model_type='gpt-4-turbo',
-            key=os.environ.get('OPENAI_API_KEY', 'YOUR OPENAI API KEY'))
+            model_type='gpt-4o-2024-08-06',
+            key=os.getenv('OPENAI_API_KEY', 'YOUR OPENAI API KEY'))
 
 url = 'https://dashscope.aliyuncs.com/api/v1/services/aigc/text-generation/generation'
 qwen = dict(type=GPTAPI,
             model_type='qwen-max-longcontext',
-            key=os.environ.get('QWEN_API_KEY', 'YOUR QWEN API KEY'),
+            key=os.getenv('QWEN_API_KEY', 'YOUR QWEN API KEY'),
             openai_api_base=url,
             meta_template=[
                 dict(role='system', api_role='system'),

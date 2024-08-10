@@ -54,6 +54,7 @@ Setup FastAPI Server.
 
 ```bash
 python -m mindsearch.app --lang en --model_format internlm_server
+python -m mindsearch.app --lang en --model_format gpt4
 ```
 
 - `--lang`: language of the model, `en` for English and `cn` for Chinese.
