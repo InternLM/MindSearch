@@ -1,4 +1,7 @@
+# Notice
+问题回答过程中离开页面后再回到页面，会导致sse重连！
 # 开始
+## 请使用大于18.0.0的node版本
 ## 准备node.js开发环境
 Node.js 是一个基于 Chrome V8 引擎的 JavaScript 运行环境，允许你在服务器端运行 JavaScript。以下是在 Windows、Linux 和 macOS 上安装 Node.js 的详细步骤。
 
