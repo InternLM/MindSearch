@@ -37,7 +37,9 @@ internlm_hf = dict(type=HFTransformerCasualLM,
 
 gpt4 = dict(type=GPTAPI,
             model_type='gpt-4-turbo',
-            key=os.environ.get('OPENAI_API_KEY', 'YOUR OPENAI API KEY'))
+            key=os.environ.get('OPENAI_API_KEY', 'YOUR OPENAI API KEY'),
+            openai_api_base=os.environ.get('OPENAI_API_BASE', 'https://api.openai.com/v1'),
+            )
 
 url = 'https://dashscope.aliyuncs.com/api/v1/services/aigc/text-generation/generation'
 qwen = dict(type=GPTAPI,
