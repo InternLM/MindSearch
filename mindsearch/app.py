@@ -61,25 +61,33 @@ async def run(request: GenerationParams):
     async def generate():
         try:
             queue = janus.Queue()
+            stop_event = asyncio.Event()
 
-            # 使用 run_in_executor 将同步生成器包装成异步生成器
+            # Wrapping a sync generator as an async generator using run_in_executor
             def sync_generator_wrapper():
                 try:
                     for response in agent.stream_chat(inputs):
                         queue.sync_q.put(response)
-                except KeyError as e:
-                    logging.error(f'KeyError in sync_generator_wrapper: {e}')
+                except Exception as e:
+                    logging.exception(
+                        f'Exception in sync_generator_wrapper: {e}')
+                finally:
+                    # Notify async_generator_wrapper that the data generation is complete.
+                    queue.sync_q.put(None)
 
             async def async_generator_wrapper():
                 loop = asyncio.get_event_loop()
                 loop.run_in_executor(None, sync_generator_wrapper)
                 while True:
                     response = await queue.async_q.get()
+                    if response is None:  # Ensure that all elements are consumed
+                        break
                     yield response
                     if not isinstance(
                             response,
                             tuple) and response.state == AgentStatusCode.END:
                         break
+                stop_event.set()  # Inform sync_generator_wrapper to stop
 
             async for response in async_generator_wrapper():
                 if isinstance(response, tuple):
@@ -108,6 +116,11 @@ async def run(request: GenerationParams):
                 ensure_ascii=False)
             yield {'data': response_json}
             # yield f'data: {response_json}\n\n'
+        finally:
+            await stop_event.wait(
+            )  # Waiting for async_generator_wrapper to stop
+            queue.close()
+            await queue.wait_closed()
 
     inputs = request.inputs
     agent = init_agent(lang=args.lang, model_format=args.model_format)

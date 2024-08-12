@@ -12,7 +12,7 @@ from mindsearch.agent.mindsearch_prompt import (
     searcher_system_prompt_cn, searcher_system_prompt_en)
 
 lang = 'cn'
-llm = LMDeployServer(path='internlm/internlm2_5-7b',
+llm = LMDeployServer(path='internlm/internlm2_5-7b-chat',
                      model_name='internlm2',
                      meta_template=INTERNLM2_META,
                      top_p=0.8,

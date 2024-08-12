@@ -8,9 +8,11 @@ from mindsearch.agent.mindsearch_agent import (MindSearchAgent,
                                                MindSearchProtocol)
 from mindsearch.agent.mindsearch_prompt import (
     FINAL_RESPONSE_CN, FINAL_RESPONSE_EN, GRAPH_PROMPT_CN, GRAPH_PROMPT_EN,
-    searcher_context_template_cn, searcher_context_template_en,
-    searcher_input_template_cn, searcher_input_template_en,
-    searcher_system_prompt_cn, searcher_system_prompt_en)
+    fewshot_example_cn, fewshot_example_en, graph_fewshot_example_cn,
+    graph_fewshot_example_en, searcher_context_template_cn,
+    searcher_context_template_en, searcher_input_template_cn,
+    searcher_input_template_en, searcher_system_prompt_cn,
+    searcher_system_prompt_en)
 
 LLM = {}
 
@@ -25,12 +27,17 @@ def init_agent(lang='cn', model_format='internlm_server'):
         llm = llm_cfg.pop('type')(**llm_cfg)
         LLM[model_format] = llm
 
+    interpreter_prompt = GRAPH_PROMPT_CN if lang == 'cn' else GRAPH_PROMPT_EN
+    plugin_prompt = searcher_system_prompt_cn if lang == 'cn' else searcher_system_prompt_en
+    if not model_format.lower().startswith('internlm'):
+        interpreter_prompt += graph_fewshot_example_cn if lang == 'cn' else graph_fewshot_example_en
+        plugin_prompt += fewshot_example_cn if lang == 'cn' else fewshot_example_en
+
     agent = MindSearchAgent(
         llm=llm,
         protocol=MindSearchProtocol(meta_prompt=datetime.now().strftime(
             'The current date is %Y-%m-%d.'),
-                                    interpreter_prompt=GRAPH_PROMPT_CN
-                                    if lang == 'cn' else GRAPH_PROMPT_EN,
+                                    interpreter_prompt=interpreter_prompt,
                                     response_prompt=FINAL_RESPONSE_CN
                                     if lang == 'cn' else FINAL_RESPONSE_EN),
         searcher_cfg=dict(
@@ -43,8 +50,7 @@ def init_agent(lang='cn', model_format='internlm_server'):
             protocol=MindSearchProtocol(
                 meta_prompt=datetime.now().strftime(
                     'The current date is %Y-%m-%d.'),
-                plugin_prompt=searcher_system_prompt_cn
-                if lang == 'cn' else searcher_system_prompt_en,
+                plugin_prompt=plugin_prompt,
             ),
             template=dict(input=searcher_input_template_cn
                           if lang == 'cn' else searcher_input_template_en,
