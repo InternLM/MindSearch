@@ -53,10 +53,10 @@ export default defineConfig({
   server: {
     port: 8080,
     proxy: {
-      "/solve": {
-        target: "https://mindsearch.openxlab.org.cn",
-        changeOrigin: true,
-      },
+      // "/solve": {
+      //   target: "...",
+      //   changeOrigin: true,
+      // },
     },
   },
 });
