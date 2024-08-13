@@ -54,7 +54,7 @@ const RenderTest = () => {
       return node;
     });
   }
-
+  
   // 渲染过程中保持渲染文字可见
   const keepScrollTop = (divA: any, divB: any) => {
     // 获取 divB 的当前高度  
@@ -230,7 +230,7 @@ const RenderTest = () => {
       },
       body: JSON.stringify(postData),
       async onopen(res) {
-        // 开始检查超时  
+        // 开始检查超时
         checkTimeoutId.current = setInterval(checkTimeout, 6000);
       },
       onmessage(ev) {
