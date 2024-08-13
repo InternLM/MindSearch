@@ -426,41 +426,41 @@ class MindSearchAgent(BaseAgent):
                         node_name, node, adj = deepcopy(item)
                         if len(node['detail'].actions) != 2:
                             raise Exception('Invalid Actions.')
+
+                        def process_node(state, action_index):
+                            node['detail'].state = state
+                            node['detail'].response = item[1][
+                                'detail'].actions[action_index].thought
+                            if state == AgentStatusCode.STREAM_ING:
+                                node['detail'].actions = item[1][
+                                    'detail'].actions[:action_index]
+                            else:
+                                node['detail'].actions = item[1][
+                                    'detail'].actions[:action_index + 1]
+                            node['response'] = node['detail'].response
+                            yield deepcopy((node_name, node, adj))
+
+                        # First thought and action
+                        yield from process_node(AgentStatusCode.STREAM_ING, 0)
+                        yield from process_node(AgentStatusCode.PLUGIN_RETURN,
+                                                0)
+
+                        # Second thought and action
+                        yield from process_node(AgentStatusCode.STREAM_ING, 1)
+                        yield from process_node(AgentStatusCode.PLUGIN_RETURN,
+                                                1)
+
+                        # Final summary and end
                         node['detail'].state = AgentStatusCode.STREAM_ING
-                        node['detail'].response = node['detail'].actions[
-                            0].thought
-                        node['detail'].actions = list()
+                        node['detail'].response = item[1]['detail'].response
                         node['response'] = node['detail'].response
-                        yield deepcopy((node_name, node, adj))
-                        node_name, node, adj = deepcopy(item)
-                        node['detail'].state = AgentStatusCode.PLUGIN_RETURN
-                        node['detail'].response = node['detail'].actions[
-                            0].thought
-                        node['detail'].actions = node['detail'].actions[:1]
-                        node['response'] = node['detail'].response
-                        yield deepcopy((node_name, node, adj))
-                        node_name, node, adj = deepcopy(item)
-                        node['detail'].state = AgentStatusCode.STREAM_ING
-                        node['detail'].response = node['detail'].actions[
-                            1].thought
-                        node['detail'].actions = node['detail'].actions[:1]
-                        node['response'] = node['detail'].response
-                        yield deepcopy((node_name, node, adj))
-                        node_name, node, adj = deepcopy(item)
-                        node['detail'].state = AgentStatusCode.PLUGIN_RETURN
-                        node['detail'].response = node['detail'].actions[
-                            1].thought
-                        node['response'] = node['detail'].response
-                        yield deepcopy((node_name, node, adj))
-                        node_name, node, adj = deepcopy(item)
-                        node['detail'].state = AgentStatusCode.STREAM_ING
                         yield deepcopy((node_name, node, adj))
                         yield deepcopy(item)
+
                         ordered_nodes.pop(0)
                         responses[active_node].clear()
                         active_node = None
                         node_state_dit[node_name] = 'END'
-                        print(node_state_dit)
                         continue
                     else:
                         item = responses[active_node].pop(0)
