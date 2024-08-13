@@ -10,15 +10,14 @@ interface IProps {
   response: string;
   draft: string;
   chatIsOver: boolean;
-  mapWidth: number;
   handleHistory: (info: any) => void;
 };
 
-const Answer = ({ renderData, isEnd, chatIsOver, response = '', draft = '', mapWidth, handleHistory }: IProps) => {
+const Answer = ({ renderData, isEnd, chatIsOver, response = '', draft = '', handleHistory }: IProps) => {
   return <div className={styles.answer}>
     {
       renderData?.length > 0 ? <div className={styles.inner}>
-        <MindMapGraph isEnd={isEnd} renderData={renderData} handleHistory={handleHistory} mapWidth={mapWidth} />
+        <MindMapGraph isEnd={isEnd} renderData={renderData} handleHistory={handleHistory} />
       </div> : <></>
     }
     {

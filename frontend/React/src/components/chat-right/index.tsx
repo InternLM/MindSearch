@@ -37,7 +37,8 @@ const ChatRight = ({ nodeInfo, stashInfo = null, historyNode = null, toggleRight
   };
   // 高亮searchList
   const highLightSearchList = (ids: any) => {
-    console.log('high light ids----------', ids);
+    // console.log('high light ids----------', ids);
+    const timeout = historyNode ? 0 : 3000;
     setCurrentStep(1);
     const highlightArr: any = [...searchList];
     highlightArr.forEach((item: any) => {
@@ -59,7 +60,7 @@ const ChatRight = ({ nodeInfo, stashInfo = null, historyNode = null, toggleRight
     setSearchList(highlightArr);
     setTimeout(() => {
       setCurrentStep(2);
-    }, 3000);
+    }, timeout);
   };
 
   const handleReceiveHistory = () => {
@@ -106,6 +107,7 @@ const ChatRight = ({ nodeInfo, stashInfo = null, historyNode = null, toggleRight
     setThinking(null);
     setReading(null);
     setConclusion('');
+    setSubQuestion('');
   };
 
   useEffect(() => {
@@ -146,9 +148,9 @@ const ChatRight = ({ nodeInfo, stashInfo = null, historyNode = null, toggleRight
         console.log('node is end------', nodeInfo);
         resetStatus();
       }
-      nodeDetail?.content && setSubQuestion(nodeDetail?.content);
       if (nodeDetail?.state === 1) {
         setThought(nodeDetail.response);
+        nodeDetail?.content && setSubQuestion(nodeDetail?.content);
         // 如果返回thought的时候还没有searchlist，那就是第一步的思考
         if (nodeDetail.actions?.[0]?.thought) {
           setThinking({
