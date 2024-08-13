@@ -55,39 +55,6 @@ const RenderTest = () => {
     });
   }
 
-  // 逐字渲染
-  // const renderDraft = (str: string, type: string, endCallback: () => void) => {
-  //   const TEXT_INTERVAL = 20;
-
-  //   // 已经输出的字符数量  
-  //   let outputIndex = 0;
-
-  //   // 输出字符的函数  
-  //   const outputText = () => {
-  //     // 给出高亮后draft输出的结束标志
-  //     if (type === 'stepDraft-1' && outputIndex + 3 > str?.length) {
-  //       nodeDraftRender.current = true;
-  //     }
-  //     // 如果还有字符未输出  
-  //     if (outputIndex < str?.length) {
-  //       // 获取接下来要输出的1个字符（或剩余字符，如果不足3个）  
-  //       let chunk = str.slice(outputIndex, Math.min(outputIndex + 10, str.length));
-  //       // 更新已输出字符的索引  
-  //       outputIndex += chunk.length;
-  //       if (type === 'thought') {
-  //         setDraft(str.slice(0, outputIndex));
-  //       }
-  //     } else {
-  //       // 如果没有更多字符需要输出，则清除定时器  
-  //       clearInterval(intervalId);
-  //       endCallback && endCallback()
-  //     }
-  //   }
-
-  //   // 设定定时器ID  
-  //   let intervalId = setInterval(outputText, TEXT_INTERVAL);
-  // }
-
   // 渲染过程中保持渲染文字可见
   const keepScrollTop = (divA: any, divB: any) => {
     // 获取 divB 的当前高度  
