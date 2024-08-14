@@ -15,7 +15,7 @@ English | [简体中文](README_zh-CN.md)
 
 ## ✨ MindSearch: Mimicking Human Minds Elicits Deep AI Searcher
 
-MindSearch is an open-source AI Search Engine Framework with Perplexity.ai Pro performance. You can simply deploy it with your own perplexity.ai style search engine with either close-source LLMs (GPT, Claude) or open-source LLMs (InternLM2.5-7b-chat). It owns following features:
+MindSearch is an open-source AI Search Engine Framework designed to deliver performance on par with Perplexity.ai Pro. It supports both closed-source LLMs (e.g., GPT, Claude) and open-source models. For optimal results, we recommend using models from the InternLM2_5 series, such as [InternLM2_5-20b-chat](https://huggingface.co/internlm/internlm2_5-20b-chat) and [InternLM2_5-7b-chat](https://huggingface.co/internlm/internlm2_5-7b-chat), which are specifically optimized to provide superior performance within the MindSearch framework. It owns following features:
 
 - 🤔 **Ask everything you want to know**: MindSearch is designed to solve any question in your life and use web knowledge.
 - 📚 **In-depth Knowledge Discovery**: MindSearch browses hundreds of web pages to answer your question, providing deeper and wider knowledge base answer.
