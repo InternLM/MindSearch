@@ -4,7 +4,7 @@
 
 <img src="assets/logo.svg" style="width: 50%; height: auto;">
 
-[🌐 Project Page](https://mindsearch.netlify.app/) | [📃 Paper](https://arxiv.org/abs/2407.20183) | [💻 Playground](https://mindsearch.openxlab.org.cn/)
+[🌐 Project Page](https://mindsearch.netlify.app/) | [📃 Paper](https://arxiv.org/abs/2407.20183) | [🤗 Hugging Face Space](https://huggingface.co/spaces/internlm/MindSearchReact)| [💻 ModelScope](https://www.modelscope.cn/studios/Shanghai_AI_Laboratory/MindSearch)
 
 [English](README.md) | 简体中文
 
