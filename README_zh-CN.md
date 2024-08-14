@@ -51,7 +51,7 @@ pip install -r requirements.txt
 启动 FastAPI 服务器
 
 ```bash
-python -m mindsearch.app --lang en --model_format internlm_server
+python -m mindsearch.app --lang en --model_format internlm_server --search_engine DuckDuckGoSearch
 ```
 
 - `--lang`: 模型的语言，`en` 为英语，`cn` 为中文。
@@ -59,7 +59,9 @@ python -m mindsearch.app --lang en --model_format internlm_server
   - `internlm_server` 为 InternLM2.5-7b-chat 本地服务器。
   - `gpt4` 为 GPT4。
     如果您想使用其他模型，请修改 [models](./mindsearch/agent/models.py)
-
+- `--search_engine`: 搜索引擎。
+  - `DuckDuckGoSearch` 为 DuckDuckGo 搜索引擎。
+  - `BingSearch` 为 Bing搜索引擎。
 ### 步骤3: 启动 MindSearch 前端
 
 提供以下几种前端界面：

@@ -34,11 +34,11 @@ internlm_hf = dict(type=HFTransformerCasualLM,
                    max_new_tokens=8192,
                    repetition_penalty=1.02,
                    stop_words=['<|im_end|>'])
-
+# openai_api_base needs to fill in the complete chat api address, such as: https://api.openai.com/v1/chat/completions
 gpt4 = dict(type=GPTAPI,
             model_type='gpt-4-turbo',
             key=os.environ.get('OPENAI_API_KEY', 'YOUR OPENAI API KEY'),
-            openai_api_base=os.environ.get('OPENAI_API_BASE', 'https://api.openai.com/v1'),
+            openai_api_base=os.environ.get('OPENAI_API_BASE', 'https://api.openai.com/v1/chat/completions'),
             )
 
 url = 'https://dashscope.aliyuncs.com/api/v1/services/aigc/text-generation/generation'

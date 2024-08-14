@@ -53,7 +53,7 @@ pip install -r requirements.txt
 Setup FastAPI Server.
 
 ```bash
-python -m mindsearch.app --lang en --model_format internlm_server
+python -m mindsearch.app --lang en --model_format internlm_server --search_engine DuckDuckGoSearch
 ```
 
 - `--lang`: language of the model, `en` for English and `cn` for Chinese.
@@ -61,6 +61,9 @@ python -m mindsearch.app --lang en --model_format internlm_server
   - `internlm_server` for InternLM2.5-7b-chat with local server. (InternLM2.5-7b-chat has been better optimized for Chinese.)
   - `gpt4` for GPT4.
     if you want to use other models, please modify [models](./mindsearch/agent/models.py)
+- `--search_engine`: Search engine.
+  - `DuckDuckGoSearch` for search engine for DuckDuckGo.
+  - `BingSearch` for Bing search engine.
 
 ### Step3: Setup MindSearch Frontend
 
