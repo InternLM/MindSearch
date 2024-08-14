@@ -15,7 +15,7 @@
 
 ## ✨ MindSearch: Mimicking Human Minds Elicits Deep AI Searcher
 
-MindSearch 是一个开源的 AI 搜索引擎框架，具有与 Perplexity.ai Pro 相同的性能。您可以轻松部署它来构建您自己的搜索引擎，可以使用闭源 LLM（如 GPT、Claude）或开源 LLM（如 InternLM2.5-7b-chat）。其拥有以下特性：
+MindSearch 是一个开源的 AI 搜索引擎框架，具有与 Perplexity.ai Pro 相同的性能。您可以轻松部署它来构建您自己的搜索引擎，可以使用闭源 LLM（如 GPT、Claude）或开源 LLM（[InternLM2.5 系列模型](https://huggingface.co/internlm/internlm2_5-7b-chat)经过专门优化，能够在 MindSearch 框架中提供卓越的性能；其他开源模型没做过具体测试）。其拥有以下特性：
 
 - 🤔 **任何想知道的问题**：MindSearch 通过搜索解决你在生活中遇到的各种问题
 - 📚 **深度知识探索**：MindSearch 通过数百网页的浏览，提供更广泛、深层次的答案
