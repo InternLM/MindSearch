@@ -53,7 +53,7 @@ pip install -r requirements.txt
 Setup FastAPI Server.
 
 ```bash
-python -m mindsearch.app --lang en --model_format internlm_server --search_engine DuckDuckGoSearch
+python -m mindsearch.app --lang en --model_format sensenova --search_engine DuckDuckGoSearch
 ```
 
 - `--lang`: language of the model, `en` for English and `cn` for Chinese.
