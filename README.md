@@ -4,7 +4,7 @@
 
 <img src="assets/logo.svg" style="width: 50%; height: auto;">
 
-[🌐 Project Page](https://mindsearch.netlify.app/) | [📃 Paper](https://arxiv.org/abs/2407.20183) | [💻 Playground](https://mindsearch.openxlab.org.cn/)
+[🌐 Project Page](https://mindsearch.netlify.app/) | [📃 Paper](https://arxiv.org/abs/2407.20183) | [🤗 Hugging Face Space](https://huggingface.co/spaces/internlm/MindSearchReact)| [💻 ModelScope](https://www.modelscope.cn/studios/Shanghai_AI_Laboratory/MindSearch)
 
 English | [简体中文](README_zh-CN.md)
 
@@ -15,7 +15,7 @@ English | [简体中文](README_zh-CN.md)
 
 ## ✨ MindSearch: Mimicking Human Minds Elicits Deep AI Searcher
 
-MindSearch is an open-source AI Search Engine Framework with Perplexity.ai Pro performance. You can simply deploy it with your own perplexity.ai style search engine with either close-source LLMs (GPT, Claude) or open-source LLMs (InternLM2.5-7b-chat). It owns following features:
+MindSearch is an open-source AI Search Engine Framework with Perplexity.ai Pro performance. You can simply deploy it with your own perplexity.ai style search engine with either close-source LLMs (GPT, Claude) or open-source LLMs ([InternLM2.5 series](https://huggingface.co/internlm/internlm2_5-7b-chat) are specifically optimized to provide superior performance within the MindSearch framework; other open-source models have not been specifically tested). It owns following features:
 
 - 🤔 **Ask everything you want to know**: MindSearch is designed to solve any question in your life and use web knowledge.
 - 📚 **In-depth Knowledge Discovery**: MindSearch browses hundreds of web pages to answer your question, providing deeper and wider knowledge base answer.
@@ -53,7 +53,7 @@ pip install -r requirements.txt
 Setup FastAPI Server.
 
 ```bash
-python -m mindsearch.app --lang en --model_format internlm_server
+python -m mindsearch.app --lang en --model_format internlm_server --search_engine DuckDuckGoSearch
 ```
 
 - `--lang`: language of the model, `en` for English and `cn` for Chinese.
@@ -61,6 +61,9 @@ python -m mindsearch.app --lang en --model_format internlm_server
   - `internlm_server` for InternLM2.5-7b-chat with local server. (InternLM2.5-7b-chat has been better optimized for Chinese.)
   - `gpt4` for GPT4.
     if you want to use other models, please modify [models](./mindsearch/agent/models.py)
+- `--search_engine`: Search engine.
+  - `DuckDuckGoSearch` for search engine for DuckDuckGo.
+  - `BingSearch` for Bing search engine.
 
 ### Step3: Setup MindSearch Frontend
 
