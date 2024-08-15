@@ -36,9 +36,10 @@ internlm_hf = dict(type=HFTransformerCasualLM,
                    stop_words=['<|im_end|>'])
 
 gpt4 = dict(type=GPTAPI,
-            model_type='gpt-4-turbo',
+            model_type='gpt-4o-mini',
             key=os.environ.get('OPENAI_API_KEY', 'YOUR OPENAI API KEY'),
-            openai_api_base=os.environ.get('OPENAI_API_BASE', 'https://api.openai.com/v1'),
+            openai_api_base=os.environ.get('OPENAI_API_BASE', 'https://api.openai.com/v1/chat/completions'),
+            max_new_tokens=16384,
             )
 
 url = 'https://dashscope.aliyuncs.com/api/v1/services/aigc/text-generation/generation'
