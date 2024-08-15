@@ -23,7 +23,7 @@ def parse_arguments():
                         default='internlm_server',
                         type=str,
                         help='Model format')
-    parse.add_argument('--search_engine',
+    parser.add_argument('--search_engine',
                        default='DuckDuckGoSearch',
                        type=str,
                        help='Search engine')
