@@ -27,3 +27,5 @@ RUN pip install --no-cache-dir \
     termcolor \
     uvicorn \
     git+https://github.com/InternLM/lagent.git
+
+RUN pip install --no-cache-dir -U griffe==0.48.0

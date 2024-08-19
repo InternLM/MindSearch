@@ -1,38 +1,35 @@
 # Use Node.js 18 as the base image
-FROM node:18-alpine AS build
+FROM node:18-alpine
 
 # Set the working directory
 WORKDIR /app
 
-# Copy package.json and package-lock.json
+# Copy package files first to leverage Docker cache
 COPY frontend/React/package*.json ./
 
 # Install dependencies
 RUN npm install
 
-# Copy frontend source code
+# Copy source code after npm install to prevent unnecessary reinstalls
 COPY frontend/React/ ./
 
-# Build the application
-RUN npm run build
+# Modify vite.config.ts for Docker environment
+# Beacuse we use Docker Compose to manage the backend and frontend services, we can use the service name as the hostname
+RUN sed -i '/server: {/,/},/c\
+    server: {\
+    host: "0.0.0.0",\
+    port: 8080,\
+    proxy: {\
+    "/solve": {\
+    target: "http://backend:8002",\
+    changeOrigin: true,\
+    },\
+    // "/solve": {\
+    //   target: "https://mindsearch.openxlab.org.cn",\
+    //   changeOrigin: true,\
+    // },\
+    },\
+    },' vite.config.ts
 
-# Use Node.js to serve static files
-FROM node:18-alpine
-
-WORKDIR /app
-
-# Install serve package and gettext (for envsubst)
-RUN apk add --no-cache gettext && \
-    npm install -g serve
-
-# Copy build artifacts
-COPY --from=build /app/dist ./dist
-
-# Create start script
-RUN echo '#!/bin/sh' > start.sh && \
-    echo 'find ./dist -type f -exec sed -i "s|http://127.0.0.1:8002|$API_URL|g" {} +' >> start.sh && \
-    echo 'serve -s dist -l $SERVE_PORT' >> start.sh && \
-    chmod +x start.sh
-
-# Use the start script
-CMD ["/bin/sh", "./start.sh"]
+# Start the development server
+CMD ["npm", "start"]

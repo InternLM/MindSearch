@@ -14,7 +14,8 @@ services:
       - PYTHONUNBUFFERED=1
       - OPENAI_API_KEY=${OPENAI_API_KEY:-}
       - OPENAI_API_BASE=${OPENAI_API_BASE:-https://api.openai.com/v1}
-    command: python -m mindsearch.app --lang ${LANG:-zh} --model_format ${MODEL_FORMAT:-internlm_server}
+      - SILICON_API_KEY=${SILICON_API_KEY:-}
+    command: python -m mindsearch.app --lang ${LANG:-cn} --model_format ${MODEL_FORMAT:-internlm_server}
     volumes:
       - /root/.cache:/root/.cache
     deploy:
@@ -56,9 +57,5 @@ services:
     # pull: never
     ports:
       - "8080:8080"
-    environment:
-      - NODE_ENV=production
-      - API_URL=http://0.0.0.0:8002
-      - SERVE_PORT=8080
     depends_on:
       - backend

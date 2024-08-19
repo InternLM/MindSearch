@@ -1,33 +1,33 @@
 # MindSearch Docker Compose 使用指南
 
+[English](README.md) | 简体中文
+
 ## 🚀 使用 Docker Compose 快速启动
 
-MindSearch 现在支持使用 Docker Compose 进行快速部署和启动。这种方法简化了环境配置过程，使您能够轻松运行整个系统。
+MindSearch 支持使用 Docker Compose 进行快速部署和启动，简化了环境配置过程，让您能轻松运行整个系统。
 
 ### 前提条件
 
-- 安装 Docker（Docker Compose V2 已集成到 Docker 中）
-- NVIDIA GPU 和 NVIDIA Container Toolkit（对于 NVIDIA GPU 支持是必需的）
+- Docker（已集成 Docker Compose V2）
+- NVIDIA GPU 和 NVIDIA Container Toolkit（如需 NVIDIA GPU 支持）
 
-注意：较新版本的 Docker 已经整合了 Docker Compose V2，因此您可以直接使用 `docker compose` 命令，无需单独安装 docker-compose。
+注意：较新版本的 Docker 已整合 Docker Compose V2，可直接使用 `docker compose` 命令。
 
-### 首次启动
+### 使用说明
 
-在项目根目录下执行以下命令：
+所有命令都应在 `mindsearch/docker` 目录下执行。
+
+#### 首次启动
 
 ```bash
-cd docker
 docker compose up --build -d
 ```
 
-这将构建必要的 Docker 镜像并在后台启动服务。
-
-### 日常使用
+#### 日常使用
 
 启动服务：
 
 ```bash
-cd docker
 docker compose up -d
 ```
 
@@ -43,69 +43,76 @@ docker ps
 docker compose down
 ```
 
+#### 大版本更新
+
+更新后重新构建镜像：
+
+```bash
+docker compose build --no-cache
+docker compose up -d
+```
+
 ### 配置说明
 
 1. **环境变量设置**：
-   系统会自动从您的环境中读取以下变量并传递给容器：
+   系统自动读取以下环境变量：
 
-   - `OPENAI_API_KEY`：您的 OpenAI API 密钥（使用 GPT 模型时需要）
-   - `OPENAI_API_BASE`：OpenAI API 的基础 URL（默认为 https://api.openai.com/v1）
-   - `LANG`：设置语言，如 'en' 或 'zh'
-   - `MODEL_FORMAT`：设置模型格式，如 'gpt4' 或 'internlm_server'
+   - `OPENAI_API_KEY`：OpenAI API 密钥
+   - `OPENAI_API_BASE`：OpenAI API 基础 URL（默认：https://api.openai.com/v1）
+   - `LANG`：语言设置（'en' 或 'cn'）
+   - `MODEL_FORMAT`：模型格式（'gpt4' 或 'internlm_server'）
 
-   您可以在运行 Docker Compose 命令前设置这些变量，例如：
+   设置示例：
 
    ```bash
    export OPENAI_API_KEY=your_api_key_here
-   export OPENAI_API_BASE=https://your-custom-endpoint.com/v1
-   export LANG=en
+   export LANG=cn
    export MODEL_FORMAT=gpt4
    docker compose up -d
    ```
 
+   使用 SiliconFlow 云端 LLM 服务：
+
+   ```bash
+   export SILICON_API_KEY=your_api_key_here
+   export LANG=cn
+   export MODEL_FORMAT=internlm_silicon
+   docker compose up -d
+   ```
+
 2. **模型缓存**：
-   容器会映射 `/root/.cache:/root/.cache` 路径。如果您使用本地运行大模型模式（`internlm_server`），模型文件将下载到此目录。如需更改存储位置，请修改 docker-compose.yaml 中的相应配置。
+   容器映射 `/root/.cache:/root/.cache` 路径存储模型文件。
 
 3. **GPU 支持**：
-   当前配置默认使用 NVIDIA GPU。对于其他 GPU 类型（如 AMD 或 Apple M 系列），请参考 docker-compose.yaml 中的注释进行相应调整。
+   默认配置使用 NVIDIA GPU。其他 GPU 类型请参考 docker-compose.yaml 中的注释。
 
-4. **服务端口**：
-   默认 API 服务地址为 `http://0.0.0.0:8002`。如需更改，请修改 docker-compose.yaml 中的相应配置。
+4. **服务访问**：
+   在 Docker Compose 环境中，前端容器可以通过 `http://backend:8002` 直接访问后端服务。
+
+5. **后端服务器地址配置**：
+   目前，更改后端服务器地址的方法是临时的。我们在 Dockerfile 中使用 sed 命令来修改 vite.config.ts 文件，以替换服务器代理地址。这种方法在开发环境中有效，但不适合生产环境。
 
 ### 注意事项
 
-- 首次运行时，根据您选择的模型和网络状况，可能需要一些时间来下载必要的模型文件。
-- 确保您有足够的磁盘空间来存储模型文件和 Docker 镜像。
-- 如果遇到权限问题，可能需要使用 sudo 运行 Docker 命令。
+- 首次运行可能需要时间下载模型文件。
+- 确保有足够磁盘空间存储模型和 Docker 镜像。
+- 如遇权限问题，可能需要使用 sudo 运行 Docker 命令。
 
-### 跨域访问注意事项
+### 跨域访问说明
 
-在访问前端时，需要特别注意避免跨域问题。目前的 Docker Compose 配置是项目的一个起点，但还没有完全解决所有生产环境中可能遇到的跨域问题。请注意以下几点：
+当前版本通过 Vite 开发模式临时解决跨域问题：
 
-1. **API 服务地址一致性**：
-   确保 API 服务地址与您访问前端的服务地址保持一致。例如：
-   - 本地部署时：使用 `0.0.0.0` 或 `127.0.0.1`
-   - 局域网或公网部署时：使用相同的 IP 地址或域名
+1. 前端 Dockerfile 使用 `npm start` 启动 Vite 开发服务器。
+2. `vite.config.ts` 配置代理，将 `/solve` 路径请求代理到后端。
 
-2. **当前限制**：
-   目前的配置主要适用于开发和测试环境。在某些部署场景下，您可能仍会遇到跨域问题。
+注意：
 
-3. **未来改进**：
-   为了提高系统的鲁棒性和适应更多的部署场景，我们计划在未来的版本中进行以下改进：
-   - 修改服务端代码以适当配置 CORS（跨源资源共享）
-   - 调整客户端代码以更灵活地处理 API 请求
-   - 考虑引入反向代理方案
+- 此方法适用于开发环境，不适合生产环境。
+- 未来版本将实现更适合生产环境的跨域解决方案。
+- 生产环境部署可能需要考虑其他跨域处理方法。
 
-4. **临时解决方案**：
-   在我们实现这些改进之前，如果您在特定环境中遇到跨域问题，可以考虑使用浏览器插件暂时禁用跨域限制（仅用于测试），或者使用简单的反向代理服务器。
+### 结语
 
-5. **Docker 环境中的设置**：
-   在 `docker-compose.yaml` 文件中，确保 `API_URL` 环境变量设置正确，例如：
-   ```yaml
-   environment:
-     - API_URL=http://your-server-address:8002
-   ```
+感谢您的支持。MindSearch 正在不断改进，您的反馈对我们至关重要。如有任何问题或建议，请随时与我们联系。
 
-我们感谢您的理解和耐心。MindSearch 仍处于早期阶段，我们正在努力改进系统的各个方面。您的反馈对我们非常重要，它帮助我们不断完善项目。如果您在使用过程中遇到任何问题或有任何建议，请随时向我们反馈。
-
-通过使用 Docker Compose，您可以快速部署 MindSearch，而无需担心复杂的环境配置。这种方法特别适合快速测试和开发环境部署。如果您在部署过程中遇到任何问题，请查阅我们的故障排除指南或寻求社区支持。
+Docker Compose 方法简化了 MindSearch 的部署流程，特别适合快速测试和开发环境。如遇部署问题，请参考故障排除指南或寻求社区支持。
