@@ -64,6 +64,16 @@ docker compose up -d
 
    Example setup:
 
+   Using local internlm2.5-7b-chat model:
+
+   ```bash
+   export LANG=cn
+   export MODEL_FORMAT=internlm_server
+   docker compose up -d
+   ```
+
+   Using OpenAI's API:
+
    ```bash
    export OPENAI_API_KEY=your_api_key_here
    export LANG=en

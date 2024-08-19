@@ -64,6 +64,16 @@ docker compose up -d
 
    设置示例：
 
+   使用本地的 internlm2.5-7b-chat 模型:
+
+   ```bash
+   export LANG=cn
+   export MODEL_FORMAT=internlm_server
+   docker compose up -d
+   ```
+
+   使用 OpenAI 的 LLM 服务:
+
    ```bash
    export OPENAI_API_KEY=your_api_key_here
    export LANG=cn
