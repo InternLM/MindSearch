@@ -73,3 +73,20 @@ qwen = dict(type=GPTAPI,
             max_new_tokens=4096,
             repetition_penalty=1.02,
             stop_words=['<|im_end|>'])
+
+internlm_silicon = dict(type=GPTAPI,
+                        model_type='internlm/internlm2_5-7b-chat',
+                        key=os.environ.get('SILICON_API_KEY', 'YOUR SILICON API KEY'),
+                        openai_api_base='https://api.siliconflow.cn/v1/chat/completions',
+                        meta_template=[
+                            dict(role='system', api_role='system'),
+                            dict(role='user', api_role='user'),
+                            dict(role='assistant', api_role='assistant'),
+                            dict(role='environment', api_role='system')
+                        ],
+                        top_p=0.8,
+                        top_k=1,
+                        temperature=0,
+                        max_new_tokens=8192,
+                        repetition_penalty=1.02,
+                        stop_words=['<|im_end|>'])
