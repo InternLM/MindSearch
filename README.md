@@ -67,7 +67,7 @@ python -m mindsearch.app --lang en --model_format internlm_server --search_engin
   - `BraveSearch` for Brave search web api engine.
   - `GoogleSearch` for Google Serper web search api engine.
   
-  Please set your web search API key as the `WEB_SEARCH_API_KEY` environment variable unless you are using DuckDuckGo.
+  Please set your Web Search engine API key as the `WEB_SEARCH_API_KEY` environment variable unless you are using `DuckDuckGo`.
 
 ### Step3: Setup MindSearch Frontend
 
