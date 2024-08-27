@@ -1,33 +1,33 @@
 # MindSearch Docker Compose User Guide
 
+English | [简体中文](README_zh-CN.md)
+
 ## 🚀 Quick Start with Docker Compose
 
 MindSearch now supports quick deployment and startup using Docker Compose. This method simplifies the environment configuration process, allowing you to easily run the entire system.
 
 ### Prerequisites
 
-- Docker installed (Docker Compose V2 is integrated into Docker)
+- Docker (Docker Compose V2 is integrated into Docker)
 - NVIDIA GPU and NVIDIA Container Toolkit (required for NVIDIA GPU support)
 
-Note: Newer versions of Docker have integrated Docker Compose V2, so you can directly use the `docker compose` command without installing docker-compose separately.
+Note: Newer versions of Docker have integrated Docker Compose V2, so you can use the `docker compose` command directly without a separate installation of docker-compose.
 
-### First-time Startup
+### Usage Instructions
 
-Execute the following commands in the project root directory:
+All commands should be executed in the `mindsearch/docker` directory.
+
+#### First-time Startup
 
 ```bash
-cd docker
 docker compose up --build -d
 ```
 
-This will build the necessary Docker images and start the services in the background.
-
-### Daily Use
+#### Daily Use
 
 Start services:
 
 ```bash
-cd docker
 docker compose up -d
 ```
 
@@ -43,71 +43,86 @@ Stop services:
 docker compose down
 ```
 
-### Configuration Instructions
+#### Major Version Updates
 
-1. **Environment Variable Settings**:
-   The system will automatically read the following variables from your environment and pass them to the containers:
+Rebuild images after a major update:
 
-   - `OPENAI_API_KEY`: Your OpenAI API key (required when using GPT models)
-   - `OPENAI_API_BASE`: Base URL for OpenAI API (default is https://api.openai.com/v1)
-   - `LANG`: Set language, e.g., 'en' or 'zh'
-   - `MODEL_FORMAT`: Set model format, e.g., 'gpt4' or 'internlm_server'
+```bash
+docker compose build --no-cache
+docker compose up -d
+```
 
-   You can set these variables before running the Docker Compose command, for example:
+### Configuration Details
+
+1. **Environment Variables**:
+   The system automatically reads the following variables from your environment:
+
+   - `OPENAI_API_KEY`: Your OpenAI API key
+   - `OPENAI_API_BASE`: OpenAI API base URL (default: https://api.openai.com/v1)
+   - `LANG`: Language setting ('en' or 'cn')
+   - `MODEL_FORMAT`: Model format ('gpt4' or 'internlm_server')
+
+   Example setup:
+
+   Using local internlm2.5-7b-chat model:
+
+   ```bash
+   export LANG=cn
+   export MODEL_FORMAT=internlm_server
+   docker compose up -d
+   ```
+
+   Using OpenAI's API:
 
    ```bash
    export OPENAI_API_KEY=your_api_key_here
-   export OPENAI_API_BASE=https://your-custom-endpoint.com/v1
    export LANG=en
    export MODEL_FORMAT=gpt4
    docker compose up -d
    ```
 
+   Using SiliconFlow's cloud LLM service:
+
+   ```bash
+   export SILICON_API_KEY=your_api_key_here
+   export LANG=en
+   export MODEL_FORMAT=internlm_silicon
+   docker compose up -d
+   ```
+
 2. **Model Cache**:
-   The container maps the `/root/.cache:/root/.cache` path. If you use the local large model mode (`internlm_server`), model files will be downloaded to this directory. To change the storage location, please modify the corresponding configuration in docker-compose.yaml.
+   The container maps the `/root/.cache:/root/.cache` path to store model files.
 
 3. **GPU Support**:
-   The current configuration defaults to using NVIDIA GPUs. For other GPU types (such as AMD or Apple M series), please refer to the comments in docker-compose.yaml for appropriate adjustments.
+   The default configuration uses NVIDIA GPUs. For other GPU types, please refer to the comments in docker-compose.yaml.
 
-4. **Service Ports**:
-   The default API service address is `http://0.0.0.0:8002`. To change this, please modify the corresponding configuration in docker-compose.yaml.
+4. **Service Access**:
+   In the Docker Compose environment, the frontend container can directly access the backend service via `http://backend:8002`.
 
-### Notes
+5. **Backend Server Address Configuration**:
+   Currently, the method for changing the backend server address is temporary. We use a sed command in the Dockerfile to modify the vite.config.ts file to replace the server proxy address. This method is effective in the development environment but not suitable for production.
 
-- During the first run, depending on your chosen model and network conditions, it may take some time to download the necessary model files.
+### Important Notes
+
+- The first run may take some time to download necessary model files, depending on your chosen model and network conditions.
 - Ensure you have sufficient disk space to store model files and Docker images.
 - If you encounter permission issues, you may need to use sudo to run Docker commands.
 
-### Cross-Origin Access Considerations
+### Cross-Origin Access Note
 
-When accessing the frontend, it's important to be aware of potential cross-origin issues. The current Docker Compose configuration is a starting point for the project but doesn't fully resolve all cross-origin problems that might be encountered in a production environment. Please note the following points:
+In the current version, we temporarily solve the cross-origin access issue by using Vite's development mode in the frontend Docker container:
 
-1. **API Service Address Consistency**:
-   Ensure that the API service address matches the address you use to access the frontend. For example:
+1. The frontend Dockerfile uses the `npm start` command to start the Vite development server.
+2. In the `vite.config.ts` file, we configure proxy settings to forward requests for the `/solve` path to the backend service.
 
-   - For local deployment: Use `0.0.0.0` or `127.0.0.1`
-   - For LAN or public network deployment: Use the same IP address or domain name
+Please note:
 
-2. **Current Limitations**:
-   The current configuration is primarily suitable for development and testing environments. You may still encounter cross-origin issues in certain deployment scenarios.
+- This method is effective in the development environment but not suitable for production use.
+- We plan to implement a more robust cross-origin solution suitable for production environments in future versions.
+- If you plan to deploy this project in a production environment, you may need to consider other cross-origin handling methods, such as configuring backend CORS policies or using a reverse proxy server.
 
-3. **Future Improvements**:
-   To enhance the system's robustness and adapt to more deployment scenarios, we plan to implement the following improvements in future versions:
+### Conclusion
 
-   - Modify server-side code to properly configure CORS (Cross-Origin Resource Sharing)
-   - Adjust client-side code to handle API requests more flexibly
-   - Consider introducing reverse proxy solutions
+We appreciate your understanding and patience. MindSearch is still in its early stages, and we are working hard to improve various aspects of the system. Your feedback is very important to us as it helps us continuously refine the project. If you encounter any issues or have any suggestions during use, please feel free to provide feedback.
 
-4. **Temporary Solutions**:
-   Before we implement these improvements, if you encounter cross-origin issues in specific environments, you can consider using browser plugins to temporarily disable cross-origin restrictions (for testing purposes only) or using a simple reverse proxy server.
-
-5. **Docker Environment Settings**:
-   In the `docker-compose.yaml` file, ensure that the `API_URL` environment variable is set correctly, for example:
-   ```yaml
-   environment:
-     - API_URL=http://your-server-address:8002
-   ```
-
-We appreciate your understanding and patience. MindSearch is still in its early stages, and we are working hard to improve various aspects of the system. Your feedback is very important to us as it helps us continually refine the project. If you encounter any issues or have any suggestions during use, please feel free to provide feedback.
-
-By using Docker Compose, you can quickly deploy MindSearch without worrying about complex environment configurations. This method is particularly suitable for rapid testing and development environment deployments. If you encounter any problems during deployment, please refer to our troubleshooting guide or seek community support.
+By using Docker Compose, you can quickly deploy MindSearch without worrying about complex environment configurations. This method is particularly suitable for rapid testing and development environment deployment. If you encounter any problems during deployment, please refer to our troubleshooting guide or seek community support.
