@@ -139,6 +139,7 @@ const ChatRight = ({ nodeInfo, stashInfo = null, historyNode = null, toggleRight
     }
     if (nodeInfo?.current_node !== currentNode) {
       console.log('current node changed--------------', nodeInfo);
+      resetStatus();
     }
     try {
       if (!(nodeInfo?.current_node && nodeInfo?.response?.nodes?.[nodeInfo.current_node]?.detail)) return;
@@ -146,7 +147,7 @@ const ChatRight = ({ nodeInfo, stashInfo = null, historyNode = null, toggleRight
       // console.log('nodeInfo-------', nodeDetail);
       if (nodeDetail?.state === 0) {
         console.log('node is end------', nodeInfo);
-        resetStatus();
+        // resetStatus();
       }
       if (nodeDetail?.state === 1) {
         setThought(nodeDetail.response);

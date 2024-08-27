@@ -54,7 +54,7 @@ const RenderTest = () => {
       return node;
     });
   }
-  
+
   // 渲染过程中保持渲染文字可见
   const keepScrollTop = (divA: any, divB: any) => {
     // 获取 divB 的当前高度  
@@ -192,6 +192,8 @@ const RenderTest = () => {
       }
       if (obj.current_node && obj.response.state === 3) {
         setNodeName(obj.current_node);
+        // 嫦娥6号上有哪些国际科学载荷？它们的作用分别是什么？
+        // console.log('nodeInfo A------', obj?.response?.nodes?.[obj.current_node]?.detail, obj?.response?.nodes?.[obj.current_node]?.detail?.state);
         // 有node
         setObj(obj);
         const newAdjList = obj.response?.adjacency_list;
