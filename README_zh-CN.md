@@ -4,7 +4,7 @@
 
 <img src="assets/logo.svg" style="width: 50%; height: auto;">
 
-[🌐 Project Page](https://mindsearch.netlify.app/) | [📃 Paper](https://arxiv.org/abs/2407.20183) | [💻 Playground](https://mindsearch.openxlab.org.cn/)
+[🌐 Project Page](https://mindsearch.netlify.app/) | [📃 Paper](https://arxiv.org/abs/2407.20183) | [🤗 Hugging Face Space](https://huggingface.co/spaces/internlm/MindSearchReact)| [💻 ModelScope](https://www.modelscope.cn/studios/Shanghai_AI_Laboratory/MindSearch)
 
 [English](README.md) | 简体中文
 
@@ -15,7 +15,7 @@
 
 ## ✨ MindSearch: Mimicking Human Minds Elicits Deep AI Searcher
 
-MindSearch 是一个开源的 AI 搜索引擎框架，具有与 Perplexity.ai Pro 相同的性能。您可以轻松部署它来构建您自己的搜索引擎，可以使用闭源 LLM（如 GPT、Claude）或开源 LLM（如 InternLM2.5-7b-chat）。其拥有以下特性：
+MindSearch 是一个开源的 AI 搜索引擎框架，具有与 Perplexity.ai Pro 相同的性能。您可以轻松部署它来构建您自己的搜索引擎，可以使用闭源 LLM（如 GPT、Claude）或开源 LLM（[InternLM2.5 系列模型](https://huggingface.co/internlm/internlm2_5-7b-chat)经过专门优化，能够在 MindSearch 框架中提供卓越的性能；其他开源模型没做过具体测试）。其拥有以下特性：
 
 - 🤔 **任何想知道的问题**：MindSearch 通过搜索解决你在生活中遇到的各种问题
 - 📚 **深度知识探索**：MindSearch 通过数百网页的浏览，提供更广泛、深层次的答案
@@ -51,7 +51,7 @@ pip install -r requirements.txt
 启动 FastAPI 服务器
 
 ```bash
-python -m mindsearch.app --lang en --model_format internlm_server
+python -m mindsearch.app --lang en --model_format internlm_server --search_engine DuckDuckGoSearch
 ```
 
 - `--lang`: 模型的语言，`en` 为英语，`cn` 为中文。
@@ -59,7 +59,9 @@ python -m mindsearch.app --lang en --model_format internlm_server
   - `internlm_server` 为 InternLM2.5-7b-chat 本地服务器。
   - `gpt4` 为 GPT4。
     如果您想使用其他模型，请修改 [models](./mindsearch/agent/models.py)
-
+- `--search_engine`: 搜索引擎。
+  - `DuckDuckGoSearch` 为 DuckDuckGo 搜索引擎。
+  - `BingSearch` 为 Bing搜索引擎。
 ### 步骤3: 启动 MindSearch 前端
 
 提供以下几种前端界面：
