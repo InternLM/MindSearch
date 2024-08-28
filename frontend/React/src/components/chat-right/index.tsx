@@ -77,26 +77,8 @@ const ChatRight = ({ nodeInfo, stashInfo = null, historyNode = null, toggleRight
     setIsLoading(false);
   };
 
-  // const stashNodeInfo = () => {
-  //   // 已完成节点信息存储
-  //   const nodeInfo = {
-  //     thinkingData,
-  //     queries,
-  //     readingData,
-  //     searchList,
-  //     conclusion,
-  //     selectedIds,
-  //     subQuestion
-  //   };
-  //   const obj: any = JSON.parse(window.localStorage.getItem('nodesInfo') || '{}');
-  //   console.log('exsited history nodes-----', obj);
-  //   obj[currentNode] = nodeInfo;
-  //   window.localStorage.setItem('nodesInfo', JSON.stringify(obj));
-  // };
-
   const resetStatus = () => {
     // 记录节点信息
-    // stashNodeInfo();
     // 初始化组件状态
     console.log('reset status-------');
     setThought('');
@@ -147,7 +129,6 @@ const ChatRight = ({ nodeInfo, stashInfo = null, historyNode = null, toggleRight
       // console.log('nodeInfo-------', nodeDetail);
       // if (nodeDetail?.state === 0) {
       //   console.log('node is end------', nodeInfo);
-      //   // resetStatus();
       // }
       if (nodeDetail?.state === 1) {
         setThought(nodeDetail.response);
