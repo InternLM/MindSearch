@@ -1,29 +1,35 @@
 # msdl/__main__.py
 
+import os
 import signal
 import sys
-import os
+
 from InquirerPy import inquirer
 from msdl.config import (
+    BACKEND_DOCKERFILE_DIR,
+    CLOUD_LLM_DOCKERFILE,
+    FRONTEND_DOCKERFILE_DIR,
+    LOCAL_LLM_DOCKERFILE,
     PACKAGE_DIR,
     PROJECT_ROOT,
+    REACT_DOCKERFILE,
     TEMP_DIR,
     TEMPLATE_FILES,
-    CLOUD_LLM_DOCKERFILE,
-    LOCAL_LLM_DOCKERFILE,
-    BACKEND_DOCKERFILE_DIR,
-    FRONTEND_DOCKERFILE_DIR,
-    REACT_DOCKERFILE,
 )
-from msdl.translations.i18n_setup import setup_i18n, t
-from msdl.utils import copy_templates_to_temp, modify_docker_compose
 from msdl.docker_manager import (
     check_docker_install,
-    stop_and_remove_containers,
     run_docker_compose,
+    stop_and_remove_containers,
     update_docker_compose_paths,
 )
-from msdl.utils import get_model_formats
+from msdl.translations.i18n_setup import setup_i18n, t
+from msdl.utils import (
+    clean_api_key,
+    copy_templates_to_temp,
+    get_model_formats,
+    modify_docker_compose,
+    save_api_key_to_env,
+)
 
 
 def signal_handler(signum, frame):
@@ -88,6 +94,14 @@ def get_user_choices():
         message=t("model_format_choice"),
         choices=[{"name": format, "value": format} for format in model_formats],
     ).execute()
+
+    # 获取API key（使用隐藏输入）
+    if model == CLOUD_LLM_DOCKERFILE:
+        api_key = inquirer.secret(
+            message=t(f"{model_format.upper()}_API_KEY_PROMPT")
+        ).execute()
+        cleaned_api_key = clean_api_key(api_key)
+        save_api_key_to_env(model_format, cleaned_api_key)
 
     return backend_language, model, model_format
 
