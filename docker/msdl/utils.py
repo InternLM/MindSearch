@@ -24,6 +24,25 @@ def clean_api_key(api_key):
     return cleaned_key
 
 
+def validate_api_key(api_key, key_type):
+    # 基本验证规则：以 "sk-" 开头
+    basic_pattern = r"^sk-[A-Za-z0-9]+$"
+
+    # 可以为不同类型的 API key 添加特定的验证规则
+    validation_rules = {
+        "SILICON_API_KEY": basic_pattern,
+        "OPENAI_API_KEY": basic_pattern,
+        "QWEN_API_KEY": basic_pattern,
+        # 未来可以在这里添加更多特定的验证规则
+    }
+
+    if key_type not in validation_rules:
+        raise ValueError(t("unknown_api_key_type", key_type=key_type))
+
+    pattern = validation_rules[key_type]
+    return re.match(pattern, api_key) is not None
+
+
 def ensure_directory(path):
     if not os.path.exists(path):
         os.makedirs(path)
@@ -63,7 +82,11 @@ def save_api_key_to_env(model_format, api_key):
     else:
         raise ValueError(t("unknown_model_format", model_format=model_format))
 
-    # 将清理后的API key写入.env文件
+    # 验证 API key
+    if not validate_api_key(api_key, env_var_name):
+        raise ValueError(t("invalid_api_key", key_type=env_var_name))
+
+    # 将验证通过的 API key 写入.env文件
     with open(env_file_path, "a") as env_file:
         env_file.write(f"{env_var_name}={api_key}\n")
 

@@ -29,6 +29,7 @@ from msdl.utils import (
     get_model_formats,
     modify_docker_compose,
     save_api_key_to_env,
+    validate_api_key,
 )
 
 
@@ -70,8 +71,8 @@ def copy_frontend_dockerfile():
 
 def get_user_choices():
     backend_language_choices = [
-        {"name": t("english"), "value": "en"},
         {"name": t("chinese"), "value": "cn"},
+        {"name": t("english"), "value": "en"},
     ]
 
     model_choices = [
@@ -95,19 +96,37 @@ def get_user_choices():
         choices=[{"name": format, "value": format} for format in model_formats],
     ).execute()
 
-    # 获取API key（使用隐藏输入）
+    # If the model is cloud_llm, ask for the API key
     if model == CLOUD_LLM_DOCKERFILE:
-        api_key = inquirer.secret(
-            message=t(f"{model_format.upper()}_API_KEY_PROMPT")
-        ).execute()
-        cleaned_api_key = clean_api_key(api_key)
-        save_api_key_to_env(model_format, cleaned_api_key)
+        while True:
+            api_key = inquirer.secret(
+                message=t(f"{model_format.upper()}_API_KEY_PROMPT")
+            ).execute()
+            cleaned_api_key = clean_api_key(api_key)
+
+            env_var_name = {
+                "internlm_silicon": "SILICON_API_KEY",
+                "gpt4": "OPENAI_API_KEY",
+                "qwen": "QWEN_API_KEY",
+            }.get(model_format)
+
+            if validate_api_key(cleaned_api_key, env_var_name):
+                save_api_key_to_env(model_format, cleaned_api_key)
+                break
+            else:
+                print(t("invalid_api_key_format"))
+                retry = inquirer.confirm(
+                    message=t("retry_api_key_input"), default=True
+                ).execute()
+                if not retry:
+                    print(t("api_key_input_cancelled"))
+                    sys.exit(1)
 
     return backend_language, model, model_format
 
 
 def main():
-    # 设置 msdl 启动器的显示语言（基于系统语言）
+    # Set the display language of the msdl launcher (based on the system language)
     setup_i18n(PACKAGE_DIR)
 
     signal.signal(signal.SIGINT, signal_handler)
