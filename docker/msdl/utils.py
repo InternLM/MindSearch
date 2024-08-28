@@ -1,7 +1,14 @@
 import os
 import shutil
 import sys
-from msdl.config import TEMP_DIR, PACKAGE_DIR
+
+import yaml
+from msdl.config import (
+    CLOUD_LLM_DOCKERFILE,
+    LOCAL_LLM_DOCKERFILE,
+    PACKAGE_DIR,
+    TEMP_DIR,
+)
 from msdl.translations.i18n_setup import t
 
 
@@ -25,3 +32,49 @@ def copy_templates_to_temp(template_files):
         else:
             print(t("file_not_found", file=filename))
             sys.exit(1)
+
+
+def modify_docker_compose(selected_dockerfile):
+    docker_compose_path = os.path.join(TEMP_DIR, "docker-compose.yaml")
+
+    with open(docker_compose_path, "r") as file:
+        compose_data = yaml.safe_load(file)
+
+    backend_service = compose_data["services"]["backend"]
+
+    if selected_dockerfile == CLOUD_LLM_DOCKERFILE:
+        # 移除 GPU 相关配置
+        if "deploy" in backend_service:
+            del backend_service["deploy"]
+        # 修改命令以使用云端 LLM
+        backend_service["command"] = (
+            "python -m mindsearch.app --lang ${LANG:-cn} --model_format ${MODEL_FORMAT:-internlm_silicon}"
+        )
+    elif selected_dockerfile == LOCAL_LLM_DOCKERFILE:
+        # 确保存在 GPU 配置（如果之前被移除）
+        if "deploy" not in backend_service:
+            backend_service["deploy"] = {
+                "resources": {
+                    "reservations": {
+                        "devices": [
+                            {"driver": "nvidia", "count": 1, "capabilities": ["gpu"]}
+                        ]
+                    }
+                }
+            }
+        # 修改命令以使用本地 LLM
+        backend_service["command"] = (
+            "python -m mindsearch.app --lang ${LANG:-cn} --model_format local_llm"
+        )
+    else:
+        raise ValueError(f"未知的 Dockerfile: {selected_dockerfile}")
+
+    with open(docker_compose_path, "w") as file:
+        yaml.dump(compose_data, file)
+
+    print(
+        t(
+            "docker_compose_updated",
+            mode="cloud" if selected_dockerfile == CLOUD_LLM_DOCKERFILE else "local",
+        )
+    )

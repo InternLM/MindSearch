@@ -10,4 +10,12 @@ PROJECT_ROOT = os.path.dirname(os.path.dirname(PACKAGE_DIR))
 TEMP_DIR = os.path.join(PACKAGE_DIR, "temp")
 
 # Configuration file name list
-TEMPLATE_FILES = ["backend.dockerfile", "docker-compose.yaml", "frontend.dockerfile"]
+TEMPLATE_FILES = ["docker-compose.yaml", "frontend.dockerfile"]
+
+# 后端 Dockerfile 目录
+BACKEND_DOCKERFILE_DIR = "backend"
+
+# Dockerfile 文件名
+CLOUD_LLM_DOCKERFILE = "cloud_llm.dockerfile"
+LOCAL_LLM_DOCKERFILE = "local_llm.dockerfile"
+

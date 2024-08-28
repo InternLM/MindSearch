@@ -1,8 +1,18 @@
 import signal
 import sys
-from msdl.config import PACKAGE_DIR, PROJECT_ROOT, TEMP_DIR, TEMPLATE_FILES
+import os
+from InquirerPy import inquirer
+from msdl.config import (
+    PACKAGE_DIR,
+    PROJECT_ROOT,
+    TEMP_DIR,
+    TEMPLATE_FILES,
+    CLOUD_LLM_DOCKERFILE,
+    LOCAL_LLM_DOCKERFILE,
+    BACKEND_DOCKERFILE_DIR,
+)
 from msdl.translations.i18n_setup import setup_i18n, t
-from msdl.utils import copy_templates_to_temp
+from msdl.utils import copy_templates_to_temp, modify_docker_compose
 from msdl.docker_manager import (
     check_docker_install,
     stop_and_remove_containers,
@@ -15,6 +25,32 @@ def signal_handler(signum, frame):
     print(t("termination_signal"))
     stop_and_remove_containers()
     sys.exit(0)
+
+
+def get_user_choice():
+    choices = [
+        {"name": t("cloud_model"), "value": CLOUD_LLM_DOCKERFILE},
+        {"name": t("local_model"), "value": LOCAL_LLM_DOCKERFILE},
+    ]
+    return inquirer.select(
+        message=t("model_choice"),
+        choices=choices,
+    ).execute()
+
+
+def copy_backend_dockerfile(choice):
+    source_file = os.path.join(BACKEND_DOCKERFILE_DIR, choice)
+    dest_file = "backend.dockerfile"
+    source_path = os.path.join(PACKAGE_DIR, "templates", source_file)
+    dest_path = os.path.join(TEMP_DIR, dest_file)
+
+    if not os.path.exists(source_path):
+        raise FileNotFoundError(f"找不到文件：{source_path}")
+
+    os.makedirs(os.path.dirname(dest_path), exist_ok=True)
+    with open(source_path, "r") as src, open(dest_path, "w") as dst:
+        dst.write(src.read())
+    print(t("dockerfile_copied", src=source_file, dst=dest_file))
 
 
 def main():
@@ -30,7 +66,19 @@ def main():
 
     try:
         check_docker_install()
+
+        # 获取用户选择
+        model_choice = get_user_choice()
+
+        # 复制选定的后端 Dockerfile
+        copy_backend_dockerfile(model_choice)
+
+        # 复制其他模板文件
         copy_templates_to_temp(TEMPLATE_FILES)
+
+        # 修改 docker-compose.yaml
+        modify_docker_compose(model_choice)
+
         update_docker_compose_paths()
         stop_and_remove_containers()
         run_docker_compose()
