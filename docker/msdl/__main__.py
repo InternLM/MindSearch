@@ -10,6 +10,8 @@ from msdl.config import (
     CLOUD_LLM_DOCKERFILE,
     LOCAL_LLM_DOCKERFILE,
     BACKEND_DOCKERFILE_DIR,
+    FRONTEND_DOCKERFILE_DIR,
+    REACT_DOCKERFILE,
 )
 from msdl.translations.i18n_setup import setup_i18n, t
 from msdl.utils import copy_templates_to_temp, modify_docker_compose
@@ -53,6 +55,22 @@ def copy_backend_dockerfile(choice):
     print(t("dockerfile_copied", src=source_file, dst=dest_file))
 
 
+# 新增复制前端 Dockerfile 的方法
+def copy_frontend_dockerfile():
+    source_file = os.path.join(FRONTEND_DOCKERFILE_DIR, REACT_DOCKERFILE)
+    dest_file = "frontend.dockerfile"
+    source_path = os.path.join(PACKAGE_DIR, "templates", source_file)
+    dest_path = os.path.join(TEMP_DIR, dest_file)
+
+    if not os.path.exists(source_path):
+        raise FileNotFoundError(f"找不到文件：{source_path}")
+
+    os.makedirs(os.path.dirname(dest_path), exist_ok=True)
+    with open(source_path, "r") as src, open(dest_path, "w") as dst:
+        dst.write(src.read())
+    print(t("dockerfile_copied", src=source_file, dst=dest_file))
+
+
 def main():
     setup_i18n(PACKAGE_DIR)
 
@@ -72,6 +90,9 @@ def main():
 
         # 复制选定的后端 Dockerfile
         copy_backend_dockerfile(model_choice)
+
+        # 复制前端 Dockerfile
+        copy_frontend_dockerfile()
 
         # 复制其他模板文件
         copy_templates_to_temp(TEMPLATE_FILES)
