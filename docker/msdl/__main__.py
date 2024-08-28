@@ -1,3 +1,5 @@
+# msdl/__main__.py
+
 import signal
 import sys
 import os

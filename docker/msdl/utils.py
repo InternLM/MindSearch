@@ -1,3 +1,5 @@
+# msdl/utils.py
+
 import os
 import shutil
 import sys
@@ -43,15 +45,15 @@ def modify_docker_compose(selected_dockerfile):
     backend_service = compose_data["services"]["backend"]
 
     if selected_dockerfile == CLOUD_LLM_DOCKERFILE:
-        # 移除 GPU 相关配置
+        # Remove GPU configuration if it exists
         if "deploy" in backend_service:
             del backend_service["deploy"]
-        # 修改命令以使用云端 LLM
+        # Modify command to use cloud LLM
         backend_service["command"] = (
             "python -m mindsearch.app --lang ${LANG:-cn} --model_format ${MODEL_FORMAT:-internlm_silicon}"
         )
     elif selected_dockerfile == LOCAL_LLM_DOCKERFILE:
-        # 确保存在 GPU 配置（如果之前被移除）
+        # Add GPU configuration if it does not exist
         if "deploy" not in backend_service:
             backend_service["deploy"] = {
                 "resources": {
@@ -62,7 +64,7 @@ def modify_docker_compose(selected_dockerfile):
                     }
                 }
             }
-        # 修改命令以使用本地 LLM
+        # Modify command to use local LLM
         backend_service["command"] = (
             "python -m mindsearch.app --lang ${LANG:-cn} --model_format ${MODEL_FORMAT:-internlm_server}"
         )
