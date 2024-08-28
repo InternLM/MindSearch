@@ -47,7 +47,7 @@ def copy_backend_dockerfile(choice):
     dest_path = os.path.join(TEMP_DIR, dest_file)
 
     if not os.path.exists(source_path):
-        raise FileNotFoundError(f"找不到文件：{source_path}")
+        raise FileNotFoundError(t("file_not_found", file=source_file))
 
     os.makedirs(os.path.dirname(dest_path), exist_ok=True)
     with open(source_path, "r") as src, open(dest_path, "w") as dst:
@@ -55,7 +55,6 @@ def copy_backend_dockerfile(choice):
     print(t("dockerfile_copied", src=source_file, dst=dest_file))
 
 
-# 新增复制前端 Dockerfile 的方法
 def copy_frontend_dockerfile():
     source_file = os.path.join(FRONTEND_DOCKERFILE_DIR, REACT_DOCKERFILE)
     dest_file = "frontend.dockerfile"
@@ -63,7 +62,7 @@ def copy_frontend_dockerfile():
     dest_path = os.path.join(TEMP_DIR, dest_file)
 
     if not os.path.exists(source_path):
-        raise FileNotFoundError(f"找不到文件：{source_path}")
+        raise FileNotFoundError(t("file_not_found", file=source_file))
 
     os.makedirs(os.path.dirname(dest_path), exist_ok=True)
     with open(source_path, "r") as src, open(dest_path, "w") as dst:
@@ -85,19 +84,19 @@ def main():
     try:
         check_docker_install()
 
-        # 获取用户选择
+        # Get user choice
         model_choice = get_user_choice()
 
-        # 复制选定的后端 Dockerfile
+        # Copy backend Dockerfile to temp
         copy_backend_dockerfile(model_choice)
 
-        # 复制前端 Dockerfile
+        # Copy frontend Dockerfile to temp
         copy_frontend_dockerfile()
 
-        # 复制其他模板文件
+        # Copy templates to temp
         copy_templates_to_temp(TEMPLATE_FILES)
 
-        # 修改 docker-compose.yaml
+        # Modify docker-compose.yaml
         modify_docker_compose(model_choice)
 
         update_docker_compose_paths()
