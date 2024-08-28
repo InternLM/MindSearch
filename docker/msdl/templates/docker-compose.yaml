@@ -2,8 +2,8 @@ services:
   backend:
     container_name: mindsearch-backend
     build:
-      context: ..
-      dockerfile: docker/backend.dockerfile
+      context: .
+      dockerfile: backend.dockerfile
     image: mindsearch/backend:latest
     restart: unless-stopped
     # Uncomment the following line to force using local build
@@ -49,8 +49,8 @@ services:
   frontend:
     container_name: mindsearch-frontend
     build:
-      context: ..
-      dockerfile: docker/frontend.dockerfile
+      context: .
+      dockerfile: frontend.dockerfile
     image: mindsearch/frontend:latest
     restart: unless-stopped
     # Uncomment the following line to force using local build
