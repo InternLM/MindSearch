@@ -64,7 +64,7 @@ def modify_docker_compose(selected_dockerfile):
             }
         # 修改命令以使用本地 LLM
         backend_service["command"] = (
-            "python -m mindsearch.app --lang ${LANG:-cn} --model_format local_llm"
+            "python -m mindsearch.app --lang ${LANG:-cn} --model_format ${MODEL_FORMAT:-internlm_server}"
         )
     else:
         raise ValueError(f"未知的 Dockerfile: {selected_dockerfile}")
