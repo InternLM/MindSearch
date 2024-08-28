@@ -31,17 +31,6 @@ def signal_handler(signum, frame):
     sys.exit(0)
 
 
-def get_user_choice():
-    choices = [
-        {"name": t("cloud_model"), "value": CLOUD_LLM_DOCKERFILE},
-        {"name": t("local_model"), "value": LOCAL_LLM_DOCKERFILE},
-    ]
-    return inquirer.select(
-        message=t("model_choice"),
-        choices=choices,
-    ).execute()
-
-
 def copy_backend_dockerfile(choice):
     source_file = os.path.join(BACKEND_DOCKERFILE_DIR, choice)
     dest_file = "backend.dockerfile"
@@ -72,7 +61,32 @@ def copy_frontend_dockerfile():
     print(t("dockerfile_copied", src=source_file, dst=dest_file))
 
 
+def get_user_choices():
+    backend_language_choices = [
+        {"name": t("english"), "value": "en"},
+        {"name": t("chinese"), "value": "cn"},
+    ]
+
+    model_choices = [
+        {"name": t("cloud_model"), "value": CLOUD_LLM_DOCKERFILE},
+        {"name": t("local_model"), "value": LOCAL_LLM_DOCKERFILE},
+    ]
+
+    backend_language = inquirer.select(
+        message=t("backend_language_choice"),
+        choices=backend_language_choices,
+    ).execute()
+
+    model = inquirer.select(
+        message=t("model_choice"),
+        choices=model_choices,
+    ).execute()
+
+    return backend_language, model
+
+
 def main():
+    # 设置 msdl 启动器的显示语言（基于系统语言）
     setup_i18n(PACKAGE_DIR)
 
     signal.signal(signal.SIGINT, signal_handler)
@@ -86,20 +100,20 @@ def main():
     try:
         check_docker_install()
 
-        # Get user choice
-        model_choice = get_user_choice()
+        # Get user choices
+        backend_language, model_choice = get_user_choices()
 
-        # Copy backend Dockerfile to temp
+        # Copy backend Dockerfile to temp directory
         copy_backend_dockerfile(model_choice)
 
-        # Copy frontend Dockerfile to temp
+        # Copy frontend Dockerfile to temp directory
         copy_frontend_dockerfile()
 
-        # Copy templates to temp
+        # Copy templates to temp directory
         copy_templates_to_temp(TEMPLATE_FILES)
 
         # Modify docker-compose.yaml
-        modify_docker_compose(model_choice)
+        modify_docker_compose(model_choice, backend_language)
 
         update_docker_compose_paths()
         stop_and_remove_containers()
