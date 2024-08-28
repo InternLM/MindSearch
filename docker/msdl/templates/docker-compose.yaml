@@ -14,6 +14,7 @@ services:
       - PYTHONUNBUFFERED=1
       - OPENAI_API_KEY=${OPENAI_API_KEY:-}
       - OPENAI_API_BASE=${OPENAI_API_BASE:-https://api.openai.com/v1}
+      - QWEN_API_KEY=${QWEN_API_KEY:-}
       - SILICON_API_KEY=${SILICON_API_KEY:-}
     command: python -m mindsearch.app --lang ${LANG:-cn} --model_format ${MODEL_FORMAT:-internlm_server}
     volumes:

@@ -23,6 +23,7 @@ from msdl.docker_manager import (
     run_docker_compose,
     update_docker_compose_paths,
 )
+from msdl.utils import get_model_formats
 
 
 def signal_handler(signum, frame):
@@ -82,7 +83,13 @@ def get_user_choices():
         choices=model_choices,
     ).execute()
 
-    return backend_language, model
+    model_formats = get_model_formats(model)
+    model_format = inquirer.select(
+        message=t("model_format_choice"),
+        choices=[{"name": format, "value": format} for format in model_formats],
+    ).execute()
+
+    return backend_language, model, model_format
 
 
 def main():
@@ -101,7 +108,7 @@ def main():
         check_docker_install()
 
         # Get user choices
-        backend_language, model_choice = get_user_choices()
+        backend_language, model_choice, model_format = get_user_choices()
 
         # Copy backend Dockerfile to temp directory
         copy_backend_dockerfile(model_choice)
@@ -113,7 +120,7 @@ def main():
         copy_templates_to_temp(TEMPLATE_FILES)
 
         # Modify docker-compose.yaml
-        modify_docker_compose(model_choice, backend_language)
+        modify_docker_compose(model_choice, backend_language, model_format)
 
         update_docker_compose_paths()
         stop_and_remove_containers()

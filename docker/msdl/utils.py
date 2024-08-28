@@ -36,7 +36,7 @@ def copy_templates_to_temp(template_files):
             sys.exit(1)
 
 
-def modify_docker_compose(selected_dockerfile, backend_language):
+def modify_docker_compose(selected_dockerfile, backend_language, model_format):
     docker_compose_path = os.path.join(TEMP_DIR, "docker-compose.yaml")
 
     with open(docker_compose_path, "r") as file:
@@ -48,7 +48,7 @@ def modify_docker_compose(selected_dockerfile, backend_language):
         if "deploy" in backend_service:
             del backend_service["deploy"]
         backend_service["command"] = (
-            f"python -m mindsearch.app --lang {backend_language} --model_format ${{MODEL_FORMAT:-internlm_silicon}}"
+            f"python -m mindsearch.app --lang {backend_language} --model_format {model_format}"
         )
     elif selected_dockerfile == LOCAL_LLM_DOCKERFILE:
         if "deploy" not in backend_service:
@@ -62,7 +62,7 @@ def modify_docker_compose(selected_dockerfile, backend_language):
                 }
             }
         backend_service["command"] = (
-            f"python -m mindsearch.app --lang {backend_language} --model_format ${{MODEL_FORMAT:-internlm_server}}"
+            f"python -m mindsearch.app --lang {backend_language} --model_format {model_format}"
         )
     else:
         raise ValueError(t("unknown_dockerfile", dockerfile=selected_dockerfile))
@@ -78,5 +78,15 @@ def modify_docker_compose(selected_dockerfile, backend_language):
                 if selected_dockerfile == CLOUD_LLM_DOCKERFILE
                 else t("local")
             ),
+            format=model_format,
         )
     )
+
+
+def get_model_formats(model_type):
+    if model_type == CLOUD_LLM_DOCKERFILE:
+        return ["internlm_silicon", "qwen", "gpt4"]
+    elif model_type == LOCAL_LLM_DOCKERFILE:
+        return ["internlm_server", "internlm_client", "internlm_hf"]
+    else:
+        raise ValueError(t("unknown_model_type", model_type=model_type))

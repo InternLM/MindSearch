@@ -1,4 +1,4 @@
-# config.py
+# msdl/config.py
 
 import os
 
