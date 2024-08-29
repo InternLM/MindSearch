@@ -18,6 +18,7 @@ en:
   DOCKER_INSTALLED: "Docker and Docker Compose installed correctly"
   DOCKER_INSTALL_ERROR: "Error: Docker or Docker Compose may not be installed correctly: %{error}"
   DOCKER_NOT_FOUND: "Error: Docker or Docker Compose command not found. Please ensure they are correctly installed and added to the PATH."
+  DOCKER_COMPOSE_NOT_FOUND: "Error: Docker Compose command not found. Please ensure it is correctly installed and added to the PATH."
   PATHS_UPDATED: "Paths updated in docker-compose.yaml"
   COMPOSE_FILE_CONTENT: "docker-compose.yaml file content:"
   COMPOSE_FILE_NOT_FOUND: "Error: %{file} file not found"

@@ -18,6 +18,7 @@ zh_CN:
   DOCKER_INSTALLED: "Docker 和 Docker Compose 安装正确"
   DOCKER_INSTALL_ERROR: "错误：Docker 或 Docker Compose 可能没有正确安装：%{error}"
   DOCKER_NOT_FOUND: "错误：Docker 或 Docker Compose 命令未找到。请确保它们已正确安装并添加到PATH中。"
+  DOCKER_COMPOSE_NOT_FOUND: "错误：Docker Compose 命令未找到。请确保它已正确安装并添加到PATH中。"
   PATHS_UPDATED: "已更新 docker-compose.yaml 中的路径"
   COMPOSE_FILE_CONTENT: "docker-compose.yaml 文件内容："
   COMPOSE_FILE_NOT_FOUND: "错误：%{file} 文件不存在"
