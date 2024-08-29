@@ -5,6 +5,8 @@ import re
 import shutil
 import sys
 import yaml
+from functools import lru_cache
+from pathlib import Path
 from msdl.config import (
     CLOUD_LLM_DOCKERFILE,
     LOCAL_LLM_DOCKERFILE,
@@ -15,24 +17,27 @@ from msdl.config import (
 from msdl.i18n import t
 
 
+@lru_cache(maxsize=None)
 def get_env_variable(var_name, default=None):
-    if os.path.exists(ENV_FILE_PATH):
-        with open(ENV_FILE_PATH, "r") as env_file:
+    if ENV_FILE_PATH.exists():
+        with ENV_FILE_PATH.open("r") as env_file:
             for line in env_file:
                 if line.startswith(f"{var_name}="):
                     return line.strip().split("=", 1)[1]
     return os.getenv(var_name, default)
 
 
+@lru_cache(maxsize=None)
 def get_existing_api_key(env_var_name):
     env_vars = read_env_file()
     return env_vars.get(env_var_name)
 
 
+@lru_cache(maxsize=None)
 def read_env_file():
     env_vars = {}
-    if os.path.exists(ENV_FILE_PATH):
-        with open(ENV_FILE_PATH, "r") as env_file:
+    if ENV_FILE_PATH.exists():
+        with ENV_FILE_PATH.open("r") as env_file:
             for line in env_file:
                 if "=" in line and not line.strip().startswith("#"):
                     key, value = line.strip().split("=", 1)
@@ -41,13 +46,12 @@ def read_env_file():
 
 
 def clean_api_key(api_key):
-
     cleaned_key = api_key.strip()
-
     cleaned_key = re.sub(r"\s+", "", cleaned_key)
     return cleaned_key
 
 
+@lru_cache(maxsize=None)
 def validate_api_key(api_key, key_type, t):
     basic_pattern = r"^sk-[A-Za-z0-9]+$"
 
@@ -65,20 +69,21 @@ def validate_api_key(api_key, key_type, t):
 
 
 def ensure_directory(path):
-    if not os.path.exists(path):
-        os.makedirs(path)
+    path = Path(path)
+    if not path.exists():
+        path.mkdir(parents=True, exist_ok=True)
         print(t("DIR_CREATED", dir=path))
 
 
 def copy_templates_to_temp(template_files):
-    template_dir = os.path.join(PACKAGE_DIR, "templates")
+    template_dir = PACKAGE_DIR / "templates"
 
     ensure_directory(TEMP_DIR)
 
     for filename in template_files:
-        src = os.path.join(template_dir, filename)
-        dst = os.path.join(TEMP_DIR, filename)
-        if os.path.exists(src):
+        src = template_dir / filename
+        dst = TEMP_DIR / filename
+        if src.exists():
             shutil.copy2(src, dst)
             print(t("FILE_COPIED", file=filename))
         else:
@@ -99,10 +104,10 @@ def save_api_key_to_env(model_format, api_key, t):
     if not validate_api_key(api_key, env_var_name, t):
         raise ValueError(t("INVALID_API_KEY", KEY_TYPE=env_var_name))
 
-    env_vars = read_env_file(ENV_FILE_PATH)
+    env_vars = read_env_file()
     env_vars[env_var_name] = api_key
 
-    with open(ENV_FILE_PATH, "w") as env_file:
+    with ENV_FILE_PATH.open("w") as env_file:
         for key, value in env_vars.items():
             env_file.write(f"{key}={value}\n")
 
@@ -110,9 +115,9 @@ def save_api_key_to_env(model_format, api_key, t):
 
 
 def modify_docker_compose(selected_dockerfile, backend_language, model_format):
-    docker_compose_path = os.path.join(TEMP_DIR, "docker-compose.yaml")
+    docker_compose_path = TEMP_DIR / "docker-compose.yaml"
 
-    with open(docker_compose_path, "r") as file:
+    with docker_compose_path.open("r") as file:
         compose_data = yaml.safe_load(file)
 
     backend_service = compose_data["services"]["backend"]
@@ -122,12 +127,11 @@ def modify_docker_compose(selected_dockerfile, backend_language, model_format):
     elif ".env" not in backend_service["env_file"]:
         backend_service["env_file"].append(".env")
 
+    command = f"python -m mindsearch.app --lang {backend_language} --model_format {model_format}"
     if selected_dockerfile == CLOUD_LLM_DOCKERFILE:
         if "deploy" in backend_service:
             del backend_service["deploy"]
-        backend_service["command"] = (
-            f"python -m mindsearch.app --lang {backend_language} --model_format {model_format}"
-        )
+        backend_service["command"] = command
     elif selected_dockerfile == LOCAL_LLM_DOCKERFILE:
         if "deploy" not in backend_service:
             backend_service["deploy"] = {
@@ -139,13 +143,11 @@ def modify_docker_compose(selected_dockerfile, backend_language, model_format):
                     }
                 }
             }
-        backend_service["command"] = (
-            f"python -m mindsearch.app --lang {backend_language} --model_format {model_format}"
-        )
+        backend_service["command"] = command
     else:
         raise ValueError(t("UNKNOWN_DOCKERFILE", dockerfile=selected_dockerfile))
 
-    with open(docker_compose_path, "w") as file:
+    with docker_compose_path.open("w") as file:
         yaml.dump(compose_data, file)
 
     print(
