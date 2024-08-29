@@ -3,13 +3,12 @@
 import os
 import i18n
 import locale
-from msdl.config import TEMP_DIR, TRANSLATIONS_DIR
+from msdl.config import TRANSLATIONS_DIR, ENV_FILE_PATH
 
 
 def get_env_variable(var_name, default=None):
-    env_file_path = os.path.join(TEMP_DIR, ".env")
-    if os.path.exists(env_file_path):
-        with open(env_file_path, "r") as env_file:
+    if os.path.exists(ENV_FILE_PATH):
+        with open(ENV_FILE_PATH, "r") as env_file:
             for line in env_file:
                 if line.startswith(f"{var_name}="):
                     return line.strip().split("=", 1)[1]

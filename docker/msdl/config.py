@@ -1,15 +1,15 @@
 # msdl/config.py
 
-import os
+from pathlib import Path
 
 # Get the directory where the script is located
-PACKAGE_DIR = os.path.dirname(os.path.abspath(__file__))
+PACKAGE_DIR = Path(__file__).resolve().parent
 
 # Get the root directory of the MindSearch project
-PROJECT_ROOT = os.path.dirname(os.path.dirname(PACKAGE_DIR))
+PROJECT_ROOT = PACKAGE_DIR.parent.parent
 
 # Get the temp directory path, which is actually the working directory for executing the docker compose up command
-TEMP_DIR = os.path.join(PACKAGE_DIR, "temp")
+TEMP_DIR = PACKAGE_DIR / "temp"
 
 # Configuration file name list
 TEMPLATE_FILES = ["docker-compose.yaml"]
@@ -28,4 +28,7 @@ FRONTEND_DOCKERFILE_DIR = "frontend"
 REACT_DOCKERFILE = "react.dockerfile"
 
 # i18n translations directory
-TRANSLATIONS_DIR = os.path.join(PACKAGE_DIR, "translations")
+TRANSLATIONS_DIR = PACKAGE_DIR / "translations"
+
+# Get the path of the .env file
+ENV_FILE_PATH = TEMP_DIR / ".env"

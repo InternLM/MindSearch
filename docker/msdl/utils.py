@@ -10,29 +10,29 @@ from msdl.config import (
     LOCAL_LLM_DOCKERFILE,
     PACKAGE_DIR,
     TEMP_DIR,
+    ENV_FILE_PATH,
 )
 from msdl.i18n import t
 
 
 def get_env_variable(var_name, default=None):
-    env_file_path = os.path.join(TEMP_DIR, ".env")
-    if os.path.exists(env_file_path):
-        with open(env_file_path, "r") as env_file:
+    if os.path.exists(ENV_FILE_PATH):
+        with open(ENV_FILE_PATH, "r") as env_file:
             for line in env_file:
                 if line.startswith(f"{var_name}="):
                     return line.strip().split("=", 1)[1]
     return os.getenv(var_name, default)
 
 
-def get_existing_api_key(env_file_path, env_var_name):
-    env_vars = read_env_file(env_file_path)
+def get_existing_api_key(env_var_name):
+    env_vars = read_env_file()
     return env_vars.get(env_var_name)
 
 
-def read_env_file(env_file_path):
+def read_env_file():
     env_vars = {}
-    if os.path.exists(env_file_path):
-        with open(env_file_path, "r") as env_file:
+    if os.path.exists(ENV_FILE_PATH):
+        with open(ENV_FILE_PATH, "r") as env_file:
             for line in env_file:
                 if "=" in line and not line.strip().startswith("#"):
                     key, value = line.strip().split("=", 1)
@@ -87,8 +87,6 @@ def copy_templates_to_temp(template_files):
 
 
 def save_api_key_to_env(model_format, api_key, t):
-    env_file_path = os.path.join(TEMP_DIR, ".env")
-
     env_var_name = {
         "internlm_silicon": "SILICON_API_KEY",
         "gpt4": "OPENAI_API_KEY",
@@ -101,10 +99,10 @@ def save_api_key_to_env(model_format, api_key, t):
     if not validate_api_key(api_key, env_var_name, t):
         raise ValueError(t("INVALID_API_KEY", KEY_TYPE=env_var_name))
 
-    env_vars = read_env_file(env_file_path)
+    env_vars = read_env_file(ENV_FILE_PATH)
     env_vars[env_var_name] = api_key
 
-    with open(env_file_path, "w") as env_file:
+    with open(ENV_FILE_PATH, "w") as env_file:
         for key, value in env_vars.items():
             env_file.write(f"{key}={value}\n")
 

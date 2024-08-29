@@ -105,8 +105,7 @@ def get_user_choices():
             "qwen": "QWEN_API_KEY",
         }.get(model_format)
 
-        env_file_path = os.path.join(TEMP_DIR, ".env")
-        existing_api_key = get_existing_api_key(env_file_path, env_var_name)
+        existing_api_key = get_existing_api_key(env_var_name)
 
         if existing_api_key:
             use_existing = inquirer.confirm(
@@ -125,7 +124,9 @@ def get_user_choices():
 
         while True:
             api_key = inquirer.secret(
-                message=t("PLEASE_INPUT_NEW_API_KEY_FROM_ZERO", ENV_VAR_NAME=env_var_name)
+                message=t(
+                    "PLEASE_INPUT_NEW_API_KEY_FROM_ZERO", ENV_VAR_NAME=env_var_name
+                )
             ).execute()
             cleaned_api_key = clean_api_key(api_key)
 
