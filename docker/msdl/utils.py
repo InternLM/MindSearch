@@ -4,9 +4,7 @@ import os
 import re
 import shutil
 import sys
-
 import yaml
-from dotenv import load_dotenv
 from msdl.config import (
     CLOUD_LLM_DOCKERFILE,
     LOCAL_LLM_DOCKERFILE,
@@ -14,6 +12,32 @@ from msdl.config import (
     TEMP_DIR,
 )
 from msdl.translations.i18n_setup import t
+
+
+def get_env_variable(var_name, default=None):
+    env_file_path = os.path.join(TEMP_DIR, ".env")
+    if os.path.exists(env_file_path):
+        with open(env_file_path, "r") as env_file:
+            for line in env_file:
+                if line.startswith(f"{var_name}="):
+                    return line.strip().split("=", 1)[1]
+    return os.getenv(var_name, default)
+
+
+def get_existing_api_key(env_file_path, env_var_name):
+    env_vars = read_env_file(env_file_path)
+    return env_vars.get(env_var_name)
+
+
+def read_env_file(env_file_path):
+    env_vars = {}
+    if os.path.exists(env_file_path):
+        with open(env_file_path, "r") as env_file:
+            for line in env_file:
+                if "=" in line and not line.strip().startswith("#"):
+                    key, value = line.strip().split("=", 1)
+                    env_vars[key] = value.strip('"').strip("'")
+    return env_vars
 
 
 def clean_api_key(api_key):
@@ -24,20 +48,17 @@ def clean_api_key(api_key):
     return cleaned_key
 
 
-def validate_api_key(api_key, key_type):
-
+def validate_api_key(api_key, key_type, t):
     basic_pattern = r"^sk-[A-Za-z0-9]+$"
 
-    # Different API key types have different validation rules
     validation_rules = {
         "SILICON_API_KEY": basic_pattern,
         "OPENAI_API_KEY": basic_pattern,
         "QWEN_API_KEY": basic_pattern,
-        # You can add more API key types here
     }
 
     if key_type not in validation_rules:
-        raise ValueError(t("unknown_api_key_type", key_type=key_type))
+        raise ValueError(t("UNKNOWN_API_KEY_TYPE", KEY_TYPE=key_type))
 
     pattern = validation_rules[key_type]
     return re.match(pattern, api_key) is not None
@@ -65,36 +86,29 @@ def copy_templates_to_temp(template_files):
             sys.exit(1)
 
 
-def save_api_key_to_env(model_format, api_key):
+def save_api_key_to_env(model_format, api_key, t):
     env_file_path = os.path.join(TEMP_DIR, ".env")
 
-    if model_format == "internlm_silicon":
-        env_var_name = "SILICON_API_KEY"
-    elif model_format == "gpt4":
-        env_var_name = "OPENAI_API_KEY"
-    elif model_format == "qwen":
-        env_var_name = "QWEN_API_KEY"
-    else:
-        raise ValueError(t("unknown_model_format", model_format=model_format))
+    env_var_name = {
+        "internlm_silicon": "SILICON_API_KEY",
+        "gpt4": "OPENAI_API_KEY",
+        "qwen": "QWEN_API_KEY",
+    }.get(model_format)
 
-    if not validate_api_key(api_key, env_var_name):
-        raise ValueError(t("invalid_api_key", key_type=env_var_name))
+    if not env_var_name:
+        raise ValueError(t("UNKNOWN_MODEL_FORMAT", MODEL_FORMAT=model_format))
 
-    env_vars = {}
-    if os.path.exists(env_file_path):
-        with open(env_file_path, "r") as env_file:
-            for line in env_file:
-                if "=" in line:
-                    key, value = line.strip().split("=", 1)
-                    env_vars[key] = value
+    if not validate_api_key(api_key, env_var_name, t):
+        raise ValueError(t("INVALID_API_KEY", KEY_TYPE=env_var_name))
 
+    env_vars = read_env_file(env_file_path)
     env_vars[env_var_name] = api_key
 
     with open(env_file_path, "w") as env_file:
         for key, value in env_vars.items():
             env_file.write(f"{key}={value}\n")
 
-    print(t("api_key_saved", model=model_format))
+    print(t("API_KEY_SAVED", MODEL=model_format))
 
 
 def modify_docker_compose(selected_dockerfile, backend_language, model_format):

@@ -25,3 +25,4 @@ zh_CN:
   termination_signal: "捕获到终止信号。正在优雅地退出..."
   keyboard_interrupt: "捕获到键盘中断。正在优雅地退出..."
   unexpected_error: "发生未预期的错误：%{error}"
+  backend_language_choice: "选择后端语言（默认为 cn）："

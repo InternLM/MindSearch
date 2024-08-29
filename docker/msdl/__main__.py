@@ -30,6 +30,7 @@ from msdl.utils import (
     modify_docker_compose,
     save_api_key_to_env,
     validate_api_key,
+    get_existing_api_key,
 )
 
 
@@ -98,28 +99,44 @@ def get_user_choices():
 
     # If the model is cloud_llm, ask for the API key
     if model == CLOUD_LLM_DOCKERFILE:
+        env_var_name = {
+            "internlm_silicon": "SILICON_API_KEY",
+            "gpt4": "OPENAI_API_KEY",
+            "qwen": "QWEN_API_KEY",
+        }.get(model_format)
+
+        env_file_path = os.path.join(TEMP_DIR, ".env")
+        existing_api_key = get_existing_api_key(env_file_path, env_var_name)
+
+        if existing_api_key:
+            use_existing = inquirer.confirm(
+                message=t("USE_EXISTING_API_KEY", MODEL=model_format.upper()),
+                default=True,
+            ).execute()
+
+            if use_existing:
+                return backend_language, model, model_format
+            else:
+                print(t("OVERWRITE_EXISTING_API_KEY", MODEL=model_format.upper()))
+        else:
+            print(t("INPUT_NEW_API_KEY", MODEL=model_format.upper()))
+
         while True:
             api_key = inquirer.secret(
-                message=t(f"{model_format.upper()}_API_KEY_PROMPT")
+                message=t("API_KEY_PROMPT", MODEL=model_format.upper())
             ).execute()
             cleaned_api_key = clean_api_key(api_key)
 
-            env_var_name = {
-                "internlm_silicon": "SILICON_API_KEY",
-                "gpt4": "OPENAI_API_KEY",
-                "qwen": "QWEN_API_KEY",
-            }.get(model_format)
-
-            if validate_api_key(cleaned_api_key, env_var_name):
-                save_api_key_to_env(model_format, cleaned_api_key)
+            if validate_api_key(cleaned_api_key, env_var_name, t):
+                save_api_key_to_env(model_format, cleaned_api_key, t)
                 break
             else:
-                print(t("invalid_api_key_format"))
+                print(t("INVALID_API_KEY_FORMAT"))
                 retry = inquirer.confirm(
-                    message=t("retry_api_key_input"), default=True
+                    message=t("RETRY_API_KEY_INPUT"), default=True
                 ).execute()
                 if not retry:
-                    print(t("api_key_input_cancelled"))
+                    print(t("API_KEY_INPUT_CANCELLED"))
                     sys.exit(1)
 
     return backend_language, model, model_format
@@ -127,15 +144,10 @@ def get_user_choices():
 
 def main():
     # Set the display language of the msdl launcher (based on the system language)
-    setup_i18n(PACKAGE_DIR)
+    setup_i18n()
 
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
-
-    print(t("package_dir", dir=PACKAGE_DIR))
-    print(t("project_root", dir=PROJECT_ROOT))
-    print(t("temp_dir", dir=TEMP_DIR))
-    print(t("docker_launcher_start"))
 
     try:
         check_docker_install()
