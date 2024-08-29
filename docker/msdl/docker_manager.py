@@ -13,12 +13,12 @@ def check_docker_install():
         subprocess.run(
             ["docker", "compose", "version"], check=True, capture_output=True
         )
-        print(t("docker_installed"))
+        print(t("DOCKER_INSTALLED"))
     except subprocess.CalledProcessError as e:
-        print(t("docker_install_error", error=str(e)))
+        print(t("DOCKER_INSTALL_ERROR", error=str(e)))
         sys.exit(1)
     except FileNotFoundError:
-        print(t("docker_not_found"))
+        print(t("DOCKER_NOT_FOUND"))
         sys.exit(1)
 
 
@@ -35,14 +35,14 @@ def stop_and_remove_containers():
             ],
             check=True,
         )
-        print(t("containers_stopped"))
+        print(t("CONTAINERS_STOPPED"))
     except subprocess.CalledProcessError as e:
-        print(t("container_stop_error", error=str(e)))
+        print(t("CONTAINER_STOP_ERROR", error=str(e)))
 
 
 def run_docker_compose():
     try:
-        print(t("building_images"))
+        print(t("BUILDING_IMAGES"))
         subprocess.run(
             [
                 "docker",
@@ -55,9 +55,9 @@ def run_docker_compose():
             ],
             check=True,
         )
-        print(t("images_built"))
+        print(t("IMAGES_BUILT"))
 
-        print(t("starting_containers"))
+        print(t("STARTING_CONTAINERS"))
         subprocess.run(
             [
                 "docker",
@@ -71,10 +71,10 @@ def run_docker_compose():
             ],
             check=True,
         )
-        print(t("containers_started"))
+        print(t("CONTAINERS_STARTED"))
     except subprocess.CalledProcessError as e:
-        print(t("docker_error", error=str(e)))
-        print(t("docker_output"))
+        print(t("DOCKER_ERROR", error=str(e)))
+        print(t("DOCKER_OUTPUT"))
         print(e.output.decode() if e.output else "No output")
         stop_and_remove_containers()
         sys.exit(1)
@@ -103,4 +103,4 @@ def update_docker_compose_paths():
     with open(docker_compose_path, "w") as file:
         yaml.dump(compose_data, file)
 
-    print(t("paths_updated"))
+    print(t("PATHS_UPDATED"))

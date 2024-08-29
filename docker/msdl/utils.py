@@ -67,7 +67,7 @@ def validate_api_key(api_key, key_type, t):
 def ensure_directory(path):
     if not os.path.exists(path):
         os.makedirs(path)
-        print(t("dir_created", dir=path))
+        print(t("DIR_CREATED", dir=path))
 
 
 def copy_templates_to_temp(template_files):
@@ -80,9 +80,9 @@ def copy_templates_to_temp(template_files):
         dst = os.path.join(TEMP_DIR, filename)
         if os.path.exists(src):
             shutil.copy2(src, dst)
-            print(t("file_copied", file=filename))
+            print(t("FILE_COPIED", file=filename))
         else:
-            print(t("file_not_found", file=filename))
+            print(t("FILE_NOT_FOUND", file=filename))
             sys.exit(1)
 
 
@@ -108,7 +108,7 @@ def save_api_key_to_env(model_format, api_key, t):
         for key, value in env_vars.items():
             env_file.write(f"{key}={value}\n")
 
-    print(t("API_KEY_SAVED", MODEL=model_format))
+    print(t("API_KEY_SAVED", ENV_VAR_NAME=env_var_name))
 
 
 def modify_docker_compose(selected_dockerfile, backend_language, model_format):
@@ -145,7 +145,7 @@ def modify_docker_compose(selected_dockerfile, backend_language, model_format):
             f"python -m mindsearch.app --lang {backend_language} --model_format {model_format}"
         )
     else:
-        raise ValueError(t("unknown_dockerfile", dockerfile=selected_dockerfile))
+        raise ValueError(t("UNKNOWN_DOCKERFILE", dockerfile=selected_dockerfile))
 
     with open(docker_compose_path, "w") as file:
         yaml.dump(compose_data, file)
@@ -154,9 +154,9 @@ def modify_docker_compose(selected_dockerfile, backend_language, model_format):
         t(
             "docker_compose_updated",
             mode=(
-                t("cloud")
+                t("CLOUD")
                 if selected_dockerfile == CLOUD_LLM_DOCKERFILE
-                else t("local")
+                else t("LOCAL")
             ),
             format=model_format,
         )
@@ -169,4 +169,4 @@ def get_model_formats(model_type):
     elif model_type == LOCAL_LLM_DOCKERFILE:
         return ["internlm_server", "internlm_client", "internlm_hf"]
     else:
-        raise ValueError(t("unknown_model_type", model_type=model_type))
+        raise ValueError(t("UNKNOWN_MODEL_TYPE", model_type=model_type))

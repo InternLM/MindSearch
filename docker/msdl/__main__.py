@@ -35,7 +35,7 @@ from msdl.utils import (
 
 
 def signal_handler(signum, frame):
-    print(t("termination_signal"))
+    print(t("TERMINATION_SIGNAL"))
     stop_and_remove_containers()
     sys.exit(0)
 
@@ -47,12 +47,12 @@ def copy_backend_dockerfile(choice):
     dest_path = os.path.join(TEMP_DIR, dest_file)
 
     if not os.path.exists(source_path):
-        raise FileNotFoundError(t("file_not_found", file=source_file))
+        raise FileNotFoundError(t("FILE_NOT_FOUND", file=source_file))
 
     os.makedirs(os.path.dirname(dest_path), exist_ok=True)
     with open(source_path, "r") as src, open(dest_path, "w") as dst:
         dst.write(src.read())
-    print(t("dockerfile_copied", src=source_file, dst=dest_file))
+    print(t("DOCKERFILE_COPIED", src=source_file, dst=dest_file))
 
 
 def copy_frontend_dockerfile():
@@ -62,38 +62,38 @@ def copy_frontend_dockerfile():
     dest_path = os.path.join(TEMP_DIR, dest_file)
 
     if not os.path.exists(source_path):
-        raise FileNotFoundError(t("file_not_found", file=source_file))
+        raise FileNotFoundError(t("FILE_NOT_FOUND", file=source_file))
 
     os.makedirs(os.path.dirname(dest_path), exist_ok=True)
     with open(source_path, "r") as src, open(dest_path, "w") as dst:
         dst.write(src.read())
-    print(t("dockerfile_copied", src=source_file, dst=dest_file))
+    print(t("DOCKERFILE_COPIED", src=source_file, dst=dest_file))
 
 
 def get_user_choices():
     backend_language_choices = [
-        {"name": t("chinese"), "value": "cn"},
-        {"name": t("english"), "value": "en"},
+        {"name": t("CHINESE"), "value": "cn"},
+        {"name": t("ENGLISH"), "value": "en"},
     ]
 
-    model_choices = [
-        {"name": t("cloud_model"), "value": CLOUD_LLM_DOCKERFILE},
-        {"name": t("local_model"), "value": LOCAL_LLM_DOCKERFILE},
+    model_deployment_type = [
+        {"name": t("CLOUD_MODEL"), "value": CLOUD_LLM_DOCKERFILE},
+        {"name": t("LOCAL_MODEL"), "value": LOCAL_LLM_DOCKERFILE},
     ]
 
     backend_language = inquirer.select(
-        message=t("backend_language_choice"),
+        message=t("BACKEND_LANGUAGE_CHOICE"),
         choices=backend_language_choices,
     ).execute()
 
     model = inquirer.select(
-        message=t("model_choice"),
-        choices=model_choices,
+        message=t("MODEL_DEPLOYMENT_TYPE"),
+        choices=model_deployment_type,
     ).execute()
 
     model_formats = get_model_formats(model)
     model_format = inquirer.select(
-        message=t("model_format_choice"),
+        message=t("MODEL_FORMAT_CHOICE"),
         choices=[{"name": format, "value": format} for format in model_formats],
     ).execute()
 
@@ -110,20 +110,22 @@ def get_user_choices():
 
         if existing_api_key:
             use_existing = inquirer.confirm(
-                message=t("USE_EXISTING_API_KEY", MODEL=model_format.upper()),
+                message=t("CONFIRM_USE_EXISTING_API_KEY", ENV_VAR_NAME=env_var_name),
                 default=True,
             ).execute()
 
             if use_existing:
                 return backend_language, model, model_format
             else:
-                print(t("OVERWRITE_EXISTING_API_KEY", MODEL=model_format.upper()))
+                print(
+                    t("CONFIRM_OVERWRITE_EXISTING_API_KEY", ENV_VAR_NAME=env_var_name)
+                )
         else:
-            print(t("INPUT_NEW_API_KEY", MODEL=model_format.upper()))
+            print(t("PLEASE_INPUT_NEW_API_KEY", ENV_VAR_NAME=env_var_name))
 
         while True:
             api_key = inquirer.secret(
-                message=t("API_KEY_PROMPT", MODEL=model_format.upper())
+                message=t("PLEASE_INPUT_NEW_API_KEY_FROM_ZERO", ENV_VAR_NAME=env_var_name)
             ).execute()
             cleaned_api_key = clean_api_key(api_key)
 
@@ -171,13 +173,13 @@ def main():
         stop_and_remove_containers()
         run_docker_compose()
 
-        print(t("docker_launcher_complete"))
+        print(t("DOCKER_LAUNCHER_COMPLETE"))
     except KeyboardInterrupt:
-        print(t("keyboard_interrupt"))
+        print(t("KEYBOARD_INTERRUPT"))
         stop_and_remove_containers()
         sys.exit(0)
     except Exception as e:
-        print(t("unexpected_error", error=str(e)))
+        print(t("UNEXPECTED_ERROR", error=str(e)))
         stop_and_remove_containers()
         sys.exit(1)
 
