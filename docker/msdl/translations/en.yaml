@@ -45,3 +45,5 @@ en:
   API_KEY_SAVED: "API key for %{ENV_VAR_NAME} saved"
   UNKNOWN_DOCKERFILE: "Unknown Dockerfile: %{dockerfile}"
   UNKNOWN_MODEL_TYPE: "Unknown model type: %{model_type}"
+  BACKEND_DOCKERFILE_COPIED: "Backend Dockerfile copied from %{source_path} to %{dest_path}"
+  FRONTEND_DOCKERFILE_COPIED: "Frontend Dockerfile copied from %{source_path} to %{dest_path}"

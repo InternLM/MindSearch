@@ -1,8 +1,7 @@
 # msdl/__main__.py
-
-import os
 import signal
 import sys
+from pathlib import Path
 
 from InquirerPy import inquirer
 from msdl.config import (
@@ -26,11 +25,11 @@ from msdl.i18n import setup_i18n, t
 from msdl.utils import (
     clean_api_key,
     copy_templates_to_temp,
+    get_existing_api_key,
     get_model_formats,
     modify_docker_compose,
     save_api_key_to_env,
     validate_api_key,
-    get_existing_api_key,
 )
 
 
@@ -41,33 +40,43 @@ def signal_handler(signum, frame):
 
 
 def copy_backend_dockerfile(choice):
-    source_file = os.path.join(BACKEND_DOCKERFILE_DIR, choice)
+    source_file = Path(BACKEND_DOCKERFILE_DIR) / choice
     dest_file = "backend.dockerfile"
-    source_path = os.path.join(PACKAGE_DIR, "templates", source_file)
-    dest_path = os.path.join(TEMP_DIR, dest_file)
+    source_path = PACKAGE_DIR / "templates" / source_file
+    dest_path = TEMP_DIR / dest_file
 
-    if not os.path.exists(source_path):
+    if not source_path.exists():
         raise FileNotFoundError(t("FILE_NOT_FOUND", file=source_file))
 
-    os.makedirs(os.path.dirname(dest_path), exist_ok=True)
-    with open(source_path, "r") as src, open(dest_path, "w") as dst:
-        dst.write(src.read())
-    print(t("DOCKERFILE_COPIED", src=source_file, dst=dest_file))
+    dest_path.parent.mkdir(parents=True, exist_ok=True)
+    dest_path.write_text(source_path.read_text())
+    print(
+        t(
+            "BACKEND_DOCKERFILE_COPIED",
+            source_path=str(source_path),
+            dest_path=str(dest_path),
+        )
+    )
 
 
 def copy_frontend_dockerfile():
-    source_file = os.path.join(FRONTEND_DOCKERFILE_DIR, REACT_DOCKERFILE)
+    source_file = Path(FRONTEND_DOCKERFILE_DIR) / REACT_DOCKERFILE
     dest_file = "frontend.dockerfile"
-    source_path = os.path.join(PACKAGE_DIR, "templates", source_file)
-    dest_path = os.path.join(TEMP_DIR, dest_file)
+    source_path = PACKAGE_DIR / "templates" / source_file
+    dest_path = TEMP_DIR / dest_file
 
-    if not os.path.exists(source_path):
+    if not source_path.exists():
         raise FileNotFoundError(t("FILE_NOT_FOUND", file=source_file))
 
-    os.makedirs(os.path.dirname(dest_path), exist_ok=True)
-    with open(source_path, "r") as src, open(dest_path, "w") as dst:
-        dst.write(src.read())
-    print(t("DOCKERFILE_COPIED", src=source_file, dst=dest_file))
+    dest_path.parent.mkdir(parents=True, exist_ok=True)
+    dest_path.write_text(source_path.read_text())
+    print(
+        t(
+            "FRONTEND_DOCKERFILE_COPIED",
+            source_path=str(source_path),
+            dest_path=str(dest_path),
+        )
+    )
 
 
 def get_user_choices():
