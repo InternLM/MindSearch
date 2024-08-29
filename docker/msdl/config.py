@@ -26,3 +26,6 @@ FRONTEND_DOCKERFILE_DIR = "frontend"
 
 # Frontend Dockerfile name
 REACT_DOCKERFILE = "react.dockerfile"
+
+# i18n translations directory
+TRANSLATIONS_DIR = os.path.join(PACKAGE_DIR, "translations")

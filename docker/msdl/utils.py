@@ -11,7 +11,7 @@ from msdl.config import (
     PACKAGE_DIR,
     TEMP_DIR,
 )
-from msdl.translations.i18n_setup import t
+from msdl.i18n import t
 
 
 def get_env_variable(var_name, default=None):

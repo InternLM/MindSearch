@@ -4,7 +4,7 @@ import subprocess
 import sys, os
 import yaml
 from msdl.config import TEMP_DIR, PROJECT_ROOT
-from msdl.translations.i18n_setup import t
+from msdl.i18n import t
 
 
 def check_docker_install():

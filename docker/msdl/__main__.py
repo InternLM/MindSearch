@@ -22,7 +22,7 @@ from msdl.docker_manager import (
     stop_and_remove_containers,
     update_docker_compose_paths,
 )
-from msdl.translations.i18n_setup import setup_i18n, t
+from msdl.i18n import setup_i18n, t
 from msdl.utils import (
     clean_api_key,
     copy_templates_to_temp,

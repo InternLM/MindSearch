@@ -3,7 +3,7 @@
 import os
 import i18n
 import locale
-from msdl.config import TEMP_DIR
+from msdl.config import TEMP_DIR, TRANSLATIONS_DIR
 
 
 def get_env_variable(var_name, default=None):
@@ -24,8 +24,7 @@ def get_system_language():
 
 
 def setup_i18n():
-    translations_dir = os.path.dirname(os.path.abspath(__file__))
-    i18n.load_path.append(translations_dir)
+    i18n.load_path.append(TRANSLATIONS_DIR)
     i18n.set("filename_format", "{locale}.{format}")
     i18n.set("file_format", "yaml")
 
