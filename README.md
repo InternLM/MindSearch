@@ -15,6 +15,13 @@ English | [简体中文](README_zh-CN.md)
 
 ## ✨ MindSearch: Mimicking Human Minds Elicits Deep AI Searcher
 
+## 🚀 New Features in This Forked Version
+
+This fork of MindSearch has introduced the following new features:
+
+- **Environment Variables Configuration**: The application now uses a `.env` file to manage environment variables, making it easier to configure and switch between different environments.
+- **Backend Usage Example**: Added `backend_example.py` to demonstrate how to interact with the backend directly. This is particularly useful for users who prefer not to use the frontend.
+
 MindSearch is an open-source AI Search Engine Framework with Perplexity.ai Pro performance. You can simply deploy it with your own perplexity.ai style search engine with either close-source LLMs (GPT, Claude) or open-source LLMs ([InternLM2.5 series](https://huggingface.co/internlm/internlm2_5-7b-chat) are specifically optimized to provide superior performance within the MindSearch framework; other open-source models have not been specifically tested). It owns following features:
 
 - 🤔 **Ask everything you want to know**: MindSearch is designed to solve any question in your life and use web knowledge.
@@ -48,7 +55,16 @@ cd MindSearch
 pip install -r requirements.txt
 ```
 
-### Step2: Setup MindSearch API
+### Step2: Setup Environment Variables
+
+Before setting up the API, you need to configure environment variables. Rename the `.env.example` file to `.env` and fill in the required values.
+
+```bash
+mv .env.example .env
+# Open .env and add your keys and model configurations
+```
+
+### Step3: Setup MindSearch API
 
 Setup FastAPI Server.
 
@@ -65,7 +81,7 @@ python -m mindsearch.app --lang en --model_format internlm_server --search_engin
   - `DuckDuckGoSearch` for search engine for DuckDuckGo.
   - `BingSearch` for Bing search engine.
 
-### Step3: Setup MindSearch Frontend
+### Step4: Setup MindSearch Frontend
 
 Providing following frontend interfaces,
 
@@ -118,6 +134,16 @@ BingBrowser(
     api_key=os.environ.get('BRAVE_API_KEY', 'YOUR BRAVE API')
 )
 ```
+
+## 🐞 Using the Backend Without Frontend
+
+For users who prefer to interact with the backend directly, use the `backend_example.py` script. This script demonstrates how to send a query to the backend and process the response.
+
+```bash
+python backend_example.py
+```
+
+Make sure you have set up the environment variables and the backend is running before executing the script.
 
 ## 🐞 Debug Locally
 
