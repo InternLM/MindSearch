@@ -1,128 +1,125 @@
-# MindSearch Docker Compose User Guide
+# MSDL (MindSearch Docker Launcher) User Guide
 
 English | [简体中文](README_zh-CN.md)
 
-## 🚀 Quick Start with Docker Compose
+## Introduction
 
-MindSearch now supports quick deployment and startup using Docker Compose. This method simplifies the environment configuration process, allowing you to easily run the entire system.
+MSDL (MindSearch Docker Launcher) is a command-line tool designed to simplify the deployment process of MindSearch. It helps users configure and launch the Docker environment for MindSearch through an interactive interface, reducing the complexity of deployment. MSDL primarily serves as a scaffold for deploying containers and does not involve optimization of MindSearch's core logic.
 
-### Prerequisites
+## Prerequisites
 
-- Docker (Docker Compose V2 is integrated into Docker)
-- NVIDIA GPU and NVIDIA Container Toolkit (required for NVIDIA GPU support)
+- Python 3.7 or higher
+- Docker (Docker Compose included; most newer Docker versions have it integrated)
+- Git (for cloning the repository)
+- Stable internet connection
+- Sufficient disk space (required space varies depending on the selected deployment option)
 
-Note: Newer versions of Docker have integrated Docker Compose V2, so you can use the `docker compose` command directly without a separate installation of docker-compose.
+## Installation Steps
 
-### Usage Instructions
-
-All commands should be executed in the `mindsearch/docker` directory.
-
-#### First-time Startup
-
-```bash
-docker compose up --build -d
-```
-
-#### Daily Use
-
-Start services:
-
-```bash
-docker compose up -d
-```
-
-View running services:
-
-```bash
-docker ps
-```
-
-Stop services:
-
-```bash
-docker compose down
-```
-
-#### Major Version Updates
-
-Rebuild images after a major update:
-
-```bash
-docker compose build --no-cache
-docker compose up -d
-```
-
-### Configuration Details
-
-1. **Environment Variables**:
-   The system automatically reads the following variables from your environment:
-
-   - `OPENAI_API_KEY`: Your OpenAI API key
-   - `OPENAI_API_BASE`: OpenAI API base URL (default: https://api.openai.com/v1)
-   - `LANG`: Language setting ('en' or 'cn')
-   - `MODEL_FORMAT`: Model format ('gpt4' or 'internlm_server')
-
-   Example setup:
-
-   Using local internlm2.5-7b-chat model:
-
+1. Clone the MindSearch repository:
    ```bash
-   export LANG=cn
-   export MODEL_FORMAT=internlm_server
-   docker compose up -d
+   git clone https://github.com/InternLM/MindSearch.git # If you have already cloned the repository, you can skip this step.
+   cd MindSearch/docker
    ```
 
-   Using OpenAI's API:
-
+2. Install MSDL:
    ```bash
-   export OPENAI_API_KEY=your_api_key_here
-   export LANG=en
-   export MODEL_FORMAT=gpt4
-   docker compose up -d
+   pip install -e .
    ```
 
-   Using SiliconFlow's cloud LLM service:
+## Usage
 
+After installation, you can run the MSDL command from any directory:
+
+```bash
+msdl
+```
+
+Follow the interactive prompts for configuration:
+- Choose the language for the Agent (Chinese or English; this only affects the language of prompts).
+- Select the model deployment type (local model or cloud model).
+- Choose the model format:
+  - Currently, only `internlm_silicon` works properly for cloud models.
+  - For local models, only `internlm_server` has passed tests and runs correctly.
+- Enter the necessary API keys (e.g., SILICON_API_KEY).
+
+MSDL will automatically perform the following actions:
+- Copy and configure the necessary Dockerfile and docker-compose.yaml files.
+- Build Docker images.
+- Launch Docker containers.
+
+## Deployment Options Comparison
+
+### Cloud Model Deployment (Recommended)
+
+**Advantages**:
+- Lightweight deployment with minimal disk usage (frontend around 510MB, backend around 839MB).
+- No need for high-performance hardware.
+- Easy to deploy and maintain.
+- You can freely use the `internlm/internlm2_5-7b-chat` model via SiliconCloud.
+- High concurrency, fast inference speed.
+
+**Instructions**:
+- Select the "Cloud Model" option.
+- Choose "internlm_silicon" as the model format.
+- Enter the SiliconCloud API Key (register at https://cloud.siliconflow.cn/ to obtain it).
+
+**Important Notes**:
+- The `internlm/internlm2_5-7b-chat` model is freely accessible on SiliconCloud.
+- MindSearch has no financial relationship with SiliconCloud; this service is recommended solely because it provides valuable resources to the open-source community.
+
+### Local Model Deployment
+
+**Features**:
+- Uses the `openmmlab/lmdeploy` image.
+- Based on the PyTorch environment.
+- Requires significant disk space (backend container 15GB+, model 15GB+, totaling 30GB+).
+- Requires a powerful GPU (12GB or more of VRAM recommended).
+
+**Instructions**:
+- Select the "Local Model" option.
+- Choose "internlm_server" as the model format.
+
+**Relevant Links**:
+- lmdeploy image: https://hub.docker.com/r/openmmlab/lmdeploy/tags
+- InternLM2.5 project: https://huggingface.co/internlm/internlm2_5-7b-chat
+
+## Notes
+
+- Currently, only the `internlm_silicon` format works properly for cloud models, and only the `internlm_server` format has passed tests for local models.
+- The language selection only affects the language of the Agent's prompts and does not change the language of the React frontend.
+- The first run might take a long time to download necessary model files and Docker images.
+- When using cloud models, ensure a stable network connection.
+
+## Troubleshooting
+
+1. Ensure the Docker service is running.
+2. Check if there is sufficient disk space.
+3. Ensure all necessary environment variables are set correctly.
+4. Check if the network connection is stable.
+5. Verify the validity of API keys (e.g., for cloud models).
+
+If problems persist, check the Issues section in the MindSearch GitHub repository or submit a new issue.
+
+## Privacy and Security
+
+MSDL is a locally executed tool and does not transmit any API keys or sensitive information. All configuration information is stored in the `msdl/temp/.env` file, used only to simplify the deployment process.
+
+## Updating MSDL
+
+To update MSDL to the latest version, follow these steps:
+
+1. Navigate to the MindSearch directory.
+2. Pull the latest code:
    ```bash
-   export SILICON_API_KEY=your_api_key_here
-   export LANG=en
-   export MODEL_FORMAT=internlm_silicon
-   docker compose up -d
+   git pull origin main
+   ```
+3. Reinstall MSDL:
+   ```bash
+   cd docker
+   pip install -e .
    ```
 
-2. **Model Cache**:
-   The container maps the `/root/.cache:/root/.cache` path to store model files.
+## Conclusion
 
-3. **GPU Support**:
-   The default configuration uses NVIDIA GPUs. For other GPU types, please refer to the comments in docker-compose.yaml.
-
-4. **Service Access**:
-   In the Docker Compose environment, the frontend container can directly access the backend service via `http://backend:8002`.
-
-5. **Backend Server Address Configuration**:
-   Currently, the method for changing the backend server address is temporary. We use a sed command in the Dockerfile to modify the vite.config.ts file to replace the server proxy address. This method is effective in the development environment but not suitable for production.
-
-### Important Notes
-
-- The first run may take some time to download necessary model files, depending on your chosen model and network conditions.
-- Ensure you have sufficient disk space to store model files and Docker images.
-- If you encounter permission issues, you may need to use sudo to run Docker commands.
-
-### Cross-Origin Access Note
-
-In the current version, we temporarily solve the cross-origin access issue by using Vite's development mode in the frontend Docker container:
-
-1. The frontend Dockerfile uses the `npm start` command to start the Vite development server.
-2. In the `vite.config.ts` file, we configure proxy settings to forward requests for the `/solve` path to the backend service.
-
-Please note:
-
-- This method is effective in the development environment but not suitable for production use.
-- We plan to implement a more robust cross-origin solution suitable for production environments in future versions.
-- If you plan to deploy this project in a production environment, you may need to consider other cross-origin handling methods, such as configuring backend CORS policies or using a reverse proxy server.
-
-### Conclusion
-
-We appreciate your understanding and patience. MindSearch is still in its early stages, and we are working hard to improve various aspects of the system. Your feedback is very important to us as it helps us continuously refine the project. If you encounter any issues or have any suggestions during use, please feel free to provide feedback.
-
-By using Docker Compose, you can quickly deploy MindSearch without worrying about complex environment configurations. This method is particularly suitable for rapid testing and development environment deployment. If you encounter any problems during deployment, please refer to our troubleshooting guide or seek community support.
+If you have any questions or suggestions, feel free to submit an issue on GitHub or contact us directly. Thank you for using MindSearch and MSDL!
