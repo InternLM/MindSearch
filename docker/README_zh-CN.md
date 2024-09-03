@@ -1,128 +1,125 @@
-# MindSearch Docker Compose 使用指南
+# MSDL (MindSearch Docker Launcher) 使用指南
 
 [English](README.md) | 简体中文
 
-## 🚀 使用 Docker Compose 快速启动
+## 简介
 
-MindSearch 支持使用 Docker Compose 进行快速部署和启动，简化了环境配置过程，让您能轻松运行整个系统。
+MSDL (MindSearch Docker Launcher) 是一个专为简化 MindSearch 部署过程而设计的命令行工具。它通过交互式界面帮助用户轻松配置和启动 MindSearch 的 Docker 环境，降低了部署的复杂性。MSDL 主要作为部署容器的脚手架，不涉及 MindSearch 核心逻辑的优化。
 
-### 前提条件
+## 环境要求
 
-- Docker（已集成 Docker Compose V2）
-- NVIDIA GPU 和 NVIDIA Container Toolkit（如需 NVIDIA GPU 支持）
+- Python 3.7 或更高版本
+- Docker (需包含 Docker Compose，新版本的 Docker 通常已集成)
+- Git (用于克隆仓库)
+- 稳定的网络连接
+- 充足的磁盘空间（根据选择的部署方案，所需空间有所不同）
 
-注意：较新版本的 Docker 已整合 Docker Compose V2，可直接使用 `docker compose` 命令。
+## 安装步骤
 
-### 使用说明
-
-所有命令都应在 `mindsearch/docker` 目录下执行。
-
-#### 首次启动
-
-```bash
-docker compose up --build -d
-```
-
-#### 日常使用
-
-启动服务：
-
-```bash
-docker compose up -d
-```
-
-查看运行中的服务：
-
-```bash
-docker ps
-```
-
-停止服务：
-
-```bash
-docker compose down
-```
-
-#### 大版本更新
-
-更新后重新构建镜像：
-
-```bash
-docker compose build --no-cache
-docker compose up -d
-```
-
-### 配置说明
-
-1. **环境变量设置**：
-   系统自动读取以下环境变量：
-
-   - `OPENAI_API_KEY`：OpenAI API 密钥
-   - `OPENAI_API_BASE`：OpenAI API 基础 URL（默认：https://api.openai.com/v1）
-   - `LANG`：语言设置（'en' 或 'cn'）
-   - `MODEL_FORMAT`：模型格式（'gpt4' 或 'internlm_server'）
-
-   设置示例：
-
-   使用本地的 internlm2.5-7b-chat 模型:
-
+1. 克隆 MindSearch 仓库:
    ```bash
-   export LANG=cn
-   export MODEL_FORMAT=internlm_server
-   docker compose up -d
+   git clone https://github.com/InternLM/MindSearch.git # 已经克隆过的，可以忽略执行此步骤
+   cd MindSearch/docker
    ```
 
-   使用 OpenAI 的 LLM 服务:
-
+2. 安装 MSDL:
    ```bash
-   export OPENAI_API_KEY=your_api_key_here
-   export LANG=cn
-   export MODEL_FORMAT=gpt4
-   docker compose up -d
+   pip install -e .
    ```
 
-   使用 SiliconFlow 云端 LLM 服务：
+## 使用方法
 
+安装完成后，您可以在任意目录下运行 MSDL 命令：
+
+```bash
+msdl
+```
+
+按照交互式提示进行配置:
+- 选择 Agent 使用的语言（中文或英文，仅影响 Agent 的提示词语言）
+- 选择模型部署类型（本地模型或云端模型）
+- 选择模型格式
+  - 云端模型目前只有 internlm_silicon 能够正常运行
+  - 本地模型目前只有 internlm_server 通过测试，能正常运行
+- 输入必要的 API 密钥（如 SILICON_API_KEY）
+
+MSDL 将自动执行以下操作:
+- 复制并配置必要的 Dockerfile 和 docker-compose.yaml 文件
+- 构建 Docker 镜像
+- 启动 Docker 容器
+
+## 部署方案比较
+
+### 云端模型部署（推荐）
+
+**优势**:
+- 轻量级部署，磁盘占用小（前端约 510MB，后端约 839MB）
+- 无需高性能硬件
+- 部署和维护简单
+- 使用 SiliconCloud 可免费调用 internlm/internlm2_5-7b-chat 模型
+- 高并发量，推理速度快
+
+**使用说明**:
+- 选择"云端模型"选项
+- 选择 "internlm_silicon" 作为模型格式
+- 输入 SiliconCloud API Key（需在 https://cloud.siliconflow.cn/ 注册获取）
+
+**重要说明**:
+- internlm/internlm2_5-7b-chat 模型在 SiliconCloud 上可以免费调用，但 API Key 仍需妥善保管好。
+- MindSearch 项目与 SiliconCloud 并无利益关系，只是使用它能更好地体验 MindSearch 的效果，感谢 SiliconCloud 为开源社区所做的贡献。
+
+### 本地模型部署
+
+**特点**:
+- 使用 openmmlab/lmdeploy 镜像
+- 基于 PyTorch 环境
+- 需要大量磁盘空间（后端容器 15GB+，模型 15GB+，总计 30GB 以上）
+- 需要强大的 GPU（建议 12GB 或以上显存）
+
+**使用说明**:
+- 选择"本地模型"选项
+- 选择 "internlm_server" 作为模型格式
+
+**相关链接**:
+- lmdeploy 镜像: https://hub.docker.com/r/openmmlab/lmdeploy/tags
+- InternLM2.5 项目: https://huggingface.co/internlm/internlm2_5-7b-chat
+
+## 注意事项
+
+- 云端模型目前只有 internlm_silicon 格式能够正常运行，本地模型只有 internlm_server 格式通过测试能正常运行。
+- 选择语言只会影响 Agent 的提示词语言，不会改变 React 前端的界面语言。
+- 首次运行可能需要较长时间来下载必要的模型文件和 Docker 镜像。
+- 使用云端模型时，请确保网络连接稳定。
+
+## 故障排除
+
+1. 确保 Docker 服务正在运行。
+2. 检查是否有足够的磁盘空间。
+3. 确保所有必要的环境变量已正确设置。
+4. 检查网络连接是否正常。
+5. 验证 API Key 是否有效（如使用云端模型）。
+
+如果问题持续，请查看 MindSearch 的 GitHub 仓库中的 Issues 部分，或提交新的 Issue。
+
+## 隐私和安全
+
+MSDL 是纯本地执行的工具，不会上报任何 API Key 或其他敏感信息。所有配置信息存储在 `msdl/temp/.env` 文件中，仅用于简化部署过程。
+
+## 更新 MSDL
+
+要更新 MSDL 到最新版本，请执行以下步骤:
+
+1. 进入 MindSearch 目录
+2. 拉取最新的代码:
    ```bash
-   export SILICON_API_KEY=your_api_key_here
-   export LANG=cn
-   export MODEL_FORMAT=internlm_silicon
-   docker compose up -d
+   git pull origin main
+   ```
+3. 重新安装 MSDL:
+   ```bash
+   cd docker
+   pip install -e .
    ```
 
-2. **模型缓存**：
-   容器映射 `/root/.cache:/root/.cache` 路径存储模型文件。
+## 结语
 
-3. **GPU 支持**：
-   默认配置使用 NVIDIA GPU。其他 GPU 类型请参考 docker-compose.yaml 中的注释。
-
-4. **服务访问**：
-   在 Docker Compose 环境中，前端容器可以通过 `http://backend:8002` 直接访问后端服务。
-
-5. **后端服务器地址配置**：
-   目前，更改后端服务器地址的方法是临时的。我们在 Dockerfile 中使用 sed 命令来修改 vite.config.ts 文件，以替换服务器代理地址。这种方法在开发环境中有效，但不适合生产环境。
-
-### 注意事项
-
-- 首次运行可能需要时间下载模型文件。
-- 确保有足够磁盘空间存储模型和 Docker 镜像。
-- 如遇权限问题，可能需要使用 sudo 运行 Docker 命令。
-
-### 跨域访问说明
-
-当前版本通过 Vite 开发模式临时解决跨域问题：
-
-1. 前端 Dockerfile 使用 `npm start` 启动 Vite 开发服务器。
-2. `vite.config.ts` 配置代理，将 `/solve` 路径请求代理到后端。
-
-注意：
-
-- 此方法适用于开发环境，不适合生产环境。
-- 未来版本将实现更适合生产环境的跨域解决方案。
-- 生产环境部署可能需要考虑其他跨域处理方法。
-
-### 结语
-
-感谢您的支持。MindSearch 正在不断改进，您的反馈对我们至关重要。如有任何问题或建议，请随时与我们联系。
-
-Docker Compose 方法简化了 MindSearch 的部署流程，特别适合快速测试和开发环境。如遇部署问题，请参考故障排除指南或寻求社区支持。
+如有任何问题或建议，欢迎在 GitHub 上提交 Issue 或直接联系我们。感谢您使用 MindSearch 和 MSDL！
