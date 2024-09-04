@@ -120,6 +120,9 @@ def modify_docker_compose(selected_dockerfile, backend_language, model_format):
     with docker_compose_path.open("r") as file:
         compose_data = yaml.safe_load(file)
 
+    # Update the name of the project
+    compose_data["name"] = "MindSearch"
+
     backend_service = compose_data["services"]["backend"]
 
     if "env_file" not in backend_service:
@@ -128,10 +131,14 @@ def modify_docker_compose(selected_dockerfile, backend_language, model_format):
         backend_service["env_file"].append(".env")
 
     command = f"python -m mindsearch.app --lang {backend_language} --model_format {model_format}"
+
     if selected_dockerfile == CLOUD_LLM_DOCKERFILE:
         if "deploy" in backend_service:
             del backend_service["deploy"]
         backend_service["command"] = command
+        # Use Cloud LLM Dockerfile: Remove volumes
+        if "volumes" in backend_service:
+            del backend_service["volumes"]
     elif selected_dockerfile == LOCAL_LLM_DOCKERFILE:
         if "deploy" not in backend_service:
             backend_service["deploy"] = {
@@ -144,6 +151,8 @@ def modify_docker_compose(selected_dockerfile, backend_language, model_format):
                 }
             }
         backend_service["command"] = command
+        # Use Local LLM Dockerfile: Add volume for cache
+        backend_service["volumes"] = ["/root/.cache:/root/.cache"]
     else:
         raise ValueError(t("UNKNOWN_DOCKERFILE", dockerfile=selected_dockerfile))
 
