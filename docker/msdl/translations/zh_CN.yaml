@@ -50,3 +50,5 @@ zh_CN:
   BACKEND_DOCKERFILE_COPIED: "后端 Dockerfile 已经从 %{source_path} 复制为 %{dest_path}"
   FRONTEND_DOCKERFILE_COPIED: "前端 Dockerfile 已经从 %{source_path} 复制为 %{dest_path}"
   TEMP_DIR_CREATED: "已在 %{dir} 创建临时目录"
+  CURRENT_COMPOSE_STOP_FAILED: "当前的容器停止失败"
+  CONTAINER_STOPPED_AND_REMOVED: "容器已停止并删除"
