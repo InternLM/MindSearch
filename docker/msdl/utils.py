@@ -120,8 +120,8 @@ def modify_docker_compose(selected_dockerfile, backend_language, model_format):
     with docker_compose_path.open("r") as file:
         compose_data = yaml.safe_load(file)
 
-    # Update the name of the project
-    compose_data["name"] = "MindSearch"
+    # Set the name of the project (Docker Compose will convert it to lowercase)
+    compose_data["name"] = "mindsearch"
 
     backend_service = compose_data["services"]["backend"]
 
