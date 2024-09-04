@@ -52,3 +52,7 @@ en:
   TEMP_DIR_CREATED: "Temporary directory created at %{dir}"
   CURRENT_COMPOSE_STOP_FAILED: "Current containers stop failed"
   CONTAINER_STOPPED_AND_REMOVED: "Container stopped and removed"
+  NETWORKS_PRUNED: "Corresponding Docker networks pruned"
+  NETWORK_PRUNE_ERROR: "Error pruning corresponding Docker networks: %{error}"
+  DOCKER_LIST_ERROR: "Error listing Docker containers: %{error}"
+  CONTAINERS_STOPPED_AND_REMOVED: "Docker containers stopped and removed"

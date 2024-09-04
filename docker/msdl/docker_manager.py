@@ -113,7 +113,7 @@ def stop_and_remove_containers():
     except subprocess.CalledProcessError as e:
         print(t("DOCKER_LIST_ERROR", error=str(e)))
 
-    print(t("CLEANUP_COMPLETED"))
+    print(t("CONTAINERS_STOPPED_AND_REMOVED"))
 
 
 def run_docker_compose():

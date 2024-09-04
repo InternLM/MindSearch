@@ -52,3 +52,7 @@ zh_CN:
   TEMP_DIR_CREATED: "已在 %{dir} 创建临时目录"
   CURRENT_COMPOSE_STOP_FAILED: "当前的容器停止失败"
   CONTAINER_STOPPED_AND_REMOVED: "容器已停止并删除"
+  NETWORKS_PRUNED: "已清理对应的Docker网络"
+  NETWORK_PRUNE_ERROR: "清理对应的Docker网络时出错：%{error}"
+  DOCKER_LIST_ERROR: "列出 Docker 容器时出错：%{error}"
+  CONTAINERS_STOPPED_AND_REMOVED: "已停止并删除 Docker 容器"
