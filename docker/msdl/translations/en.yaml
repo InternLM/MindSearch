@@ -12,6 +12,7 @@ en:
   BUILDING_IMAGES: "Starting to build Docker images..."
   IMAGES_BUILT: "Docker images built successfully"
   STARTING_CONTAINERS: "Starting Docker containers..."
+  STARTING_CONTAINERS_WITH_BUILD: "Starting to build and start Docker containers..."
   CONTAINERS_STARTED: "Docker containers started successfully"
   DOCKER_ERROR: "Error while building or starting Docker containers: %{error}"
   DOCKER_OUTPUT: "Docker command output:"
@@ -48,3 +49,4 @@ en:
   UNKNOWN_MODEL_TYPE: "Unknown model type: %{model_type}"
   BACKEND_DOCKERFILE_COPIED: "Backend Dockerfile copied from %{source_path} to %{dest_path}"
   FRONTEND_DOCKERFILE_COPIED: "Frontend Dockerfile copied from %{source_path} to %{dest_path}"
+  TEMP_DIR_CREATED: "Temporary directory created at %{dir}"

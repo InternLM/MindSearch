@@ -67,20 +67,7 @@ def stop_and_remove_containers():
 def run_docker_compose():
     docker_compose_cmd = get_docker_command()
     try:
-        print(t("BUILDING_IMAGES"))
-        subprocess.run(
-            docker_compose_cmd
-            + [
-                "-f",
-                os.path.join(TEMP_DIR, "docker-compose.yaml"),
-                "--env-file",
-                os.path.join(TEMP_DIR, ".env"),
-                "build",
-            ],
-            check=True,
-        )
-        print(t("IMAGES_BUILT"))
-        print(t("STARTING_CONTAINERS"))
+        print(t("STARTING_CONTAINERS_WITH_BUILD"))
         subprocess.run(
             docker_compose_cmd
             + [
@@ -90,6 +77,7 @@ def run_docker_compose():
                 os.path.join(TEMP_DIR, ".env"),
                 "up",
                 "-d",
+                "--build",
             ],
             check=True,
         )

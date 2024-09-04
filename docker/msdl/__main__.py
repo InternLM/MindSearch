@@ -162,6 +162,11 @@ def main():
     signal.signal(signal.SIGTERM, signal_handler)
 
     try:
+        # Check if TEMP_DIR exists, if not, create it
+        if not TEMP_DIR.exists():
+            TEMP_DIR.mkdir(parents=True, exist_ok=True)
+            print(t("TEMP_DIR_CREATED", dir=str(TEMP_DIR)))
+
         check_docker_install()
 
         # Get user choices
