@@ -46,19 +46,21 @@ def init_agent(
 
     date = datetime.now().strftime("The current date is %Y-%m-%d.")
     plugins = [
-        dict(
-            type=AsyncWebBrowser if use_async else WebBrowser,
-            searcher_type=search_engine,
-            topk=6,
-            secret_id=os.getenv("TENCENT_SEARCH_SECRET_ID"),
-            secret_key=os.getenv("TENCENT_SEARCH_SECRET_KEY"),
-        )
-        if search_engine == "TencentSearch"
-        else dict(
-            type=AsyncWebBrowser if use_async else WebBrowser,
-            searcher_type=search_engine,
-            topk=6,
-            api_key=os.getenv("WEB_SEARCH_API_KEY"),
+        (
+            dict(
+                type=AsyncWebBrowser if use_async else WebBrowser,
+                searcher_type=search_engine,
+                topk=6,
+                secret_id=os.getenv("TENCENT_SEARCH_SECRET_ID"),
+                secret_key=os.getenv("TENCENT_SEARCH_SECRET_KEY"),
+            )
+            if search_engine == "TencentSearch"
+            else dict(
+                type=AsyncWebBrowser if use_async else WebBrowser,
+                searcher_type=search_engine,
+                topk=6,
+                api_key=os.getenv("WEB_SEARCH_API_KEY"),
+            )
         )
     ]
     agent = (AsyncMindSearchAgent if use_async else MindSearchAgent)(
