@@ -10,6 +10,7 @@ setup(
         "pyyaml>=6.0",
         "python-i18n>=0.3.9",
         "inquirerpy>=0.3.4",
+        "python-dotenv>=0.19.1",
     ],
     entry_points={
         "console_scripts": [
