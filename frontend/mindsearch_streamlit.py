@@ -38,10 +38,9 @@ def draw_graph(net):
     return path
 
 
-def streaming(raw_response):
-    for chunk in raw_response.iter_lines(chunk_size=8192,
-                                         decode_unicode=False,
-                                         delimiter=b'\n'):
+def streaming(raw_response, batch_size=30):
+    buffer = []
+    for chunk in raw_response.iter_lines(chunk_size=12192, decode_unicode=False, delimiter=b'\n'):
         if chunk:
             decoded = chunk.decode('utf-8')
             if decoded == '\r':
@@ -51,7 +50,12 @@ def streaming(raw_response):
             elif decoded.startswith(': ping - '):
                 continue
             response = json.loads(decoded)
-            yield (response['response'], response['current_node'])
+            buffer.append((response['response'], response['current_node']))
+            if len(buffer) >= batch_size:
+                yield buffer
+                buffer = []
+    if buffer:
+        yield buffer
 
 
 # Initialize Streamlit session state
@@ -91,146 +95,147 @@ def update_chat(query):
                                      timeout=20,
                                      stream=True)
 
-        for resp in streaming(raw_response):
-            agent_return, node_name = resp
-            if node_name and node_name in ['root', 'response']:
-                continue
-            nodes = agent_return['nodes']
-            adjacency_list = agent_return['adj']
-            response = agent_return['response']
-            history = agent_return['inner_steps']
-            if nodes:
-                net = create_network_graph(nodes, adjacency_list)
-                graph_html_path = draw_graph(net)
-                with open(graph_html_path, encoding='utf-8') as f:
-                    graph_html = f.read()
-            else:
-                graph_html = None
-            if 'graph_placeholder' not in st.session_state:
-                st.session_state['graph_placeholder'] = st.empty()
-            if 'expander_placeholder' not in st.session_state:
-                st.session_state['expander_placeholder'] = st.empty()
-            if graph_html:
-                with st.session_state['expander_placeholder'].expander(
-                        'Show Graph', expanded=False):
-                    st.session_state['graph_placeholder']._html(graph_html,
-                                                                height=500)
-            if 'container_placeholder' not in st.session_state:
-                st.session_state['container_placeholder'] = st.empty()
-            with st.session_state['container_placeholder'].container():
-                if 'columns_placeholder' not in st.session_state:
-                    st.session_state['columns_placeholder'] = st.empty()
-                col1, col2 = st.session_state['columns_placeholder'].columns(
-                    [2, 1])
-                with col1:
-                    if 'planner_placeholder' not in st.session_state:
-                        st.session_state['planner_placeholder'] = st.empty()
-                    if 'session_info_temp' not in st.session_state:
-                        st.session_state['session_info_temp'] = ''
-                    if not node_name:
-                        if agent_return['state'] in [
-                                AgentStatusCode.STREAM_ING,
-                                AgentStatusCode.ANSWER_ING
-                        ]:
-                            st.session_state['session_info_temp'] = response
-                        elif agent_return[
-                                'state'] == AgentStatusCode.PLUGIN_START:
-                            thought = st.session_state[
-                                'session_info_temp'].split('```')[0]
-                            if agent_return['response'].startswith('```'):
-                                st.session_state[
-                                    'session_info_temp'] = thought + '\n' + response
-                        elif agent_return[
-                                'state'] == AgentStatusCode.PLUGIN_RETURN:
-                            assert agent_return['inner_steps'][-1][
-                                'role'] == 'environment'
-                            st.session_state[
-                                'session_info_temp'] += '\n' + agent_return[
-                                    'inner_steps'][-1]['content']
-                        st.session_state['planner_placeholder'].markdown(
-                            st.session_state['session_info_temp'])
-                        if agent_return[
-                                'state'] == AgentStatusCode.PLUGIN_RETURN:
-                            st.session_state['responses'][-1].append(
-                                st.session_state['session_info_temp'])
+        for resp_batch in streaming(raw_response):
+            for resp in resp_batch:
+                agent_return, node_name = resp
+                if node_name and node_name in ['root', 'response']:
+                    continue
+                nodes = agent_return['nodes']
+                adjacency_list = agent_return['adj']
+                response = agent_return['response']
+                history = agent_return['inner_steps']
+                if nodes:
+                    net = create_network_graph(nodes, adjacency_list)
+                    graph_html_path = draw_graph(net)
+                    with open(graph_html_path, encoding='utf-8') as f:
+                        graph_html = f.read()
+                else:
+                    graph_html = None
+                if 'graph_placeholder' not in st.session_state:
+                    st.session_state['graph_placeholder'] = st.empty()
+                if 'expander_placeholder' not in st.session_state:
+                    st.session_state['expander_placeholder'] = st.empty()
+                if graph_html:
+                    with st.session_state['expander_placeholder'].expander(
+                            'Show Graph', expanded=False):
+                        st.session_state['graph_placeholder']._html(graph_html,
+                                                                    height=500)
+                if 'container_placeholder' not in st.session_state:
+                    st.session_state['container_placeholder'] = st.empty()
+                with st.session_state['container_placeholder'].container():
+                    if 'columns_placeholder' not in st.session_state:
+                        st.session_state['columns_placeholder'] = st.empty()
+                    col1, col2 = st.session_state['columns_placeholder'].columns(
+                        [2, 1])
+                    with col1:
+                        if 'planner_placeholder' not in st.session_state:
+                            st.session_state['planner_placeholder'] = st.empty()
+                        if 'session_info_temp' not in st.session_state:
                             st.session_state['session_info_temp'] = ''
-                    else:
-                        st.session_state['planner_placeholder'].markdown(
-                            st.session_state['responses'][-1][-1] if
-                            not st.session_state['session_info_temp'] else st.
-                            session_state['session_info_temp'])
-                with col2:
-                    if 'selectbox_placeholder' not in st.session_state:
-                        st.session_state['selectbox_placeholder'] = st.empty()
-                    if 'searcher_placeholder' not in st.session_state:
-                        st.session_state['searcher_placeholder'] = st.empty()
-                    # st.session_state['searcher_placeholder'].markdown('')
-                    if node_name:
-                        selected_node_key = f"selected_node_{len(st.session_state['queries'])}_{node_name}"
-                        if selected_node_key not in st.session_state:
-                            st.session_state[selected_node_key] = node_name
-                        if selected_node_key not in st.session_state[
-                                'already_used_keys']:
-                            selected_node = st.session_state[
-                                'selectbox_placeholder'].selectbox(
-                                    'Select a node:',
-                                    list(nodes.keys()),
-                                    key=f'key_{selected_node_key}',
-                                    index=list(nodes.keys()).index(node_name))
-                            st.session_state['already_used_keys'].append(
-                                selected_node_key)
-                        else:
-                            selected_node = node_name
-                        st.session_state[selected_node_key] = selected_node
-                        if selected_node in nodes:
-                            node = nodes[selected_node]
-                            agent_return = node['detail']
-                            node_info_key = f'{selected_node}_info'
-                            if 'node_info_temp' not in st.session_state:
-                                st.session_state[
-                                    'node_info_temp'] = f'### {agent_return["content"]}'
-                            if node_info_key not in st.session_state:
-                                st.session_state[node_info_key] = []
+                        if not node_name:
                             if agent_return['state'] in [
                                     AgentStatusCode.STREAM_ING,
                                     AgentStatusCode.ANSWER_ING
                             ]:
-                                st.session_state[
-                                    'node_info_temp'] = agent_return[
-                                        'response']
+                                st.session_state['session_info_temp'] = response
                             elif agent_return[
                                     'state'] == AgentStatusCode.PLUGIN_START:
                                 thought = st.session_state[
-                                    'node_info_temp'].split('```')[0]
+                                    'session_info_temp'].split('```')[0]
                                 if agent_return['response'].startswith('```'):
                                     st.session_state[
-                                        'node_info_temp'] = thought + '\n' + agent_return[
-                                            'response']
-                            elif agent_return[
-                                    'state'] == AgentStatusCode.PLUGIN_END:
-                                thought = st.session_state[
-                                    'node_info_temp'].split('```')[0]
-                                if isinstance(agent_return['response'], dict):
-                                    st.session_state[
-                                        'node_info_temp'] = thought + '\n' + f'```json\n{json.dumps(agent_return["response"], ensure_ascii=False, indent=4)}\n```'  # noqa: E501
+                                        'session_info_temp'] = thought + '\n' + response
                             elif agent_return[
                                     'state'] == AgentStatusCode.PLUGIN_RETURN:
                                 assert agent_return['inner_steps'][-1][
                                     'role'] == 'environment'
-                                st.session_state[node_info_key].append(
-                                    ('thought',
-                                     st.session_state['node_info_temp']))
-                                st.session_state[node_info_key].append(
-                                    ('observation',
-                                     agent_return['inner_steps'][-1]['content']
-                                     ))
-                            st.session_state['searcher_placeholder'].markdown(
-                                st.session_state['node_info_temp'])
-                            if agent_return['state'] == AgentStatusCode.END:
-                                st.session_state[node_info_key].append(
-                                    ('answer',
-                                     st.session_state['node_info_temp']))
-                                st.session_state['node_info_temp'] = ''
+                                st.session_state[
+                                    'session_info_temp'] += '\n' + agent_return[
+                                        'inner_steps'][-1]['content']
+                            st.session_state['planner_placeholder'].markdown(
+                                st.session_state['session_info_temp'])
+                            if agent_return[
+                                    'state'] == AgentStatusCode.PLUGIN_RETURN:
+                                st.session_state['responses'][-1].append(
+                                    st.session_state['session_info_temp'])
+                                st.session_state['session_info_temp'] = ''
+                        else:
+                            st.session_state['planner_placeholder'].markdown(
+                                st.session_state['responses'][-1][-1] if
+                                not st.session_state['session_info_temp'] else st.
+                                session_state['session_info_temp'])
+                    with col2:
+                        if 'selectbox_placeholder' not in st.session_state:
+                            st.session_state['selectbox_placeholder'] = st.empty()
+                        if 'searcher_placeholder' not in st.session_state:
+                            st.session_state['searcher_placeholder'] = st.empty()
+                        # st.session_state['searcher_placeholder'].markdown('')
+                        if node_name:
+                            selected_node_key = f"selected_node_{len(st.session_state['queries'])}_{node_name}"
+                            if selected_node_key not in st.session_state:
+                                st.session_state[selected_node_key] = node_name
+                            if selected_node_key not in st.session_state[
+                                    'already_used_keys']:
+                                selected_node = st.session_state[
+                                    'selectbox_placeholder'].selectbox(
+                                        'Select a node:',
+                                        list(nodes.keys()),
+                                        key=f'key_{selected_node_key}',
+                                        index=list(nodes.keys()).index(node_name))
+                                st.session_state['already_used_keys'].append(
+                                    selected_node_key)
+                            else:
+                                selected_node = node_name
+                            st.session_state[selected_node_key] = selected_node
+                            if selected_node in nodes:
+                                node = nodes[selected_node]
+                                agent_return = node['detail']
+                                node_info_key = f'{selected_node}_info'
+                                if 'node_info_temp' not in st.session_state:
+                                    st.session_state[
+                                        'node_info_temp'] = f'### {agent_return["content"]}'
+                                if node_info_key not in st.session_state:
+                                    st.session_state[node_info_key] = []
+                                if agent_return['state'] in [
+                                        AgentStatusCode.STREAM_ING,
+                                        AgentStatusCode.ANSWER_ING
+                                ]:
+                                    st.session_state[
+                                        'node_info_temp'] = agent_return[
+                                            'response']
+                                elif agent_return[
+                                        'state'] == AgentStatusCode.PLUGIN_START:
+                                    thought = st.session_state[
+                                        'node_info_temp'].split('```')[0]
+                                    if agent_return['response'].startswith('```'):
+                                        st.session_state[
+                                            'node_info_temp'] = thought + '\n' + agent_return[
+                                                'response']
+                                elif agent_return[
+                                        'state'] == AgentStatusCode.PLUGIN_END:
+                                    thought = st.session_state[
+                                        'node_info_temp'].split('```')[0]
+                                    if isinstance(agent_return['response'], dict):
+                                        st.session_state[
+                                            'node_info_temp'] = thought + '\n' + f'```json\n{json.dumps(agent_return["response"], ensure_ascii=False, indent=4)}\n```'  # noqa: E501
+                                elif agent_return[
+                                        'state'] == AgentStatusCode.PLUGIN_RETURN:
+                                    assert agent_return['inner_steps'][-1][
+                                        'role'] == 'environment'
+                                    st.session_state[node_info_key].append(
+                                        ('thought',
+                                         st.session_state['node_info_temp']))
+                                    st.session_state[node_info_key].append(
+                                        ('observation',
+                                         agent_return['inner_steps'][-1]['content']
+                                         ))
+                                st.session_state['searcher_placeholder'].markdown(
+                                    st.session_state['node_info_temp'])
+                                if agent_return['state'] == AgentStatusCode.END:
+                                    st.session_state[node_info_key].append(
+                                        ('answer',
+                                         st.session_state['node_info_temp']))
+                                    st.session_state['node_info_temp'] = ''
         if st.session_state['session_info_temp']:
             st.session_state['responses'][-1].append(
                 st.session_state['session_info_temp'])
