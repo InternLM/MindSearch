@@ -317,3 +317,6 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+# 指定端口为7860的运行方法
+# streamlit run frontend/mindsearch_streamlit.py --server.port=7860
