@@ -45,8 +45,8 @@ def init_agent(lang='cn', model_format='internlm_server',search_engine='DuckDuck
             plugin_executor=ActionExecutor(
                 BingBrowser(searcher_type=search_engine,
                             topk=6,
-                            api_key=os.environ.get('BING_API_KEY',
-                                                   'YOUR BING API'))),
+                            api_key=os.environ.get('WEB_SEARCH_API_KEY',
+                                                   'YOUR WEB SEARCH ENGINE API'))),
             protocol=MindSearchProtocol(
                 meta_prompt=datetime.now().strftime(
                     'The current date is %Y-%m-%d.'),

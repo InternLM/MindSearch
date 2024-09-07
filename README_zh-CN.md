@@ -61,7 +61,12 @@ python -m mindsearch.app --lang en --model_format internlm_server --search_engin
     如果您想使用其他模型，请修改 [models](./mindsearch/agent/models.py)
 - `--search_engine`: 搜索引擎。
   - `DuckDuckGoSearch` 为 DuckDuckGo 搜索引擎。
-  - `BingSearch` 为 Bing搜索引擎。
+  - `BingSearch` 为 Bing 搜索引擎。
+  - `BraveSearch` 为 Brave 搜索引擎。
+  - `GoogleSearch` 为 Google Serper 搜索引擎。
+    
+  请将网页搜索引擎 API 密钥设置为 `WEB_SEARCH_API_KEY` 环境变量，如果使用的是 `DuckDuckGo`，则无需设置。
+ 
 ### 步骤3: 启动 MindSearch 前端
 
 提供以下几种前端界面：

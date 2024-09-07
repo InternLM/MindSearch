@@ -2,8 +2,8 @@ services:
   backend:
     container_name: mindsearch-backend
     build:
-      context: ..
-      dockerfile: docker/backend.dockerfile
+      context: .
+      dockerfile: backend.dockerfile
     image: mindsearch/backend:latest
     restart: unless-stopped
     # Uncomment the following line to force using local build
@@ -12,9 +12,10 @@ services:
       - "8002:8002"
     environment:
       - PYTHONUNBUFFERED=1
-      - OPENAI_API_KEY=${OPENAI_API_KEY:-}
+      # - OPENAI_API_KEY=${OPENAI_API_KEY:-}
       - OPENAI_API_BASE=${OPENAI_API_BASE:-https://api.openai.com/v1}
-      - SILICON_API_KEY=${SILICON_API_KEY:-}
+      # - QWEN_API_KEY=${QWEN_API_KEY:-}
+      # - SILICON_API_KEY=${SILICON_API_KEY:-}
     command: python -m mindsearch.app --lang ${LANG:-cn} --model_format ${MODEL_FORMAT:-internlm_server}
     volumes:
       - /root/.cache:/root/.cache
@@ -49,8 +50,8 @@ services:
   frontend:
     container_name: mindsearch-frontend
     build:
-      context: ..
-      dockerfile: docker/frontend.dockerfile
+      context: .
+      dockerfile: frontend.dockerfile
     image: mindsearch/frontend:latest
     restart: unless-stopped
     # Uncomment the following line to force using local build
