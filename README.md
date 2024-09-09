@@ -90,6 +90,35 @@ python frontend/mindsearch_gradio.py
 streamlit run frontend/mindsearch_streamlit.py
 ```
 
+## 🌐 Change Web Search API
+
+To use a different type of web search API, modify the `searcher_type` attribute in the `searcher_cfg` located in `mindsearch/agent/__init__.py`. Currently supported web search APIs include:
+
+- `GoogleSearch`
+- `DuckDuckGoSearch`
+- `BraveSearch`
+- `BingSearch`
+
+For example, to change to the Brave Search API, you would configure it as follows:
+
+```python
+BingBrowser(
+    searcher_type='BraveSearch',
+    topk=2,
+    api_key=os.environ.get('BRAVE_API_KEY', 'YOUR BRAVE API')
+)
+```
+
+## 🐞 Using the Backend Without Frontend
+
+For users who prefer to interact with the backend directly, use the `backend_example.py` script. This script demonstrates how to send a query to the backend and process the response.
+
+```bash
+python backend_example.py
+```
+
+Make sure you have set up the environment variables and the backend is running before executing the script.
+
 ## 🐞 Debug Locally
 
 ```bash
