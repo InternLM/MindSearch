@@ -1,5 +1,6 @@
 import os
 
+from dotenv import load_dotenv
 from lagent.llms import (
     GPTAPI,
     INTERNLM2_META,
