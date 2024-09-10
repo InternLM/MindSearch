@@ -137,8 +137,10 @@ def update_chat(query):
                                 "<|action_start|><|interpreter|>\n", "\n"
                             )
                         elif agent_message["stream_state"] == AgentStatusCode.CODE_RETURN:
-                            assert history[-1]["role"] == "environment"
-                            st.session_state["session_info_temp"] += "\n" + history[-1]["content"]
+                            # assert history[-1]["role"] == "environment"
+                            st.session_state["session_info_temp"] += (
+                                "\n" + agent_message["content"]
+                            )
                         st.session_state["planner_placeholder"].markdown(
                             st.session_state["session_info_temp"]
                         )
@@ -178,13 +180,15 @@ def update_chat(query):
                         st.session_state[selected_node_key] = selected_node
                         if selected_node in nodes:
                             node = nodes[selected_node]
-                            agent_message, inner_steps = node["detail"], node["inner_steps"]
+                            agent_message = node["detail"]
                             response = (
                                 (
                                     agent_message["formatted"]["action"]
-                                    if agent_message["stream_state"]
-                                    == AgentStatusCode.PLUGIN_RETURN
-                                    else agent_message["formatted"]["thought"]
+                                    if agent_message["stream_state"] == AgentStatusCode.PLUGIN_END
+                                    and isinstance(
+                                        agent_message.get("formatted", {}).get("action"), dict
+                                    )
+                                    else agent_message["content"]
                                 )
                                 if agent_message["sender"].lower().endswith("agent")
                                 else node["inner_steps"][-1]["content"]
@@ -200,10 +204,12 @@ def update_chat(query):
                             ]:
                                 st.session_state["node_info_temp"] = response
                             elif agent_message["stream_state"] == AgentStatusCode.PLUGIN_START:
-                                thought = st.session_state["node_info_temp"].split("\n```json\n")[
-                                    0
-                                ]
-                                action = response.split("<|action_start|><|plugin|>\n")[-1]
+                                thought = (
+                                    st.session_state["node_info_temp"]
+                                    .split("<|action_start|><|plugin|>")[0]
+                                    .split("\n```json\n")[0]
+                                )
+                                action = response.split("<|action_start|><|plugin|>")[-1]
                                 st.session_state["node_info_temp"] = (
                                     thought + "\n```json\n" + action
                                 )
@@ -214,16 +220,15 @@ def update_chat(query):
                                 if isinstance(response, dict):
                                     st.session_state["node_info_temp"] = (
                                         thought
-                                        + "\n"
-                                        + f"```json\n{json.dumps(response, ensure_ascii=False, indent=4)}\n```"
+                                        + f"\n```json\n{json.dumps(response, ensure_ascii=False, indent=4)}\n```"
                                     )  # noqa: E501
                             elif agent_message["stream_state"] == AgentStatusCode.PLUGIN_RETURN:
-                                assert inner_steps[-1]["role"] == "environment"
+                                # assert inner_steps[-1]["role"] == "environment"
                                 st.session_state[node_info_key].append(
                                     ("thought", st.session_state["node_info_temp"])
                                 )
                                 st.session_state[node_info_key].append(
-                                    ("observation", inner_steps[-1]["content"])
+                                    ("observation", agent_message["content"])
                                 )
                             st.session_state["searcher_placeholder"].markdown(
                                 st.session_state["node_info_temp"]

@@ -20,6 +20,7 @@ def parse_arguments():
     parser.add_argument("--lang", default="cn", type=str, help="Language")
     parser.add_argument("--model_format", default="internlm_server", type=str, help="Model format")
     parser.add_argument("--search_engine", default="BingSearch", type=str, help="Search engine")
+    parser.add_argument("--asy", default=False, action="store_true", help="Agent mode")
     return parser.parse_args()
 
 
@@ -39,21 +40,21 @@ class GenerationParams(BaseModel):
     agent_cfg: Dict = dict()
 
 
-@app.post("/solve")
+def convert_adjacency_to_tree(adjacency_input, root_name):
+    def build_tree(node_name):
+        node = {"name": node_name, "children": []}
+        if node_name in adjacency_input:
+            for child in adjacency_input[node_name]:
+                child_node = build_tree(child["name"])
+                child_node["state"] = child["state"]
+                child_node["id"] = child["id"]
+                node["children"].append(child_node)
+        return node
+
+    return build_tree(root_name)
+
+
 async def run(request: GenerationParams):
-    def convert_adjacency_to_tree(adjacency_input, root_name):
-        def build_tree(node_name):
-            node = {"name": node_name, "children": []}
-            if node_name in adjacency_input:
-                for child in adjacency_input[node_name]:
-                    child_node = build_tree(child["name"])
-                    child_node["state"] = child["state"]
-                    child_node["id"] = child["id"]
-                    node["children"].append(child_node)
-            return node
-
-        return build_tree(root_name)
-
     async def generate():
         try:
             queue = janus.Queue()
@@ -125,10 +126,55 @@ async def run(request: GenerationParams):
 
     inputs = request.inputs
     agent = init_agent(
-        lang=args.lang, model_format=args.model_format, search_engine=args.search_engine
+        lang=args.lang,
+        model_format=args.model_format,
+        search_engine=args.search_engine,
     )
     return EventSourceResponse(generate())
 
+
+async def run_async(request: GenerationParams):
+    async def generate():
+        try:
+            async for message in agent(inputs):
+                origin_adjacency_list = message.formatted["adjacency_list"]
+                adjacency_list = convert_adjacency_to_tree(origin_adjacency_list, "root")
+                assert adjacency_list["name"] == "root" and "children" in adjacency_list
+                message.formatted["adj"] = adjacency_list["children"]
+                response_json = json.dumps(
+                    dict(
+                        response=message.model_dump(),
+                        current_node=message.content["current_node"]
+                        if isinstance(message.content, dict)
+                        else None,
+                        node=message.formatted["node"],
+                        adjacency_list=origin_adjacency_list,
+                        inner_steps=agent.get_steps(),
+                    ),
+                    ensure_ascii=False,
+                )
+                yield {"data": response_json}
+                # yield f'data: {response_json}\n\n'
+        except Exception as exc:
+            msg = "An error occurred while generating the response."
+            logging.exception(msg)
+            response_json = json.dumps(
+                dict(error=dict(msg=msg, details=str(exc))), ensure_ascii=False
+            )
+            yield {"data": response_json}
+            # yield f'data: {response_json}\n\n'
+
+    inputs = request.inputs
+    agent = init_agent(
+        lang=args.lang,
+        model_format=args.model_format,
+        search_engine=args.search_engine,
+        use_async=True,
+    )
+    return EventSourceResponse(generate())
+
+
+app.add_api_route("/solve", run_async if args.asy else run, methods=["POST"])
 
 if __name__ == "__main__":
     import uvicorn

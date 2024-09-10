@@ -26,7 +26,7 @@ class StreamingAgentMixin:
                     formatted=parsed_response,
                     stream_state=model_state,
                 )
-            yield response_message
+            yield copy.copy(response_message)
         self.update_memory(response_message, session_id=session_id)
         for hook in self._hooks.values():
             response_message = copy.deepcopy(response_message)
@@ -59,7 +59,7 @@ class AsyncStreamingAgentMixin:
                     formatted=parsed_response,
                     stream_state=model_state,
                 )
-            yield response_message
+            yield copy.copy(response_message)
         self.update_memory(response_message, session_id=session_id)
         for hook in self._hooks.values():
             response_message = copy.deepcopy(response_message)
@@ -110,7 +110,13 @@ class StreamingAgentForInternLM(StreamingAgentMixin, AgentForInternLM):
             for message in self.agent(message, session_id=session_id, **kwargs):
                 if isinstance(message.formatted, dict) and message.formatted.get("tool_type"):
                     if message.stream_state == ModelStatusCode.END:
-                        message.stream_state = last_agent_state + 1
+                        message.stream_state = last_agent_state + int(
+                            last_agent_state
+                            in [
+                                AgentStatusCode.CODING,
+                                AgentStatusCode.PLUGIN_START,
+                            ]
+                        )
                     else:
                         message.stream_state = (
                             AgentStatusCode.PLUGIN_START
@@ -135,7 +141,7 @@ class StreamingAgentForInternLM(StreamingAgentMixin, AgentForInternLM):
                 message = tool_return
                 yield message
             else:
-                message.stream_state = AgentStatusCode.END
+                message.stream_state = AgentStatusCode.STREAM_ING
                 yield message
 
 
@@ -152,7 +158,13 @@ class AsyncStreamingAgentForInternLM(AsyncStreamingAgentMixin, AsyncAgentForInte
             async for message in self.agent(message, session_id=session_id, **kwargs):
                 if isinstance(message.formatted, dict) and message.formatted.get("tool_type"):
                     if message.stream_state == ModelStatusCode.END:
-                        message.stream_state = last_agent_state + 1
+                        message.stream_state = last_agent_state + int(
+                            last_agent_state
+                            in [
+                                AgentStatusCode.CODING,
+                                AgentStatusCode.PLUGIN_START,
+                            ]
+                        )
                     else:
                         message.stream_state = (
                             AgentStatusCode.PLUGIN_START
@@ -177,5 +189,5 @@ class AsyncStreamingAgentForInternLM(AsyncStreamingAgentMixin, AsyncAgentForInte
                 message = tool_return
                 yield message
             else:
-                message.stream_state = AgentStatusCode.END
+                message.stream_state = AgentStatusCode.STREAM_ING
                 yield message
