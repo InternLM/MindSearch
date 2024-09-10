@@ -1,13 +1,13 @@
-import os
+from copy import deepcopy
 from datetime import datetime
 
-from lagent.actions import WebBrowser
+from lagent.actions import AsyncWebBrowser, WebBrowser
 from lagent.agents.stream import get_plugin_prompt
 from lagent.prompts import InterpreterParser, PluginParser
 from lagent.utils import create_object
 
 from . import models as llm_factory
-from .mindsearch_agent import MindSearchAgent
+from .mindsearch_agent import AsyncMindSearchAgent, MindSearchAgent
 from .mindsearch_prompt import (
     FINAL_RESPONSE_CN,
     FINAL_RESPONSE_EN,
@@ -26,18 +26,30 @@ LLM = {}
 
 def init_agent(lang="cn",
                model_format="internlm_server",
-               search_engine="BingSearch"):
-    llm = LLM.get(model_format, None)
+               search_engine="BingSearch",
+               use_async=False):
+    mode = "async" if use_async else "sync"
+    llm = LLM.get(model_format, {}).get(mode)
     if llm is None:
-        llm_cfg = getattr(llm_factory, model_format)
+        llm_cfg = deepcopy(getattr(llm_factory, model_format))
         if llm_cfg is None:
             raise NotImplementedError
+        if use_async:
+            cls_name = (
+                llm_cfg["type"].split(".")[-1] if isinstance(
+                    llm_cfg["type"], str) else llm_cfg["type"].__name__)
+            llm_cfg["type"] = f"lagent.llms.Async{cls_name}"
         llm = create_object(llm_cfg)
-        LLM[model_format] = llm
+        LLM.setdefault(model_format, {}).setdefault(mode, llm)
 
     date = datetime.now().strftime("The current date is %Y-%m-%d.")
-    plugins = [WebBrowser(searcher_type=search_engine, topk=6)]
-    agent = MindSearchAgent(
+    plugins = [
+        dict(
+            type=AsyncWebBrowser if use_async else WebBrowser,
+            searcher_type=search_engine,
+            topk=6)
+    ]
+    agent = (AsyncMindSearchAgent if use_async else MindSearchAgent)(
         llm=llm,
         template=date,
         output_format=InterpreterParser(
