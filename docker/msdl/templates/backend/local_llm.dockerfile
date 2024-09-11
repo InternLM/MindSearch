@@ -11,24 +11,23 @@ WORKDIR /root
 # Install Git
 RUN apt-get update && apt-get install -y git && apt-get clean && rm -rf /var/lib/apt/lists/*
 
-# Copy the mindsearch folder to the /root directory of the container
-COPY mindsearch /root/mindsearch
-
 # Install specified dependency packages
 # Note: lmdeploy dependency is already included in the base image, no need to reinstall
 RUN pip install --no-cache-dir \
     duckduckgo_search==5.3.1b1 \
     einops \
     fastapi \
-    gradio \
     janus \
     pyvis \
     sse-starlette \
     termcolor \
     uvicorn \
+    griffe==0.48.0 \
+    python-dotenv \ 
     git+https://github.com/InternLM/lagent.git
 
-# lagent requires class_registry dotenv
-RUN pip install --no-cache-dir class_registry python-dotenv
+# lagent requires new lib: class_registry 
+RUN pip install --no-cache-dir class_registry 
 
-RUN pip install --no-cache-dir -U griffe==0.48.0
+# Copy the mindsearch folder to the /root directory of the container
+COPY mindsearch /root/mindsearch
