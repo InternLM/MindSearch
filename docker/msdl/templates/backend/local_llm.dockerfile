@@ -28,4 +28,7 @@ RUN pip install --no-cache-dir \
     uvicorn \
     git+https://github.com/InternLM/lagent.git
 
+# lagent requires class_registry dotenv
+RUN pip install --no-cache-dir class_registry python-dotenv
+
 RUN pip install --no-cache-dir -U griffe==0.48.0
