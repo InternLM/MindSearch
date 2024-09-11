@@ -160,7 +160,6 @@ def update_chat(query):
                         st.session_state["selectbox_placeholder"] = st.empty()
                     if "searcher_placeholder" not in st.session_state:
                         st.session_state["searcher_placeholder"] = st.empty()
-                    # st.session_state['searcher_placeholder'].markdown('')
                     if node_name:
                         selected_node_key = (
                             f"selected_node_{len(st.session_state['queries'])}_{node_name}"
@@ -185,59 +184,62 @@ def update_chat(query):
                                 (
                                     agent_message["formatted"]["action"]
                                     if agent_message["stream_state"] == AgentStatusCode.PLUGIN_END
-                                    and isinstance(
-                                        agent_message.get("formatted", {}).get("action"), dict
-                                    )
                                     else agent_message["content"]
                                 )
                                 if agent_message["sender"].lower().endswith("agent")
                                 else node["inner_steps"][-1]["content"]
                             )
                             node_info_key = f"{selected_node}_info"
-                            if "node_info_temp" not in st.session_state:
-                                st.session_state["node_info_temp"] = f'### {node["content"]}'
                             if node_info_key not in st.session_state:
-                                st.session_state[node_info_key] = []
+                                st.session_state[node_info_key] = [["thought", ""]]
                             if agent_message["stream_state"] in [
                                 AgentStatusCode.STREAM_ING,
                                 # AgentStatusCode.ANSWER_ING
                             ]:
-                                st.session_state["node_info_temp"] = response
+                                st.session_state[node_info_key][-1][1] = response
                             elif agent_message["stream_state"] == AgentStatusCode.PLUGIN_START:
                                 thought = (
-                                    st.session_state["node_info_temp"]
+                                    st.session_state[node_info_key][-1][1]
                                     .split("<|action_start|><|plugin|>")[0]
                                     .split("\n```json\n")[0]
                                 )
                                 action = response.split("<|action_start|><|plugin|>")[-1]
-                                st.session_state["node_info_temp"] = (
+                                st.session_state[node_info_key][-1][1] = (
                                     thought + "\n```json\n" + action
                                 )
                             elif agent_message["stream_state"] == AgentStatusCode.PLUGIN_END:
-                                thought = st.session_state["node_info_temp"].split("\n```json\n")[
-                                    0
-                                ]
+                                thought = st.session_state[node_info_key][-1][1].split(
+                                    "\n```json\n"
+                                )[0]
                                 if isinstance(response, dict):
-                                    st.session_state["node_info_temp"] = (
+                                    st.session_state[node_info_key][-1][1] = (
                                         thought
                                         + f"\n```json\n{json.dumps(response, ensure_ascii=False, indent=4)}\n```"
-                                    )  # noqa: E501
-                            elif agent_message["stream_state"] == AgentStatusCode.PLUGIN_RETURN:
-                                # assert inner_steps[-1]["role"] == "environment"
+                                    )
+                            elif (
+                                agent_message["stream_state"] == AgentStatusCode.PLUGIN_RETURN
+                                and st.session_state[node_info_key][-1][1]
+                            ):
+                                try:
+                                    content = json.loads(agent_message["content"])
+                                except json.decoder.JSONDecodeError:
+                                    content = agent_message["content"]
                                 st.session_state[node_info_key].append(
-                                    ("thought", st.session_state["node_info_temp"])
-                                )
-                                st.session_state[node_info_key].append(
-                                    ("observation", agent_message["content"])
+                                    [
+                                        "observation",
+                                        content
+                                        if isinstance(content, str)
+                                        else f"```json\n{json.dumps(content, ensure_ascii=False, indent=4)}\n```",
+                                    ]
                                 )
                             st.session_state["searcher_placeholder"].markdown(
-                                st.session_state["node_info_temp"]
+                                st.session_state[node_info_key][-1][1]
                             )
-                            if agent_message["stream_state"] == AgentStatusCode.END:
-                                st.session_state[node_info_key].append(
-                                    ("answer", st.session_state["node_info_temp"])
-                                )
-                                st.session_state["node_info_temp"] = ""
+                            if (
+                                agent_message["stream_state"] == AgentStatusCode.PLUGIN_RETURN
+                                and st.session_state[node_info_key][-1][1]
+                            ):
+                                st.session_state[node_info_key].append(["thought", ""])
         if st.session_state["session_info_temp"]:
             st.session_state["responses"][-1].append(st.session_state["session_info_temp"])
             st.session_state["session_info_temp"] = ""
