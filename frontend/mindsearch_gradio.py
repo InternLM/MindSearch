@@ -1,18 +1,59 @@
 import json
 import os
 import sys
+import tempfile
 
 import gradio as gr
 import requests
 
 sys.path.insert(0, os.path.dirname(__file__))
 
+import schemdraw
 from gradio_agentchatbot.agentchatbot import AgentChatbot
 from gradio_agentchatbot.utils import ChatMessage, ThoughtMetadata
 from lagent.schema import AgentStatusCode
+from schemdraw import flow
 
 PLANNER_HISTORY = []
 SEARCHER_HISTORY = []
+
+
+def create_search_graph(adjacency_list):
+    import matplotlib.pyplot as plt
+
+    plt.rcParams["font.sans-serif"] = ["SimHei"]
+
+    with schemdraw.Drawing(fontsize=9, unit=1) as graph:
+        node_pos, nodes, edges = {}, {}, []
+        if "root" in adjacency_list:
+            queue, layer, response_level = ["root"], 0, 0
+            while queue:
+                layer_len = len(queue)
+                for i in range(layer_len):
+                    node_name = queue.pop(0)
+                    if not node_name:
+                        continue
+                    node_pos[node_name] = (layer * 5, -i * 3)
+                    for item in adjacency_list[node_name]:
+                        if item["name"] == "response":
+                            response_level = max(response_level, (layer + 1) * 5)
+                            queue.append(None)
+                        else:
+                            queue.append(item["name"])
+                        edges.append((node_name, item["name"]))
+                layer += 1
+            for node_name, (x, y) in node_pos.items():
+                color = "pink" if node_name == "root" else "lightblue"
+                node = flow.State().label(node_name).at((x, y)).color(color)
+                nodes[node_name] = node
+            if response_level:
+                response_node = (
+                    flow.State().label("response").at((response_level, 0)).color("orange")
+                )
+                nodes["response"] = response_node
+            for start, end in edges:
+                flow.Arc3(arrow="->").at(nodes[start].E).to(nodes[end].W).color("grey")
+    return graph
 
 
 def rst_mem(history_planner: list, history_searcher: list):
@@ -21,7 +62,7 @@ def rst_mem(history_planner: list, history_searcher: list):
     history_searcher = []
     if PLANNER_HISTORY:
         PLANNER_HISTORY.clear()
-    return history_planner, history_searcher
+    return history_planner, history_searcher, None, 0
 
 
 def format_response(gr_history, message, response, idx=-1):
@@ -86,7 +127,7 @@ def format_response(gr_history, message, response, idx=-1):
             gr_history.insert(idx + 2, ChatMessage(role="assistant", content=""))
 
 
-def predict(history_planner, history_searcher):
+def predict(history_planner, history_searcher, graph_path, node_cnt):
     def streaming(raw_response):
         for chunk in raw_response.iter_lines(
             chunk_size=8192, decode_unicode=False, delimiter=b"\n"
@@ -120,7 +161,12 @@ def predict(history_planner, history_searcher):
 
     node_id2msg_idx = {}
     for resp in streaming(raw_response):
-        agent_message, node_name, nodes, _, history = resp
+        agent_message, node_name, nodes, adjacency_list, history = resp
+        if len(adjacency_list) > 0 and len(nodes) != node_cnt:
+            node_cnt = len(nodes)
+            g = create_search_graph(adjacency_list)
+            graph_path = tempfile.mktemp(suffix=".png")
+            g.save(graph_path, dpi=360)
         if node_name:
             if node_name in ["root", "response"]:
                 continue
@@ -148,7 +194,7 @@ def predict(history_planner, history_searcher):
                     node_id2msg_idx[key] = value + incr
                     if not flag:
                         flag = True
-            yield history_planner, history_searcher
+            yield history_planner, history_searcher, graph_path, node_cnt
         else:
             response = (
                 agent_message["content"]
@@ -158,12 +204,14 @@ def predict(history_planner, history_searcher):
             format_response(history_planner, agent_message, response)
             if agent_message["stream_state"] == AgentStatusCode.END:
                 PLANNER_HISTORY = history
-            yield history_planner, history_searcher
-    return history_planner, history_searcher
+            yield history_planner, history_searcher, graph_path, node_cnt
+    return history_planner, history_searcher, graph_path, node_cnt
 
 
 with gr.Blocks() as demo:
     gr.HTML("""<h1 align="center">WebAgent Gradio Simple Demo</h1>""")
+    search_graph = gr.Image(label="search graph", show_label=True, height=250, interactive=False)
+    node_count = gr.State(0)
     with gr.Row():
         planner = AgentChatbot(
             label="planner",
@@ -194,9 +242,13 @@ with gr.Blocks() as demo:
         return "", history
 
     submitBtn.click(user, [user_input, planner], [user_input, planner], queue=False).then(
-        predict, [planner, searcher], [planner, searcher]
+        predict,
+        [planner, searcher, search_graph, node_count],
+        [planner, searcher, search_graph, node_count],
     )
-    emptyBtn.click(rst_mem, [planner, searcher], [planner, searcher], queue=False)
+    emptyBtn.click(
+        rst_mem, [planner, searcher], [planner, searcher, search_graph, node_count], queue=False
+    )
 
 demo.queue()
 demo.launch(server_name="127.0.0.1", server_port=7882, inbrowser=True, share=False)
