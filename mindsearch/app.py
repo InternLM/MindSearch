@@ -154,7 +154,11 @@ async def run_async(request: GenerationParams):
                     ensure_ascii=False,
                 )
                 yield {"data": response_json}
-                # yield f'data: {response_json}\n\n'
+                if (
+                    not isinstance(message.content, dict)
+                    and message.stream_state == AgentStatusCode.END
+                ):
+                    break
         except Exception as exc:
             msg = "An error occurred while generating the response."
             logging.exception(msg)
@@ -162,7 +166,6 @@ async def run_async(request: GenerationParams):
                 dict(error=dict(msg=msg, details=str(exc))), ensure_ascii=False
             )
             yield {"data": response_json}
-            # yield f'data: {response_json}\n\n'
 
     inputs = request.inputs
     agent = init_agent(
