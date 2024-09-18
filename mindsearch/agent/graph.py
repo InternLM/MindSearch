@@ -242,11 +242,11 @@ class ExecutionAction(BaseAction):
             return text
 
         command = extract_code(command)
-        exec(command, local_dict, global_dict)
+        exec(command, global_dict, local_dict)
 
         # 匹配所有 graph.node 中的内容
         node_list = re.findall(r"graph.node\((.*?)\)", command)
-        graph: WebSearchGraph = global_dict["graph"]
+        graph: WebSearchGraph = local_dict["graph"]
         while True:
             if (
                 all(task.done() for task in graph.future_to_query)
@@ -284,6 +284,7 @@ class ExecutionAction(BaseAction):
                                 node=deepcopy(graph.nodes),
                                 adjacency_list=deepcopy(graph.adjacency_list),
                             ),
+                            stream_state=AgentStatusCode.STREAM_ING,
                         )
         res = [graph.nodes[node.strip().strip('"').strip("'")] for node in node_list]
         return res, graph.nodes, graph.adjacency_list
