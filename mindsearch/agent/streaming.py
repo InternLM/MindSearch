@@ -26,10 +26,10 @@ class StreamingAgentMixin:
                     formatted=parsed_response,
                     stream_state=model_state,
                 )
-            yield copy.copy(response_message)
+            yield response_message.model_copy()
         self.update_memory(response_message, session_id=session_id)
         for hook in self._hooks.values():
-            response_message = copy.deepcopy(response_message)
+            response_message = response_message.model_copy(deep=True)
             result = hook.after_agent(self, response_message, session_id)
             if result:
                 response_message = result
@@ -59,10 +59,10 @@ class AsyncStreamingAgentMixin:
                     formatted=parsed_response,
                     stream_state=model_state,
                 )
-            yield copy.copy(response_message)
+            yield response_message.model_copy()
         self.update_memory(response_message, session_id=session_id)
         for hook in self._hooks.values():
-            response_message = copy.deepcopy(response_message)
+            response_message = response_message.model_copy(deep=True)
             result = hook.after_agent(self, response_message, session_id)
             if result:
                 response_message = result
@@ -79,7 +79,9 @@ class StreamingAgent(StreamingAgentMixin, Agent):
             self.output_format,
             self.template,
         )
-        for model_state, response, _ in self.llm.stream_chat(formatted_messages, **kwargs):
+        for model_state, response, _ in self.llm.stream_chat(
+            formatted_messages, session_id=session_id, **kwargs
+        ):
             yield model_state, response
 
 
@@ -93,7 +95,9 @@ class AsyncStreamingAgent(AsyncStreamingAgentMixin, AsyncAgent):
             self.output_format,
             self.template,
         )
-        async for model_state, response, _ in self.llm.stream_chat(formatted_messages, **kwargs):
+        async for model_state, response, _ in self.llm.stream_chat(
+            formatted_messages, session_id=session_id, **kwargs
+        ):
             yield model_state, response
 
 

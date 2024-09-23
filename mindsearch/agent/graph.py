@@ -1,5 +1,6 @@
 import asyncio
 import queue
+import random
 import re
 import uuid
 from collections import defaultdict
@@ -70,8 +71,8 @@ class AsyncSearcherAgent(AsyncStreamingAgentForInternLM):
 class WebSearchGraph:
     is_async = False
     SEARCHER_CONFIG = {}
-    _SEARCHER_LOOP = None
-    _SEARCHER_THREAD = None
+    _SEARCHER_LOOP = []
+    _SEARCHER_THREAD = []
 
     def __init__(self):
         self.nodes: Dict[str, Dict[str, str]] = {}
@@ -79,6 +80,7 @@ class WebSearchGraph:
         self.future_to_query = dict()
         self.searcher_resp_queue = queue.Queue()
         self.executor = ThreadPoolExecutor(max_workers=10)
+        self.n_active_tasks = 0
 
     def add_root_node(
         self,
@@ -148,10 +150,16 @@ class WebSearchGraph:
                     self.nodes[node_name]["response"] = searcher_message.content
                     self.nodes[node_name]["detail"] = searcher_message.model_dump()
                     self.searcher_resp_queue.put((node_name, self.nodes[node_name], []))
+                self.searcher_resp_queue.put((None, None, None))
 
             self.future_to_query[
-                asyncio.run_coroutine_threadsafe(_async_search_node_stream(), self._SEARCHER_LOOP)
+                asyncio.run_coroutine_threadsafe(
+                    _async_search_node_stream(), random.choice(self._SEARCHER_LOOP)
+                )
             ] = f"{node_name}-{node_content}"
+            # self.future_to_query[
+            #     self.executor.submit(asyncio.run, _async_search_node_stream())
+            # ] = f"{node_name}-{node_content}"
         else:
 
             def _search_node_stream():
@@ -175,10 +183,13 @@ class WebSearchGraph:
                     self.nodes[node_name]["response"] = searcher_message.content
                     self.nodes[node_name]["detail"] = searcher_message.model_dump()
                     self.searcher_resp_queue.put((node_name, self.nodes[node_name], []))
+                self.searcher_resp_queue.put((None, None, None))
 
             self.future_to_query[
                 self.executor.submit(_search_node_stream)
             ] = f"{node_name}-{node_content}"
+
+        self.n_active_tasks += 1
 
     def add_response_node(self, node_name="response"):
         """添加回复节点
@@ -211,20 +222,29 @@ class WebSearchGraph:
         return self.nodes[node_name].copy()
 
     @classmethod
-    def start_loop(cls):
+    def start_loop(cls, n: int = 32):
         if not cls.is_async:
             raise RuntimeError("Event loop cannot be launched as `is_async` is disabled")
-        if cls._SEARCHER_THREAD is None:
+
+        assert len(cls._SEARCHER_LOOP) == len(cls._SEARCHER_THREAD)
+        for i, (loop, thread) in enumerate(
+            zip(cls._SEARCHER_LOOP.copy(), cls._SEARCHER_THREAD.copy())
+        ):
+            if not (loop.is_running() and thread.is_alive()):
+                cls._SEARCHER_LOOP.pop(i)
+                cls._SEARCHER_THREAD.pop(i)
+
+        while len(cls._SEARCHER_THREAD) < n:
 
             def _start_loop():
-                cls._SEARCHER_LOOP = asyncio.new_event_loop()
-                asyncio.set_event_loop(cls._SEARCHER_LOOP)
-                cls._SEARCHER_LOOP.run_forever()
+                loop = asyncio.new_event_loop()
+                asyncio.set_event_loop(loop)
+                cls._SEARCHER_LOOP.append(loop)
+                loop.run_forever()
 
-            cls._SEARCHER_THREAD = Thread(target=_start_loop, daemon=True)
-            cls._SEARCHER_THREAD.start()
-        else:
-            assert cls._SEARCHER_THREAD.is_alive() and cls._SEARCHER_LOOP.is_running()
+            thread = Thread(target=_start_loop, daemon=True)
+            thread.start()
+            cls._SEARCHER_THREAD.append(thread)
 
 
 class ExecutionAction(BaseAction):
@@ -247,14 +267,12 @@ class ExecutionAction(BaseAction):
         # 匹配所有 graph.node 中的内容
         node_list = re.findall(r"graph.node\((.*?)\)", command)
         graph: WebSearchGraph = local_dict["graph"]
-        while True:
-            if (
-                all(task.done() for task in graph.future_to_query)
-                and graph.searcher_resp_queue.empty()
-            ):
-                break
+        while graph.n_active_tasks:
             while not graph.searcher_resp_queue.empty():
                 node_name, _, _ = graph.searcher_resp_queue.get(timeout=60)
+                if node_name is None:
+                    graph.n_active_tasks -= 1
+                    continue
                 if stream_graph:
                     for neighbors in graph.adjacency_list.values():
                         for neighbor in neighbors:

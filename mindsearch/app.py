@@ -1,13 +1,14 @@
 import asyncio
 import json
 import logging
+import uuid
 from typing import Dict, List, Union
 
 import janus
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from lagent.schema import AgentStatusCode
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from sse_starlette.sse import EventSourceResponse
 
 from mindsearch.agent import init_agent
@@ -37,6 +38,7 @@ app.add_middleware(
 
 class GenerationParams(BaseModel):
     inputs: Union[str, List[Dict]]
+    session_id: int = Field(default_factory=lambda: uuid.uuid4().int)
     agent_cfg: Dict = dict()
 
 
@@ -63,7 +65,7 @@ async def run(request: GenerationParams):
             # Wrapping a sync generator as an async generator using run_in_executor
             def sync_generator_wrapper():
                 try:
-                    for response in agent(inputs):
+                    for response in agent(inputs, session_id=session_id):
                         queue.sync_q.put((response, agent.get_steps()))
                 except Exception as e:
                     logging.exception(f"Exception in sync_generator_wrapper: {e}")
@@ -125,6 +127,7 @@ async def run(request: GenerationParams):
             await queue.wait_closed()
 
     inputs = request.inputs
+    session_id = request.session_id
     agent = init_agent(
         lang=args.lang,
         model_format=args.model_format,
@@ -136,7 +139,7 @@ async def run(request: GenerationParams):
 async def run_async(request: GenerationParams):
     async def generate():
         try:
-            async for message in agent(inputs):
+            async for message in agent(inputs, session_id=session_id):
                 origin_adjacency_list = message.formatted["adjacency_list"]
                 adjacency_list = convert_adjacency_to_tree(origin_adjacency_list, "root")
                 assert adjacency_list["name"] == "root" and "children" in adjacency_list
@@ -149,7 +152,7 @@ async def run_async(request: GenerationParams):
                         else None,
                         node=message.formatted["node"],
                         adjacency_list=origin_adjacency_list,
-                        inner_steps=agent.get_steps(),
+                        inner_steps=agent.get_steps(session_id),
                     ),
                     ensure_ascii=False,
                 )
@@ -166,8 +169,11 @@ async def run_async(request: GenerationParams):
                 dict(error=dict(msg=msg, details=str(exc))), ensure_ascii=False
             )
             yield {"data": response_json}
+        finally:
+            agent.agent.memory.memory_map.pop(session_id, None)
 
     inputs = request.inputs
+    session_id = request.session_id
     agent = init_agent(
         lang=args.lang,
         model_format=args.model_format,
