@@ -151,11 +151,11 @@ def predict(history_planner, history_searcher, node_cnt):
                     continue
                 response = json.loads(decoded)
                 yield (
-                    response["response"],
                     response["current_node"],
-                    response["node"],
-                    response["adjacency_list"],
-                    response["inner_steps"],
+                    response["response"],
+                    response["response"]["formatted"]["node"],
+                    response["response"]["formatted"]["adjacency_list"],
+                    response["memory"]["agent.memory"],
                 )
 
     global PLANNER_HISTORY
@@ -163,15 +163,12 @@ def predict(history_planner, history_searcher, node_cnt):
     search_graph_msg = history_planner[-1]
 
     url = "http://localhost:8002/solve"
-    headers = {"Content-Type": "application/json"}
     data = {"inputs": PLANNER_HISTORY[-3].content}
-    raw_response = requests.post(
-        url, headers=headers, data=json.dumps(data), timeout=20, stream=True
-    )
+    raw_response = requests.post(url, json=data, timeout=20, stream=True)
 
     node_id2msg_idx = {}
     for resp in streaming(raw_response):
-        agent_message, node_name, nodes, adjacency_list, history = resp
+        node_name, agent_message, nodes, adjacency_list, history = resp
         if len(adjacency_list) > 0 and len(nodes) != node_cnt:
             node_cnt = len(nodes)
             graph_path = draw_search_graph(adjacency_list)
@@ -182,7 +179,7 @@ def predict(history_planner, history_searcher, node_cnt):
                 continue
             node = nodes[node_name]
             node_id = f'【{node_name}】{node["content"]}'
-            agent_message, history = node["detail"], node["inner_steps"]
+            agent_message, history = node["response"], node["memory"]["agent.memory"]
             response = (
                 (
                     agent_message["formatted"]["action"]
@@ -213,7 +210,7 @@ def predict(history_planner, history_searcher, node_cnt):
             )
             format_response(history_planner, agent_message, response, -2)
             if agent_message["stream_state"] == AgentStatusCode.END:
-                PLANNER_HISTORY = history
+                PLANNER_HISTORY = history_planner
             yield history_planner, history_searcher, node_cnt
     return history_planner, history_searcher, node_cnt
 

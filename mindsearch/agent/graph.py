@@ -142,13 +142,9 @@ class WebSearchGraph:
                     history=parent_response,
                     session_id=session_id,
                 ):
-                    if isinstance(searcher_message.formatted, dict):
-                        searcher_message.formatted["node_content"] = node_content
-                    # self.nodes[node_name]["inner_step"] = agent.state_dict(session_id=session_id)
-                    self.nodes[node_name]["inner_steps"] = agent.get_steps(session_id)
+                    self.nodes[node_name]["response"] = searcher_message.model_dump()
+                    self.nodes[node_name]["memory"] = agent.state_dict(session_id=session_id)
                     self.nodes[node_name]["session_id"] = session_id
-                    self.nodes[node_name]["response"] = searcher_message.content
-                    self.nodes[node_name]["detail"] = searcher_message.model_dump()
                     self.searcher_resp_queue.put((node_name, self.nodes[node_name], []))
                 self.searcher_resp_queue.put((None, None, None))
 
@@ -175,13 +171,9 @@ class WebSearchGraph:
                     history=parent_response,
                     session_id=session_id,
                 ):
-                    if isinstance(searcher_message.formatted, dict):
-                        searcher_message.formatted["node_content"] = node_content
-                    # self.nodes[node_name]["inner_step"] = agent.state_dict(session_id=session_id)
-                    self.nodes[node_name]["inner_steps"] = agent.get_steps(session_id)
+                    self.nodes[node_name]["response"] = searcher_message.model_dump()
+                    self.nodes[node_name]["memory"] = agent.state_dict(session_id=session_id)
                     self.nodes[node_name]["session_id"] = session_id
-                    self.nodes[node_name]["response"] = searcher_message.content
-                    self.nodes[node_name]["detail"] = searcher_message.model_dump()
                     self.searcher_resp_queue.put((node_name, self.nodes[node_name], []))
                 self.searcher_resp_queue.put((None, None, None))
 
@@ -279,19 +271,18 @@ class ExecutionAction(BaseAction):
                             # state  1进行中，2未开始，3已结束
                             if not (
                                 neighbor["name"] in graph.nodes
-                                and "inner_steps" in graph.nodes[neighbor["name"]]
+                                and "response" in graph.nodes[neighbor["name"]]
                             ):
                                 neighbor["state"] = 2
+                            elif (
+                                graph.nodes[neighbor["name"]]["response"]["stream_state"]
+                                == AgentStatusCode.END
+                            ):
+                                neighbor["state"] = 3
                             else:
-                                if (
-                                    graph.nodes[neighbor["name"]]["detail"]["stream_state"]
-                                    == AgentStatusCode.END
-                                ):
-                                    neighbor["state"] = 3
-                                else:
-                                    neighbor["state"] = 1
+                                neighbor["state"] = 1
                     if all(
-                        "detail" in node
+                        "response" in node
                         for name, node in graph.nodes.items()
                         if name not in ["root", "response"]
                     ):
