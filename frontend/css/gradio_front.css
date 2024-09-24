@@ -1,15 +1,15 @@
 .gradio-container.gradio-container-4-44-0.svelte-wpkpf6.app{
-    
+
     /* /* background-image:url('https://images.unsplash.com/photo-1577563908411-5077b6dc7624?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&dl=volodymyr-hryshchenko-V5vqWC9gyEU-unsplash.jpg&w=2400'); */
     background-image:url('https://github.com/InternLM/MindSearch/blob/main/frontend/React/src/assets/background.png?raw=true');
     background-size:cover; /*整张图片覆盖页面*/
     background-position: center;
-    background-repeat:no-repeat; 
+    background-repeat:no-repeat;
     background-color:#f9fafb;
 }
 
 .logo{
-    width: 200px; 
+    width: 200px;
 }
 .chatbot-container {
     height: auto;
@@ -22,8 +22,8 @@
     background-color: #f9fafb;
     border-radius: 8px;
     padding: 10px;
-    display: flex; 
-    align-items: center; 
+    display: flex;
+    align-items: center;
 }
 
 /* Style the text input area */
@@ -44,7 +44,7 @@
     margin-left: 10px; /* Add spacing between buttons */
 }
 
-.examples-container { 
+.examples-container {
    margin-top: 2px; /* Reduced margin */
 }
 .flex-wrap.user.svelte-1e1jlin.svelte-1e1jlin.svelte-1e1jlin{

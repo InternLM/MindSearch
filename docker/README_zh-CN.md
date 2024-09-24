@@ -17,12 +17,14 @@ MSDL (MindSearch Docker Launcher) 是一个专为简化 MindSearch 部署过程�
 ## 安装步骤
 
 1. 克隆 MindSearch 仓库:
+
    ```bash
    git clone https://github.com/InternLM/MindSearch.git # 已经克隆过的，可以忽略执行此步骤
    cd MindSearch/docker
    ```
 
 2. 安装 MSDL:
+
    ```bash
    pip install -e .
    ```
@@ -36,6 +38,7 @@ msdl
 ```
 
 按照交互式提示进行配置:
+
 - 选择 Agent 使用的语言（中文或英文，仅影响 Agent 的提示词语言）
 - 选择模型部署类型（本地模型或云端模型）
 - 选择模型格式
@@ -44,6 +47,7 @@ msdl
 - 输入必要的 API 密钥（如 SILICON_API_KEY）
 
 MSDL 将自动执行以下操作:
+
 - 复制并配置必要的 Dockerfile 和 docker-compose.yaml 文件
 - 构建 Docker 镜像
 - 启动 Docker 容器
@@ -53,6 +57,7 @@ MSDL 将自动执行以下操作:
 ### 云端模型部署（推荐）
 
 **优势**:
+
 - 轻量级部署，磁盘占用小（前端约 510MB，后端约 839MB）
 - 无需高性能硬件
 - 部署和维护简单
@@ -60,27 +65,32 @@ MSDL 将自动执行以下操作:
 - 高并发量，推理速度快
 
 **使用说明**:
+
 - 选择"云端模型"选项
 - 选择 "internlm_silicon" 作为模型格式
 - 输入 SiliconCloud API Key（需在 https://cloud.siliconflow.cn/ 注册获取）
 
 **重要说明**:
+
 - internlm/internlm2_5-7b-chat 模型在 SiliconCloud 上可以免费调用，但 API Key 仍需妥善保管好。
 - MindSearch 项目与 SiliconCloud 并无利益关系，只是使用它能更好地体验 MindSearch 的效果，感谢 SiliconCloud 为开源社区所做的贡献。
 
 ### 本地模型部署
 
 **特点**:
+
 - 使用 openmmlab/lmdeploy 镜像
 - 基于 PyTorch 环境
 - 需要大量磁盘空间（后端容器 15GB+，模型 15GB+，总计 30GB 以上）
 - 需要强大的 GPU（建议 12GB 或以上显存）
 
 **使用说明**:
+
 - 选择"本地模型"选项
 - 选择 "internlm_server" 作为模型格式
 
 **相关链接**:
+
 - lmdeploy 镜像: https://hub.docker.com/r/openmmlab/lmdeploy/tags
 - InternLM2.5 项目: https://huggingface.co/internlm/internlm2_5-7b-chat
 

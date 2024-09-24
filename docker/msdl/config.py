@@ -9,26 +9,26 @@ PACKAGE_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = PACKAGE_DIR.parent.parent
 
 # Get the temp directory path, which is actually the working directory for executing the docker compose up command
-TEMP_DIR = PACKAGE_DIR / "temp"
+TEMP_DIR = PACKAGE_DIR / 'temp'
 
 # Configuration file name list
-TEMPLATE_FILES = ["docker-compose.yaml"]
+TEMPLATE_FILES = ['docker-compose.yaml']
 
 # Backend Dockerfile directory
-BACKEND_DOCKERFILE_DIR = "backend"
+BACKEND_DOCKERFILE_DIR = 'backend'
 
 # Backend Dockerfile name
-CLOUD_LLM_DOCKERFILE = "cloud_llm.dockerfile"
-LOCAL_LLM_DOCKERFILE = "local_llm.dockerfile"
+CLOUD_LLM_DOCKERFILE = 'cloud_llm.dockerfile'
+LOCAL_LLM_DOCKERFILE = 'local_llm.dockerfile'
 
 # Frontend Dockerfile directory
-FRONTEND_DOCKERFILE_DIR = "frontend"
+FRONTEND_DOCKERFILE_DIR = 'frontend'
 
 # Frontend Dockerfile name
-REACT_DOCKERFILE = "react.dockerfile"
+REACT_DOCKERFILE = 'react.dockerfile'
 
 # i18n translations directory
-TRANSLATIONS_DIR = PACKAGE_DIR / "translations"
+TRANSLATIONS_DIR = PACKAGE_DIR / 'translations'
 
 # Get the path of the .env file
-ENV_FILE_PATH = TEMP_DIR / ".env"
+ENV_FILE_PATH = TEMP_DIR / '.env'

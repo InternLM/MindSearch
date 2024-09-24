@@ -17,12 +17,14 @@ MSDL (MindSearch Docker Launcher) is a command-line tool designed to simplify th
 ## Installation Steps
 
 1. Clone the MindSearch repository:
+
    ```bash
    git clone https://github.com/InternLM/MindSearch.git # If you have already cloned the repository, you can skip this step.
    cd MindSearch/docker
    ```
 
 2. Install MSDL:
+
    ```bash
    pip install -e .
    ```
@@ -36,6 +38,7 @@ msdl
 ```
 
 Follow the interactive prompts for configuration:
+
 - Choose the language for the Agent (Chinese or English; this only affects the language of prompts).
 - Select the model deployment type (local model or cloud model).
 - Choose the model format:
@@ -44,6 +47,7 @@ Follow the interactive prompts for configuration:
 - Enter the necessary API keys (e.g., SILICON_API_KEY).
 
 MSDL will automatically perform the following actions:
+
 - Copy and configure the necessary Dockerfile and docker-compose.yaml files.
 - Build Docker images.
 - Launch Docker containers.
@@ -53,6 +57,7 @@ MSDL will automatically perform the following actions:
 ### Cloud Model Deployment (Recommended)
 
 **Advantages**:
+
 - Lightweight deployment with minimal disk usage (frontend around 510MB, backend around 839MB).
 - No need for high-performance hardware.
 - Easy to deploy and maintain.
@@ -60,27 +65,32 @@ MSDL will automatically perform the following actions:
 - High concurrency, fast inference speed.
 
 **Instructions**:
+
 - Select the "Cloud Model" option.
 - Choose "internlm_silicon" as the model format.
 - Enter the SiliconCloud API Key (register at https://cloud.siliconflow.cn/ to obtain it).
 
 **Important Notes**:
+
 - The `internlm/internlm2_5-7b-chat` model is freely accessible on SiliconCloud.
 - MindSearch has no financial relationship with SiliconCloud; this service is recommended solely because it provides valuable resources to the open-source community.
 
 ### Local Model Deployment
 
 **Features**:
+
 - Uses the `openmmlab/lmdeploy` image.
 - Based on the PyTorch environment.
 - Requires significant disk space (backend container 15GB+, model 15GB+, totaling 30GB+).
 - Requires a powerful GPU (12GB or more of VRAM recommended).
 
 **Instructions**:
+
 - Select the "Local Model" option.
 - Choose "internlm_server" as the model format.
 
 **Relevant Links**:
+
 - lmdeploy image: https://hub.docker.com/r/openmmlab/lmdeploy/tags
 - InternLM2.5 project: https://huggingface.co/internlm/internlm2_5-7b-chat
 

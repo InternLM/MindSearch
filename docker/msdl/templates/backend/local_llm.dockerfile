@@ -1,7 +1,7 @@
 # Use openmmlab/lmdeploy:latest-cu12 as the base image
 # Note: Before using this Dockerfile, you should visit https://hub.docker.com/r/openmmlab/lmdeploy/tags
 # to select a base image that's compatible with your specific GPU architecture.
-# The 'latest-cu12' tag is used here as an example, but you should choose the most 
+# The 'latest-cu12' tag is used here as an example, but you should choose the most
 # appropriate tag for your setup (e.g., cu11 for CUDA 11, cu12 for CUDA 12, etc.)
 FROM openmmlab/lmdeploy:latest-cu12
 

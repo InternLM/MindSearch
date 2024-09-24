@@ -8,7 +8,6 @@ PLANNER_HISTORY = []
 SEARCHER_HISTORY = []
 
 
-
 def rst_mem(history_planner: list, history_searcher: list):
     '''
     Reset the chatbot memory.
@@ -43,6 +42,7 @@ def format_response(gr_history, agent_return):
         ])
         gr_history.append([None, ''])
     return
+
 
 def predict(history_planner, history_searcher):
 
@@ -97,16 +97,18 @@ def predict(history_planner, history_searcher):
 
 
 examples = [
-    ["Find legal precedents in contract law."],
-    ["What are the top 10 e-commerce websites?"],
-    ["Generate a report on global climate change."],
+    ['Find legal precedents in contract law.'],
+    ['What are the top 10 e-commerce websites?'],
+    ['Generate a report on global climate change.'],
 ]
 import os
-css_path = os.path.join(os.path.dirname(__file__), "css", "gradio_front.css")
+
+css_path = os.path.join(os.path.dirname(__file__), 'css', 'gradio_front.css')
 with gr.Blocks(css=css_path) as demo:
-    with gr.Column(elem_classes="chat-box"):
+    with gr.Column(elem_classes='chat-box'):
         gr.HTML("""<h1 align="center">MindSearch Gradio Demo</h1>""")
-        gr.HTML("""<p style="text-align: center; font-family: Arial, sans-serif;">
+        gr.HTML(
+            """<p style="text-align: center; font-family: Arial, sans-serif;">
                 MindSearch is an open-source AI Search Engine Framework with Perplexity.ai Pro performance. You can deploy your own Perplexity.ai-style search engine using either closed-source LLMs (GPT, Claude)
                 or open-source LLMs (InternLM2.5-7b-chat).</p> """)
         gr.HTML("""
@@ -129,38 +131,39 @@ with gr.Blocks(css=css_path) as demo:
                                          show_copy_button=True,
                                          bubble_full_width=False,
                                          render_markdown=True,
-                                         elem_classes="chatbot-container")
+                                         elem_classes='chatbot-container')
                 with gr.Column():
                     searcher = gr.Chatbot(label='searcher',
                                           show_label=True,
                                           show_copy_button=True,
                                           bubble_full_width=False,
                                           render_markdown=True,
-                                          elem_classes="chatbot-container")
+                                          elem_classes='chatbot-container')
 
-            with gr.Row(elem_classes="chat-box"):
+            with gr.Row(elem_classes='chat-box'):
                 # Text input area
-                user_input = gr.Textbox(
-                    show_label=False,
-                    placeholder="Type your message...",
-                    lines=1,
-                    container=False,
-                    elem_classes="editor"
-                )
+                user_input = gr.Textbox(show_label=False,
+                                        placeholder='Type your message...',
+                                        lines=1,
+                                        container=False,
+                                        elem_classes='editor')
                 # Buttons (now in the same Row)
-                submitBtn = gr.Button("submit", variant="primary", elem_classes="toolbarButton")
-                clearBtn = gr.Button("clear", variant="secondary", elem_classes="toolbarButton")
-            with gr.Row(elem_classes="examples-container"):
-                examples_component = gr.Examples(examples, inputs=user_input,
-                                                label="Try these examples:")
+                submitBtn = gr.Button('submit',
+                                      variant='primary',
+                                      elem_classes='toolbarButton')
+                clearBtn = gr.Button('clear',
+                                     variant='secondary',
+                                     elem_classes='toolbarButton')
+            with gr.Row(elem_classes='examples-container'):
+                examples_component = gr.Examples(examples,
+                                                 inputs=user_input,
+                                                 label='Try these examples:')
 
     def user(query, history):
         return '', history + [[query, '']]
 
     def submit_example(example):
         return user(example[0], planner.value)
-
-
 
     submitBtn.click(user, [user_input, planner], [user_input, planner],
                     queue=False).then(predict, [planner, searcher],

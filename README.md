@@ -43,16 +43,20 @@ python -m mindsearch.app --lang en --model_format internlm_server --search_engin
 ```
 
 - `--lang`: language of the model, `en` for English and `cn` for Chinese.
+
 - `--model_format`: format of the model.
+
   - `internlm_server` for InternLM2.5-7b-chat with local server. (InternLM2.5-7b-chat has been better optimized for Chinese.)
   - `gpt4` for GPT4.
     if you want to use other models, please modify [models](./mindsearch/agent/models.py)
+
 - `--search_engine`: Search engine.
+
   - `DuckDuckGoSearch` for search engine for DuckDuckGo.
   - `BingSearch` for Bing search engine.
   - `BraveSearch` for Brave search web api engine.
   - `GoogleSearch` for Google Serper web search api engine.
-  
+
   Please set your Web Search engine API key as the `WEB_SEARCH_API_KEY` environment variable unless you are using `DuckDuckGo`.
 
 ### Step4: Setup MindSearch Frontend
