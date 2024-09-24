@@ -1,4 +1,5 @@
 import json
+import os
 
 import gradio as gr
 import requests
@@ -101,7 +102,6 @@ examples = [
     ['What are the top 10 e-commerce websites?'],
     ['Generate a report on global climate change.'],
 ]
-import os
 
 css_path = os.path.join(os.path.dirname(__file__), 'css', 'gradio_front.css')
 with gr.Blocks(css=css_path) as demo:
@@ -109,18 +109,26 @@ with gr.Blocks(css=css_path) as demo:
         gr.HTML("""<h1 align="center">MindSearch Gradio Demo</h1>""")
         gr.HTML(
             """<p style="text-align: center; font-family: Arial, sans-serif;">
-                MindSearch is an open-source AI Search Engine Framework with Perplexity.ai Pro performance. You can deploy your own Perplexity.ai-style search engine using either closed-source LLMs (GPT, Claude)
+                MindSearch is an open-source AI Search Engine Framework with Perplexity.ai Pro performance.
+                You can deploy your own Perplexity.ai-style search engine using either
+                closed-source LLMs (GPT, Claude)
                 or open-source LLMs (InternLM2.5-7b-chat).</p> """)
         gr.HTML("""
         <div style="text-align: center; font-size: 16px;">
-        <a href="https://github.com/InternLM/MindSearch" style="margin-right: 15px; text-decoration: none; color: #4A90E2;" target="_blank">🔗 GitHub</a>
-        <a href="https://arxiv.org/abs/2407.20183" style="margin-right: 15px; text-decoration: none; color: #4A90E2;" target="_blank">📄 Arxiv</a>
-        <a href="https://huggingface.co/papers/2407.20183" style="margin-right: 15px; text-decoration: none; color: #4A90E2;" target="_blank">📚 Hugging Face Papers</a>
-        <a href="https://huggingface.co/spaces/internlm/MindSearch" style="text-decoration: none; color: #4A90E2;" target="_blank">🤗 Hugging Face Demo</a>
+        <a href="https://github.com/InternLM/MindSearch" style="margin-right: 15px;
+         text-decoration: none; color: #4A90E2;" target="_blank">🔗 GitHub</a>
+        <a href="https://arxiv.org/abs/2407.20183" style="margin-right: 15px;
+         text-decoration: none; color: #4A90E2;" target="_blank">📄 Arxiv</a>
+        <a href="https://huggingface.co/papers/2407.20183" style="margin-right:
+         15px; text-decoration: none; color: #4A90E2;" target="_blank">📚 Hugging Face Papers</a>
+        <a href="https://huggingface.co/spaces/internlm/MindSearch"
+         style="text-decoration: none; color: #4A90E2;" target="_blank">🤗 Hugging Face Demo</a>
         </div>""")
     gr.HTML("""
-       <h1 align='right'><img src='https://raw.githubusercontent.com/InternLM/MindSearch/98fd84d566fe9e3adc5028727f72f2944098fd05/assets/logo.svg' alt='MindSearch Logo1' class="logo"></h1>
-       """)
+       <h1 align='right'><img
+        src=
+        'https://raw.githubusercontent.com/InternLM/MindSearch/98fd84d566fe9e3adc5028727f72f2944098fd05/assets/logo.svg'
+         alt='MindSearch Logo1' class="logo"></h1> """)
 
     with gr.Row():
         with gr.Column(scale=10):
