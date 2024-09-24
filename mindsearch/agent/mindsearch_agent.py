@@ -38,11 +38,14 @@ def _generate_references_from_graph(graph: Dict[str, dict]) -> Tuple[str, Dict[i
         if name in ["root", "response"]:
             continue
         # only search once at each node, thus the result offset is 2
-        assert data_item["inner_steps"][2]["role"] == "environment"
+        assert data_item["memory"]["agent.memory"][2]["sender"].endswith("ActionExecutor")
         ref2url = {
-            int(k): v for k, v in json.loads(data_item["inner_steps"][2]["content"]).items()
+            int(k): v
+            for k, v in json.loads(data_item["memory"]["agent.memory"][2]["content"]).items()
         }
-        updata_ref, ref2url, added_ptr = _update_ref(data_item["response"], ref2url, ptr)
+        updata_ref, ref2url, added_ptr = _update_ref(
+            data_item["response"]["content"], ref2url, ptr
+        )
         ptr += added_ptr
         references.append(f'## {data_item["content"]}\n\n{updata_ref}')
         references_url.update(ref2url)
