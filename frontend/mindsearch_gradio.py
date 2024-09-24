@@ -102,7 +102,7 @@ examples = [
     ["Generate a report on global climate change."],
 ]
 import os
-css_path = os.path.join(os.path.dirname(__file__), "css", "test1.css")
+css_path = os.path.join(os.path.dirname(__file__), "css", "gradio_front.css")
 with gr.Blocks(css=css_path) as demo:
     with gr.Column(elem_classes="chat-box"):
         gr.HTML("""<h1 align="center">MindSearch Gradio Demo</h1>""")
@@ -170,6 +170,6 @@ with gr.Blocks(css=css_path) as demo:
 
 demo.queue()
 demo.launch(server_name='127.0.0.1',
-            server_port=7884,
+            server_port=7882,
             inbrowser=True,
             share=True)
