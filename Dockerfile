@@ -10,7 +10,7 @@ ENV BING_API_KEY=${BING_API_KEY}
 ENV PATH=/opt/conda/bin:$PATH
 
 # 克隆git仓库
-RUN git clone https://github.com/InternLM/MindSearch.git /app
+RUN git clone -b lagent_v1.0 https://github.com/braisedpork1964/MindSearch.git /app
 
 WORKDIR /app
 
@@ -23,4 +23,4 @@ RUN conda create --name fastapi python=3.10 -y && \
 EXPOSE 8000
 
 # 启动 FastAPI 服务
-CMD ["conda", "run", "--no-capture-output", "-n", "fastapi", "uvicorn", "mindsearch.app:app", "--host", "0.0.0.0", "--port", "8002"]
+ENTRYPOINT ["conda", "run", "--no-capture-output", "-n", "fastapi", "uvicorn", "mindsearch.app:app", "--host", "0.0.0.0", "--port", "8002", "--asy"]
