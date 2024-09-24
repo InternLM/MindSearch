@@ -1,3 +1,4 @@
+import os
 from copy import deepcopy
 from datetime import datetime
 
@@ -47,7 +48,9 @@ def init_agent(lang="cn",
         dict(
             type=AsyncWebBrowser if use_async else WebBrowser,
             searcher_type=search_engine,
-            topk=6)
+            topk=6,
+            api_key=os.getenv("WEB_SEARCH_API_KEY"),
+        )
     ]
     agent = (AsyncMindSearchAgent if use_async else MindSearchAgent)(
         llm=llm,

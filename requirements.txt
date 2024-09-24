@@ -1,7 +1,8 @@
 duckduckgo_search==5.3.1b1
 einops
 fastapi
-lagent==0.2.4
+#git+https://github.com/InternLM/lagent.git
+lagent @ git+https://github.com/Harold-lkk/lagent.git@lkk/lagent_v0.3.0
 gradio
 janus
 lmdeploy
