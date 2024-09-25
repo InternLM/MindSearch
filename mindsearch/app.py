@@ -17,6 +17,8 @@ def parse_arguments():
     import argparse
 
     parser = argparse.ArgumentParser(description="MindSearch API")
+    parser.add_argument("--host", default="0.0.0.0", type=str, help="Service host")
+    parser.add_argument("--port", default=8002, type=int, help="Service port")
     parser.add_argument("--lang", default="cn", type=str, help="Language")
     parser.add_argument("--model_format", default="internlm_server", type=str, help="Model format")
     parser.add_argument("--search_engine", default="BingSearch", type=str, help="Search engine")
@@ -144,4 +146,4 @@ app.add_api_route("/solve", run_async if args.asy else run, methods=["POST"])
 if __name__ == "__main__":
     import uvicorn
 
-    uvicorn.run(app, host="0.0.0.0", port=8002, log_level="info")
+    uvicorn.run(app, host=args.host, port=args.port, log_level="info")
