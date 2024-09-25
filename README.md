@@ -20,8 +20,11 @@ English | [简体中文](README_zh-CN.md)
 ### Step1: Dependencies Installation
 
 ```bash
+# Clone Repo
 git clone https://github.com/InternLM/MindSearch
 cd MindSearch
+
+# Install requirements
 pip install -r requirements.txt
 ```
 
