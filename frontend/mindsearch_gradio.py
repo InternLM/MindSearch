@@ -1,4 +1,5 @@
 import json
+import os
 
 import gradio as gr
 import requests
@@ -96,43 +97,86 @@ def predict(history_planner, history_searcher):
     return history_planner, history_searcher
 
 
-with gr.Blocks() as demo:
-    gr.HTML("""<h1 align="center">WebAgent Gradio Simple Demo</h1>""")
+examples = [
+    ['Find legal precedents in contract law.'],
+    ['What are the top 10 e-commerce websites?'],
+    ['Generate a report on global climate change.'],
+]
+
+css_path = os.path.join(os.path.dirname(__file__), 'css', 'gradio_front.css')
+with gr.Blocks(css=css_path) as demo:
+    with gr.Column(elem_classes='chat-box'):
+        gr.HTML("""<h1 align="center">MindSearch Gradio Demo</h1>""")
+        gr.HTML(
+            """<p style="text-align: center; font-family: Arial, sans-serif;">
+                MindSearch is an open-source AI Search Engine Framework with Perplexity.ai Pro performance.
+                You can deploy your own Perplexity.ai-style search engine using either
+                closed-source LLMs (GPT, Claude)
+                or open-source LLMs (InternLM2.5-7b-chat).</p> """)
+        gr.HTML("""
+        <div style="text-align: center; font-size: 16px;">
+        <a href="https://github.com/InternLM/MindSearch" style="margin-right: 15px;
+         text-decoration: none; color: #4A90E2;" target="_blank">🔗 GitHub</a>
+        <a href="https://arxiv.org/abs/2407.20183" style="margin-right: 15px;
+         text-decoration: none; color: #4A90E2;" target="_blank">📄 Arxiv</a>
+        <a href="https://huggingface.co/papers/2407.20183" style="margin-right:
+         15px; text-decoration: none; color: #4A90E2;" target="_blank">📚 Hugging Face Papers</a>
+        <a href="https://huggingface.co/spaces/internlm/MindSearch"
+         style="text-decoration: none; color: #4A90E2;" target="_blank">🤗 Hugging Face Demo</a>
+        </div>""")
+    gr.HTML("""
+       <h1 align='right'><img
+        src=
+        'https://raw.githubusercontent.com/InternLM/MindSearch/98fd84d566fe9e3adc5028727f72f2944098fd05/assets/logo.svg'
+         alt='MindSearch Logo1' class="logo"></h1> """)
+
     with gr.Row():
         with gr.Column(scale=10):
             with gr.Row():
                 with gr.Column():
                     planner = gr.Chatbot(label='planner',
-                                         height=700,
                                          show_label=True,
                                          show_copy_button=True,
                                          bubble_full_width=False,
-                                         render_markdown=True)
+                                         render_markdown=True,
+                                         elem_classes='chatbot-container')
                 with gr.Column():
                     searcher = gr.Chatbot(label='searcher',
-                                          height=700,
                                           show_label=True,
                                           show_copy_button=True,
                                           bubble_full_width=False,
-                                          render_markdown=True)
-            with gr.Row():
+                                          render_markdown=True,
+                                          elem_classes='chatbot-container')
+
+            with gr.Row(elem_classes='chat-box'):
+                # Text input area
                 user_input = gr.Textbox(show_label=False,
-                                        placeholder='inputs...',
-                                        lines=5,
-                                        container=False)
-            with gr.Row():
-                with gr.Column(scale=2):
-                    submitBtn = gr.Button('Submit')
-                with gr.Column(scale=1, min_width=20):
-                    emptyBtn = gr.Button('Clear History')
+                                        placeholder='Type your message...',
+                                        lines=1,
+                                        container=False,
+                                        elem_classes='editor')
+                # Buttons (now in the same Row)
+                submitBtn = gr.Button('submit',
+                                      variant='primary',
+                                      elem_classes='toolbarButton')
+                clearBtn = gr.Button('clear',
+                                     variant='secondary',
+                                     elem_classes='toolbarButton')
+            with gr.Row(elem_classes='examples-container'):
+                examples_component = gr.Examples(examples,
+                                                 inputs=user_input,
+                                                 label='Try these examples:')
 
     def user(query, history):
         return '', history + [[query, '']]
 
+    def submit_example(example):
+        return user(example[0], planner.value)
+
     submitBtn.click(user, [user_input, planner], [user_input, planner],
                     queue=False).then(predict, [planner, searcher],
                                       [planner, searcher])
-    emptyBtn.click(rst_mem, [planner, searcher], [planner, searcher],
+    clearBtn.click(rst_mem, [planner, searcher], [planner, searcher],
                    queue=False)
 
 demo.queue()
