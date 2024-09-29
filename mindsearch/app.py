@@ -43,6 +43,32 @@ class GenerationParams(BaseModel):
     agent_cfg: Dict = dict()
 
 
+def _postprocess_agent_message(message: dict) -> dict:
+    content, fmt = message["content"], message["formatted"]
+    current_node = content["current_node"] if isinstance(content, dict) else None
+    if current_node:
+        message["content"] = None
+        for key in ["ref2url"]:
+            fmt.pop(key, None)
+        graph = fmt["node"]
+        for key in graph.copy():
+            if key != current_node:
+                graph.pop(key)
+        if current_node not in ["root", "response"]:
+            node = graph[current_node]
+            for key in ["memory", "session_id"]:
+                node.pop(key, None)
+            node_fmt = node["response"]["formatted"]
+            if isinstance(node_fmt, dict) and "thought" in node_fmt and "action" in node_fmt:
+                node["response"]["content"] = None
+    else:
+        if isinstance(fmt, dict) and "thought" in fmt and "action" in fmt:
+            message["content"] = None
+        for key in ["node"]:
+            fmt.pop(key, None)
+    return dict(current_node=current_node, response=message)
+
+
 async def run(request: GenerationParams):
     async def generate():
         try:
@@ -72,13 +98,7 @@ async def run(request: GenerationParams):
 
             async for message in async_generator_wrapper():
                 response_json = json.dumps(
-                    dict(
-                        response=message.model_dump(),
-                        current_node=message.content["current_node"]
-                        if isinstance(message.content, dict)
-                        else None,
-                        memory=agent.state_dict(session_id),
-                    ),
+                    _postprocess_agent_message(message.model_dump()),
                     ensure_ascii=False,
                 )
                 yield {"data": response_json}
@@ -110,13 +130,7 @@ async def run_async(request: GenerationParams):
         try:
             async for message in agent(inputs, session_id=session_id):
                 response_json = json.dumps(
-                    dict(
-                        response=message.model_dump(),
-                        current_node=message.content["current_node"]
-                        if isinstance(message.content, dict)
-                        else None,
-                        memory=agent.state_dict(session_id),
-                    ),
+                    _postprocess_agent_message(message.model_dump()),
                     ensure_ascii=False,
                 )
                 yield {"data": response_json}
