@@ -19,11 +19,9 @@ class StreamingAgentMixin:
         for response_message in self.forward(*message, session_id=session_id, **kwargs):
             if not isinstance(response_message, AgentMessage):
                 model_state, response = response_message
-                parsed_response = self.parse_response(response)
                 response_message = AgentMessage(
                     sender=self.name,
                     content=response,
-                    formatted=parsed_response,
                     stream_state=model_state,
                 )
             yield response_message.model_copy()
@@ -52,11 +50,9 @@ class AsyncStreamingAgentMixin:
         async for response_message in self.forward(*message, session_id=session_id, **kwargs):
             if not isinstance(response_message, AgentMessage):
                 model_state, response = response_message
-                parsed_response = self.parse_response(response)
                 response_message = AgentMessage(
                     sender=self.name,
                     content=response,
-                    formatted=parsed_response,
                     stream_state=model_state,
                 )
             yield response_message.model_copy()
@@ -82,7 +78,12 @@ class StreamingAgent(StreamingAgentMixin, Agent):
         for model_state, response, _ in self.llm.stream_chat(
             formatted_messages, session_id=session_id, **kwargs
         ):
-            yield model_state, response
+            yield AgentMessage(
+                sender=self.name,
+                content=response,
+                formatted=self.output_format.parse_response(response),
+                stream_state=model_state,
+            ) if self.output_format else (model_state, response)
 
 
 class AsyncStreamingAgent(AsyncStreamingAgentMixin, AsyncAgent):
@@ -98,7 +99,12 @@ class AsyncStreamingAgent(AsyncStreamingAgentMixin, AsyncAgent):
         async for model_state, response, _ in self.llm.stream_chat(
             formatted_messages, session_id=session_id, **kwargs
         ):
-            yield model_state, response
+            yield AgentMessage(
+                sender=self.name,
+                content=response,
+                formatted=self.output_format.parse_response(response),
+                stream_state=model_state,
+            ) if self.output_format else (model_state, response)
 
 
 class StreamingAgentForInternLM(StreamingAgentMixin, AgentForInternLM):
