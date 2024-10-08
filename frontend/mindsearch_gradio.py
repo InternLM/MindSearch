@@ -80,41 +80,37 @@ def format_response(gr_history, message, response, idx=-1):
     if message["stream_state"] == AgentStatusCode.STREAM_ING:
         gr_history[idx].content = response
     elif message["stream_state"] == AgentStatusCode.CODING:
-        action = response.split("<|action_start|><|interpreter|>")[-1].lstrip()
         if gr_history[idx].thought_metadata.tool_name is None:
-            gr_history[idx].content = gr_history[idx].content.split(
-                "<|action_start|><|interpreter|>"
-            )[0]
+            gr_history[idx].content = gr_history[idx].content.split("<|action_start|>")[0]
             gr_history.insert(
                 idx + 1,
                 ChatMessage(
                     role="assistant",
-                    content=action,
+                    content=response,
                     thought_metadata=ThoughtMetadata(tool_name="🖥️ Code Interpreter"),
                 ),
             )
         else:
-            gr_history[idx].content = action
+            gr_history[idx].content = response
     elif message["stream_state"] == AgentStatusCode.PLUGIN_START:
-        action = response.split("<|action_start|><|plugin|>")[-1].lstrip()
+        if isinstance(response, dict):
+            response = json.dumps(response, ensure_ascii=False, indent=4)
         if gr_history[idx].thought_metadata.tool_name is None:
-            gr_history[idx].content = gr_history[idx].content.split("<|action_start|><|plugin|>")[
-                0
-            ]
+            gr_history[idx].content = gr_history[idx].content.split("<|action_start|>")[0]
             gr_history.insert(
                 idx + 1,
                 ChatMessage(
                     role="assistant",
-                    content="```json\n" + action,
+                    content="```json\n" + response,
                     thought_metadata=ThoughtMetadata(tool_name="🌐 Web Browser"),
                 ),
             )
         else:
-            gr_history[idx].content = "```json\n" + action
+            gr_history[idx].content = "```json\n" + response
     elif message["stream_state"] == AgentStatusCode.PLUGIN_END and isinstance(response, dict):
-        gr_history[
-            idx
-        ].content = f"```json\n{json.dumps(response, ensure_ascii=False, indent=4)}\n```"
+        gr_history[idx].content = (
+            f"```json\n{json.dumps(response, ensure_ascii=False, indent=4)}\n```"
+        )
     elif message["stream_state"] in [AgentStatusCode.CODE_RETURN, AgentStatusCode.PLUGIN_RETURN]:
         try:
             content = json.loads(message["content"])
@@ -137,6 +133,7 @@ def format_response(gr_history, message, response, idx=-1):
 
 
 def predict(history_planner, history_searcher, node_cnt):
+
     def streaming(raw_response):
         for chunk in raw_response.iter_lines(
             chunk_size=8192, decode_unicode=False, delimiter=b"\n"
@@ -152,10 +149,12 @@ def predict(history_planner, history_searcher, node_cnt):
                 response = json.loads(decoded)
                 yield (
                     response["current_node"],
-                    response["response"],
-                    response["response"]["formatted"]["node"],
+                    (
+                        response["response"]["formatted"]["node"][response["current_node"]]
+                        if response["current_node"]
+                        else response["response"]
+                    ),
                     response["response"]["formatted"]["adjacency_list"],
-                    response["memory"]["agent.memory"],
                 )
 
     global PLANNER_HISTORY
@@ -164,30 +163,29 @@ def predict(history_planner, history_searcher, node_cnt):
 
     url = "http://localhost:8002/solve"
     data = {"inputs": PLANNER_HISTORY[-3].content}
-    raw_response = requests.post(url, json=data, timeout=20, stream=True)
+    raw_response = requests.post(url, json=data, timeout=60, stream=True)
 
     node_id2msg_idx = {}
     for resp in streaming(raw_response):
-        node_name, agent_message, nodes, adjacency_list, history = resp
-        if len(adjacency_list) > 0 and len(nodes) != node_cnt:
-            node_cnt = len(nodes)
+        node_name, agent_message, adjacency_list = resp
+        dedup_nodes = set(adjacency_list) | {
+            val["name"] for vals in adjacency_list.values() for val in vals
+        }
+        if dedup_nodes and len(dedup_nodes) != node_cnt:
+            node_cnt = len(dedup_nodes)
             graph_path = draw_search_graph(adjacency_list)
             search_graph_msg.file.path = graph_path
             search_graph_msg.file.mime_type = mimetypes.guess_type(graph_path)[0]
         if node_name:
             if node_name in ["root", "response"]:
                 continue
-            node = nodes[node_name]
-            node_id = f'【{node_name}】{node["content"]}'
-            agent_message, history = node["response"], node["memory"]["agent.memory"]
+            node_id = f'【{node_name}】{agent_message["content"]}'
+            agent_message = agent_message["response"]
             response = (
-                (
-                    agent_message["formatted"]["action"]
-                    if agent_message["stream_state"] == AgentStatusCode.PLUGIN_END
-                    else agent_message["content"]
-                )
-                if agent_message["sender"].lower().endswith("agent")
-                else history[-1]["content"]
+                agent_message["formatted"]["action"]
+                if agent_message["stream_state"]
+                in [AgentStatusCode.PLUGIN_START, AgentStatusCode.PLUGIN_END]
+                else agent_message["formatted"] and agent_message["formatted"].get("thought")
             )
             if node_id not in node_id2msg_idx:
                 node_id2msg_idx[node_id] = len(history_searcher) + 1
@@ -204,9 +202,10 @@ def predict(history_planner, history_searcher, node_cnt):
             yield history_planner, history_searcher, node_cnt
         else:
             response = (
-                agent_message["content"]
-                if agent_message["sender"].lower().endswith("agent")
-                else history[-1]["content"]
+                agent_message["formatted"]["action"]
+                if agent_message["stream_state"]
+                in [AgentStatusCode.CODING, AgentStatusCode.CODE_END]
+                else agent_message["formatted"] and agent_message["formatted"].get("thought")
             )
             format_response(history_planner, agent_message, response, -2)
             if agent_message["stream_state"] == AgentStatusCode.END:
@@ -215,33 +214,78 @@ def predict(history_planner, history_searcher, node_cnt):
     return history_planner, history_searcher, node_cnt
 
 
-with gr.Blocks() as demo:
-    gr.HTML("""<h1 align="center">WebAgent Gradio Simple Demo</h1>""")
-    # search_graph = gr.Image(label="search graph", show_label=True, height=250, interactive=False)
+with gr.Blocks(css=os.path.join(os.path.dirname(__file__), "css", "gradio_front.css")) as demo:
+    with gr.Column(elem_classes="chat-box"):
+        gr.HTML("""<h1 align="center">MindSearch Gradio Demo</h1>""")
+        gr.HTML(
+            """<p style="text-align: center; font-family: Arial, sans-serif;">
+                MindSearch is an open-source AI Search Engine Framework with Perplexity.ai Pro performance.
+                You can deploy your own Perplexity.ai-style search engine using either
+                closed-source LLMs (GPT, Claude)
+                or open-source LLMs (InternLM2.5-7b-chat).</p> """
+        )
+        gr.HTML(
+            """
+        <div style="text-align: center; font-size: 16px;">
+        <a href="https://github.com/InternLM/MindSearch" style="margin-right: 15px;
+         text-decoration: none; color: #4A90E2;" target="_blank">🔗 GitHub</a>
+        <a href="https://arxiv.org/abs/2407.20183" style="margin-right: 15px;
+         text-decoration: none; color: #4A90E2;" target="_blank">📄 Arxiv</a>
+        <a href="https://huggingface.co/papers/2407.20183" style="margin-right:
+         15px; text-decoration: none; color: #4A90E2;" target="_blank">📚 Hugging Face Papers</a>
+        <a href="https://huggingface.co/spaces/internlm/MindSearch"
+         style="text-decoration: none; color: #4A90E2;" target="_blank">🤗 Hugging Face Demo</a>
+        </div>"""
+        )
+    gr.HTML(
+        """
+       <h1 align='right'><img
+        src=
+        'https://raw.githubusercontent.com/InternLM/MindSearch/98fd84d566fe9e3adc5028727f72f2944098fd05/assets/logo.svg'
+         alt='MindSearch Logo1' class="logo"></h1> """
+    )
     node_count = gr.State(0)
     with gr.Row():
         planner = AgentChatbot(
             label="planner",
-            height=700,
+            height=600,
             show_label=True,
             show_copy_button=True,
             bubble_full_width=False,
             render_markdown=True,
+            elem_classes="chatbot-container",
         )
         searcher = AgentChatbot(
             label="searcher",
-            height=700,
+            height=600,
             show_label=True,
             show_copy_button=True,
             bubble_full_width=False,
             render_markdown=True,
+            elem_classes="chatbot-container",
         )
-    user_input = gr.Textbox(show_label=False, placeholder="inputs...", lines=5, container=False)
-    with gr.Row():
-        with gr.Column(scale=2):
-            submitBtn = gr.Button("Submit")
-        with gr.Column(scale=1, min_width=20):
-            emptyBtn = gr.Button("Clear History")
+    with gr.Row(elem_classes="chat-box"):
+        # Text input area
+        user_input = gr.Textbox(
+            show_label=False,
+            placeholder="Type your message...",
+            lines=1,
+            container=False,
+            elem_classes="editor",
+        )
+        # Buttons (now in the same Row)
+        submitBtn = gr.Button("submit", variant="primary", elem_classes="toolbarButton")
+        clearBtn = gr.Button("clear", variant="secondary", elem_classes="toolbarButton")
+    with gr.Row(elem_classes="examples-container"):
+        examples_component = gr.Examples(
+            [
+                ["Find legal precedents in contract law."],
+                ["What are the top 10 e-commerce websites?"],
+                ["Generate a report on global climate change."],
+            ],
+            inputs=user_input,
+            label="Try these examples:",
+        )
 
     def user(query, history):
         history.append(ChatMessage(role="user", content=query))
@@ -260,7 +304,7 @@ with gr.Blocks() as demo:
         [planner, searcher, node_count],
         [planner, searcher, node_count],
     )
-    emptyBtn.click(rst_mem, [planner, searcher], [planner, searcher, node_count], queue=False)
+    clearBtn.click(rst_mem, [planner, searcher], [planner, searcher], queue=False)
 
 demo.queue()
 demo.launch(server_name="127.0.0.1", server_port=7882, inbrowser=True, share=False)

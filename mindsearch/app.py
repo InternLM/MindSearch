@@ -1,7 +1,7 @@
 import asyncio
 import json
 import logging
-import uuid
+import random
 from typing import Dict, List, Union
 
 import janus
@@ -39,7 +39,7 @@ app.add_middleware(
 
 class GenerationParams(BaseModel):
     inputs: Union[str, List[Dict]]
-    session_id: int = Field(default_factory=lambda: uuid.uuid4().int)
+    session_id: int = Field(default_factory=lambda: random.randint(0, 999999))
     agent_cfg: Dict = dict()
 
 
@@ -70,6 +70,7 @@ def _postprocess_agent_message(message: dict) -> dict:
 
 
 async def run(request: GenerationParams):
+
     async def generate():
         try:
             queue = janus.Queue()
@@ -126,6 +127,7 @@ async def run(request: GenerationParams):
 
 
 async def run_async(request: GenerationParams):
+
     async def generate():
         try:
             async for message in agent(inputs, session_id=session_id):

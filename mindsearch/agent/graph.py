@@ -16,6 +16,7 @@ from .streaming import AsyncStreamingAgentForInternLM, StreamingAgentForInternLM
 
 
 class SearcherAgent(StreamingAgentForInternLM):
+
     def __init__(
         self,
         user_input_template: str = "{question}",
@@ -42,6 +43,7 @@ class SearcherAgent(StreamingAgentForInternLM):
 
 
 class AsyncSearcherAgent(AsyncStreamingAgentForInternLM):
+
     def __init__(
         self,
         user_input_template: str = "{question}",
@@ -134,7 +136,7 @@ class WebSearchGraph:
                     **self.SEARCHER_CONFIG,
                     "plugins": deepcopy(self.SEARCHER_CONFIG.get("plugins")),
                 }
-                agent, session_id = AsyncSearcherAgent(**cfg), uuid.uuid4().int
+                agent, session_id = AsyncSearcherAgent(**cfg), random.randint(0, 999999)
                 searcher_message = AgentMessage(sender="SearcherAgent", content="")
                 async for searcher_message in agent(
                     question=node_content,
@@ -163,7 +165,7 @@ class WebSearchGraph:
                     **self.SEARCHER_CONFIG,
                     "plugins": deepcopy(self.SEARCHER_CONFIG.get("plugins")),
                 }
-                agent, session_id = SearcherAgent(**cfg), uuid.uuid4().int
+                agent, session_id = SearcherAgent(**cfg), random.randint(0, 999999)
                 searcher_message = AgentMessage(sender="SearcherAgent", content="")
                 for searcher_message in agent(
                     question=node_content,
@@ -177,9 +179,9 @@ class WebSearchGraph:
                     self.searcher_resp_queue.put((node_name, self.nodes[node_name], []))
                 self.searcher_resp_queue.put((None, None, None))
 
-            self.future_to_query[
-                self.executor.submit(_search_node_stream)
-            ] = f"{node_name}-{node_content}"
+            self.future_to_query[self.executor.submit(_search_node_stream)] = (
+                f"{node_name}-{node_content}"
+            )
 
         self.n_active_tasks += 1
 
@@ -243,6 +245,7 @@ class ExecutionAction(BaseAction):
     """Tool used by MindSearch planner to execute graph node query."""
 
     def run(self, command, local_dict, global_dict, stream_graph=False):
+
         def extract_code(text: str) -> str:
             text = re.sub(r"from ([\w.]+) import WebSearchGraph", "", text)
             triple_match = re.search(r"```[^\n]*\n(.+?)```", text, re.DOTALL)
