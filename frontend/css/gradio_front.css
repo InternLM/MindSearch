@@ -1,0 +1,82 @@
+.gradio-container.gradio-container-4-44-0.svelte-wpkpf6.app {
+
+    /* /* background-image:url('https://images.unsplash.com/photo-1577563908411-5077b6dc7624?ixlib=rb-4.0.3&q=85&fm=jpg&crop=entropy&cs=srgb&dl=volodymyr-hryshchenko-V5vqWC9gyEU-unsplash.jpg&w=2400'); */
+    background-image: url('https://github.com/InternLM/MindSearch/blob/main/frontend/React/src/assets/background.png?raw=true');
+    background-size: cover;
+    /*整张图片覆盖页面*/
+    background-position: center;
+    background-repeat: no-repeat;
+    background-color: #f9fafb;
+}
+
+.logo {
+    width: 150px;
+}
+
+.chatbot-container {
+    height: auto;
+    max-height: 600px;
+    /* Maximum height for chatbots */
+    overflow-y: auto;
+}
+
+/* Style the main chat bar container */
+.chat-box {
+    background-color: #f9fafb;
+    border-radius: 8px;
+    padding: 10px;
+    display: flex;
+    align-items: center;
+}
+
+/* Style the text input area */
+.editor {
+    border: none;
+    background-color: transparent;
+    padding: 5px;
+    width: 100%;
+    font-size: 16px;
+    flex: 9;
+    /* Allow the input to grow */
+}
+
+
+
+.toolbarButton {
+    padding: 5px 10px;
+    /* Reduce padding to make buttons smaller */
+    font-size: 14px;
+    /* Adjust font size if needed */
+    margin-left: 10px;
+    /* Add spacing between buttons */
+}
+
+.examples-container {
+    margin-top: 2px;
+    /* Reduced margin */
+}
+
+.flex-wrap.user.svelte-1e1jlin.svelte-1e1jlin.svelte-1e1jlin {
+    background-color: #93c5fd;
+}
+
+#component-10 {
+    color: #f9fafb;
+    gap: 0px;
+}
+
+#component-16 {
+    gap: 0px;
+}
+
+#component-9 {
+    color: #f9fafb;
+}
+
+#component-1 {
+    color: #f9fafb;
+}
+
+.gradio-app.gradio-container.gradio-container-4-44-0.contain.chat-box {
+    background-color: #f9fafb;
+}
