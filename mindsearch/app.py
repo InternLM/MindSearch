@@ -61,16 +61,23 @@ def _postprocess_agent_message(message: dict) -> dict:
             node_fmt = node["response"]["formatted"]
             if isinstance(node_fmt, dict) and "thought" in node_fmt and "action" in node_fmt:
                 node["response"]["content"] = None
+                node_fmt["thought"] = (
+                    node_fmt["thought"] and node_fmt["thought"].split("<|action_start|>")[0]
+                )
+                if isinstance(node_fmt["action"], str):
+                    node_fmt["action"] = node_fmt["action"].split("<|action_end|>")[0]
     else:
         if isinstance(fmt, dict) and "thought" in fmt and "action" in fmt:
             message["content"] = None
+            fmt["thought"] = fmt["thought"] and fmt["thought"].split("<|action_start|>")[0]
+            if isinstance(fmt["action"], str):
+                fmt["action"] = fmt["action"].split("<|action_end|>")[0]
         for key in ["node"]:
             fmt.pop(key, None)
     return dict(current_node=current_node, response=message)
 
 
 async def run(request: GenerationParams):
-
     async def generate():
         try:
             queue = janus.Queue()
@@ -127,7 +134,6 @@ async def run(request: GenerationParams):
 
 
 async def run_async(request: GenerationParams):
-
     async def generate():
         try:
             async for message in agent(inputs, session_id=session_id):
