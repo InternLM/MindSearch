@@ -5,7 +5,7 @@ fastapi
 lagent @ git+https://github.com/InternLM/lagent.git@v1.0.0
 gradio
 janus
-lmdeploy
+lmdeploy==0.5.3
 pyvis
 sse-starlette
 schemdraw
