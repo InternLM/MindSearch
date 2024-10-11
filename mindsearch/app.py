@@ -130,7 +130,7 @@ async def run(request: GenerationParams):
         model_format=args.model_format,
         search_engine=args.search_engine,
     )
-    return EventSourceResponse(generate())
+    return EventSourceResponse(generate(), ping=300)
 
 
 async def run_async(request: GenerationParams):
@@ -160,7 +160,7 @@ async def run_async(request: GenerationParams):
         search_engine=args.search_engine,
         use_async=True,
     )
-    return EventSourceResponse(generate())
+    return EventSourceResponse(generate(), ping=300)
 
 
 app.add_api_route("/solve", run_async if args.asy else run, methods=["POST"])
