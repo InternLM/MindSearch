@@ -16,7 +16,6 @@ from .streaming import AsyncStreamingAgentForInternLM, StreamingAgentForInternLM
 
 
 class SearcherAgent(StreamingAgentForInternLM):
-
     def __init__(
         self,
         user_input_template: str = "{question}",
@@ -43,7 +42,6 @@ class SearcherAgent(StreamingAgentForInternLM):
 
 
 class AsyncSearcherAgent(AsyncStreamingAgentForInternLM):
-
     def __init__(
         self,
         user_input_template: str = "{question}",
@@ -138,17 +136,20 @@ class WebSearchGraph:
                 }
                 agent, session_id = AsyncSearcherAgent(**cfg), random.randint(0, 999999)
                 searcher_message = AgentMessage(sender="SearcherAgent", content="")
-                async for searcher_message in agent(
-                    question=node_content,
-                    topic=self.nodes["root"]["content"],
-                    history=parent_response,
-                    session_id=session_id,
-                ):
-                    self.nodes[node_name]["response"] = searcher_message.model_dump()
-                    self.nodes[node_name]["memory"] = agent.state_dict(session_id=session_id)
-                    self.nodes[node_name]["session_id"] = session_id
-                    self.searcher_resp_queue.put((node_name, self.nodes[node_name], []))
-                self.searcher_resp_queue.put((None, None, None))
+                try:
+                    async for searcher_message in agent(
+                        question=node_content,
+                        topic=self.nodes["root"]["content"],
+                        history=parent_response,
+                        session_id=session_id,
+                    ):
+                        self.nodes[node_name]["response"] = searcher_message.model_dump()
+                        self.nodes[node_name]["memory"] = agent.state_dict(session_id=session_id)
+                        self.nodes[node_name]["session_id"] = session_id
+                        self.searcher_resp_queue.put((node_name, self.nodes[node_name], []))
+                    self.searcher_resp_queue.put((None, None, None))
+                except Exception as exc:
+                    self.searcher_resp_queue.put((exc, None, None))
 
             self.future_to_query[
                 asyncio.run_coroutine_threadsafe(
@@ -167,21 +168,24 @@ class WebSearchGraph:
                 }
                 agent, session_id = SearcherAgent(**cfg), random.randint(0, 999999)
                 searcher_message = AgentMessage(sender="SearcherAgent", content="")
-                for searcher_message in agent(
-                    question=node_content,
-                    topic=self.nodes["root"]["content"],
-                    history=parent_response,
-                    session_id=session_id,
-                ):
-                    self.nodes[node_name]["response"] = searcher_message.model_dump()
-                    self.nodes[node_name]["memory"] = agent.state_dict(session_id=session_id)
-                    self.nodes[node_name]["session_id"] = session_id
-                    self.searcher_resp_queue.put((node_name, self.nodes[node_name], []))
-                self.searcher_resp_queue.put((None, None, None))
+                try:
+                    for searcher_message in agent(
+                        question=node_content,
+                        topic=self.nodes["root"]["content"],
+                        history=parent_response,
+                        session_id=session_id,
+                    ):
+                        self.nodes[node_name]["response"] = searcher_message.model_dump()
+                        self.nodes[node_name]["memory"] = agent.state_dict(session_id=session_id)
+                        self.nodes[node_name]["session_id"] = session_id
+                        self.searcher_resp_queue.put((node_name, self.nodes[node_name], []))
+                    self.searcher_resp_queue.put((None, None, None))
+                except Exception as exc:
+                    self.searcher_resp_queue.put((exc, None, None))
 
-            self.future_to_query[self.executor.submit(_search_node_stream)] = (
-                f"{node_name}-{node_content}"
-            )
+            self.future_to_query[
+                self.executor.submit(_search_node_stream)
+            ] = f"{node_name}-{node_content}"
 
         self.n_active_tasks += 1
 
@@ -245,7 +249,6 @@ class ExecutionAction(BaseAction):
     """Tool used by MindSearch planner to execute graph node query."""
 
     def run(self, command, local_dict, global_dict, stream_graph=False):
-
         def extract_code(text: str) -> str:
             text = re.sub(r"from ([\w.]+) import WebSearchGraph", "", text)
             triple_match = re.search(r"```[^\n]*\n(.+?)```", text, re.DOTALL)
@@ -265,6 +268,8 @@ class ExecutionAction(BaseAction):
         while graph.n_active_tasks:
             while not graph.searcher_resp_queue.empty():
                 node_name, _, _ = graph.searcher_resp_queue.get(timeout=60)
+                if isinstance(node_name, Exception):
+                    raise node_name
                 if node_name is None:
                     graph.n_active_tasks -= 1
                     continue
