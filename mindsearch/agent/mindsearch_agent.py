@@ -157,6 +157,7 @@ class WebSearchGraph:
                 self.nodes[node_name]['detail'] = answer
             except Exception as e:
                 logger.exception(f'Error in model_stream_thread: {e}')
+                raise
 
         self.future_to_query[self.executor.submit(
             model_stream_thread)] = f'{node_name}-{node_content}'
@@ -355,6 +356,8 @@ class MindSearchAgent(BaseAgent):
                 return single_match.group(1)
             return text
 
+        exit_flag = threading.Event()
+
         def run_command(cmd):
             try:
                 exec(cmd, globals(), self.local_dict)
@@ -366,6 +369,10 @@ class MindSearchAgent(BaseAgent):
                 plan_graph.searcher_resp_queue.put(plan_graph.end_signal)
             except Exception as e:
                 logger.exception(f'Error executing code: {e}')
+                exit_flag.set()
+                if 'graph' in self.local_dict:
+                    for future in self.local_dict['graph'].future_to_query:
+                        future.cancel()
                 raise
 
         command = extract_code(command)
@@ -375,48 +382,101 @@ class MindSearchAgent(BaseAgent):
 
         responses = defaultdict(list)
         ordered_nodes = []
+        root_response_edges = []
         active_node = None
+        node_state_dit = dict()
 
-        while True:
-            try:
-                item = self.local_dict.get('graph').searcher_resp_queue.get(
-                    timeout=60)
-                if item is WebSearchGraph.end_signal:
-                    for node_name in ordered_nodes:
-                        # resp = None
-                        for resp in responses[node_name]:
-                            yield deepcopy(resp)
-                        # if resp:
-                        #     assert resp[1][
-                        #         'detail'].state == AgentStatusCode.END
-                    break
-                node_name, node, adj = item
-                if node_name in ['root', 'response']:
-                    yield deepcopy((node_name, node, adj))
-                else:
+        def fetch_from_queue():
+            while not exit_flag.is_set():
+                try:
+                    item = self.local_dict.get(
+                        'graph').searcher_resp_queue.get(timeout=60)
+                    if item is WebSearchGraph.end_signal:
+                        ordered_nodes.append(WebSearchGraph.end_signal)
+                        break
+                    node_name, node, adj = item
+                    if node_name in ['root', 'response'] or adj:
+                        root_response_edges.append(item)
+                        continue
                     if node_name not in ordered_nodes:
                         ordered_nodes.append(node_name)
                     responses[node_name].append((node_name, node, adj))
-                    if not active_node and ordered_nodes:
-                        active_node = ordered_nodes[0]
-                    while active_node and responses[active_node]:
-                        if return_early:
-                            if 'detail' in responses[active_node][-1][
-                                    1] and responses[active_node][-1][1][
-                                        'detail'].state == AgentStatusCode.END:
-                                item = responses[active_node][-1]
-                            else:
-                                item = responses[active_node].pop(0)
-                        else:
-                            item = responses[active_node].pop(0)
-                        if 'detail' in item[1] and item[1][
-                                'detail'].state == AgentStatusCode.END:
-                            ordered_nodes.pop(0)
-                            responses[active_node].clear()
-                            active_node = None
-                        yield deepcopy(item)
-            except queue.Empty:
-                if not producer_thread.is_alive():
-                    break
+                except queue.Empty:
+                    if not producer_thread.is_alive():
+                        break
+
+        # 启动线程从队列中获取元素
+        fetch_thread = threading.Thread(target=fetch_from_queue)
+        fetch_thread.start()
+
+        def handle_return_early(active_node):
+            item = responses[active_node][-1]
+            if active_node not in node_state_dit and 'detail' in item[
+                    1] and item[1]['detail'].state == AgentStatusCode.END:
+                node_name, node, adj = deepcopy(item)
+                if len(node['detail'].actions) != 2:
+                    raise Exception('Invalid Actions.')
+
+                def process_node(state, action_index):
+                    node['detail'].state = state
+                    node['detail'].response = item[1]['detail'].actions[
+                        action_index].thought
+                    if state == AgentStatusCode.STREAM_ING:
+                        node['detail'].actions = item[1][
+                            'detail'].actions[:action_index]
+                    else:
+                        node['detail'].actions = item[1][
+                            'detail'].actions[:action_index + 1]
+                    node['response'] = node['detail'].response
+                    yield deepcopy((node_name, node, adj))
+
+                # First thought and action
+                yield from process_node(AgentStatusCode.STREAM_ING, 0)
+                yield from process_node(AgentStatusCode.PLUGIN_RETURN, 0)
+
+                # Second thought and action
+                yield from process_node(AgentStatusCode.STREAM_ING, 1)
+                yield from process_node(AgentStatusCode.PLUGIN_RETURN, 1)
+
+                # Final summary and end
+                node['detail'].state = AgentStatusCode.STREAM_ING
+                node['detail'].response = item[1]['detail'].response
+                node['response'] = node['detail'].response
+                yield deepcopy((node_name, node, adj))
+                yield deepcopy(item)
+
+                ordered_nodes.pop(0)
+                responses[active_node].clear()
+                active_node = None
+                node_state_dit[node_name] = 'END'
+                item = None
+            else:
+                item = responses[active_node].pop(0)
+                node_state_dit[active_node] = 'ING'
+            return item
+
+        while not exit_flag.is_set():
+            while root_response_edges:
+                item = root_response_edges.pop(0)
+                yield deepcopy(item)
+            if active_node is None and ordered_nodes:
+                active_node = ordered_nodes[0]
+            if active_node is WebSearchGraph.end_signal:
+                break
+            while active_node and responses[active_node]:
+                if return_early:
+                    item = handle_return_early(active_node)
+                    if not item:
+                        continue
+                else:
+                    item = responses[active_node].pop(0)
+                if 'detail' in item[1] and item[1][
+                        'detail'].state == AgentStatusCode.END:
+                    ordered_nodes.pop(0)
+                    responses[active_node].clear()
+                    active_node = None
+                yield deepcopy(item)
+
+        fetch_thread.join()  # 确保线程结束
         producer_thread.join()
         return
