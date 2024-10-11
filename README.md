@@ -6,7 +6,7 @@
 
 [🌐 Project Page](https://mindsearch.netlify.app/) | [📃 Paper](https://arxiv.org/abs/2407.20183) | [🤗 Hugging Face Space](https://huggingface.co/spaces/internlm/MindSearchReact)| [💻 ModelScope](https://www.modelscope.cn/studios/Shanghai_AI_Laboratory/MindSearch)
 
-English | [简体中文](README_zh-CN.md)
+English | [简体中文](README_zh-CN.md) | [日本語](README_ja.md)
 
 <https://github.com/user-attachments/assets/44ffe4b9-be26-4b93-a77b-02fed16e33fe>
 
