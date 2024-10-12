@@ -7,6 +7,7 @@ from typing import Dict, List, Union
 import janus
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.requests import Request
 from pydantic import BaseModel, Field
 from sse_starlette.sse import EventSourceResponse
 
@@ -77,7 +78,7 @@ def _postprocess_agent_message(message: dict) -> dict:
     return dict(current_node=current_node, response=message)
 
 
-async def run(request: GenerationParams):
+async def run(request: GenerationParams, _request: Request):
     async def generate():
         try:
             queue = janus.Queue()
@@ -110,6 +111,8 @@ async def run(request: GenerationParams):
                     ensure_ascii=False,
                 )
                 yield {"data": response_json}
+                if await _request.is_disconnected():
+                    break
         except Exception as exc:
             msg = "An error occurred while generating the response."
             logging.exception(msg)
@@ -133,7 +136,7 @@ async def run(request: GenerationParams):
     return EventSourceResponse(generate(), ping=300)
 
 
-async def run_async(request: GenerationParams):
+async def run_async(request: GenerationParams, _request: Request):
     async def generate():
         try:
             async for message in agent(inputs, session_id=session_id):
@@ -142,6 +145,8 @@ async def run_async(request: GenerationParams):
                     ensure_ascii=False,
                 )
                 yield {"data": response_json}
+                if await _request.is_disconnected():
+                    break
         except Exception as exc:
             msg = "An error occurred while generating the response."
             logging.exception(msg)
