@@ -49,6 +49,12 @@ def init_agent(lang="cn",
             type=AsyncWebBrowser if use_async else WebBrowser,
             searcher_type=search_engine,
             topk=6,
+            secret_id=os.getenv("TENCENT_SEARCH_SECRET_ID"),
+            secret_key=os.getenv("TENCENT_SEARCH_SECRET_KEY"),
+        ) if search_engine == "TencentSearch" else dict(
+            type=AsyncWebBrowser if use_async else WebBrowser,
+            searcher_type=search_engine,
+            topk=6,
             api_key=os.getenv("WEB_SEARCH_API_KEY"),
         )
     ]
@@ -66,10 +72,10 @@ def init_agent(lang="cn",
                 if lang == "cn" else searcher_system_prompt_en,
                 tool_info=get_plugin_prompt(plugins),
             ),
-            user_input_template=searcher_input_template_cn
-            if lang == "cn" else searcher_input_template_en,
-            user_context_template=searcher_context_template_cn
-            if lang == "cn" else searcher_context_template_en,
+            user_input_template=(searcher_input_template_cn if lang == "cn"
+                                 else searcher_input_template_en),
+            user_context_template=(searcher_context_template_cn if lang == "cn"
+                                   else searcher_context_template_en),
         ),
         summary_prompt=FINAL_RESPONSE_CN
         if lang == "cn" else FINAL_RESPONSE_EN,
