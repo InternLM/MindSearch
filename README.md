@@ -39,7 +39,7 @@ mv .env.example .env
 Setup FastAPI Server.
 
 ```bash
-python -m mindsearch.app --lang en --model_format internlm_server --search_engine DuckDuckGoSearch
+python -m mindsearch.app --lang en --model_format internlm_server --search_engine DuckDuckGoSearch --asy 
 ```
 
 - `--lang`: language of the model, `en` for English and `cn` for Chinese.
@@ -52,8 +52,10 @@ python -m mindsearch.app --lang en --model_format internlm_server --search_engin
   - `BingSearch` for Bing search engine.
   - `BraveSearch` for Brave search web api engine.
   - `GoogleSearch` for Google Serper web search api engine.
+  - `TencentSearch` for Tencent search api engine.
   
-  Please set your Web Search engine API key as the `WEB_SEARCH_API_KEY` environment variable unless you are using `DuckDuckGo`.
+  Please set your Web Search engine API key as the `WEB_SEARCH_API_KEY` environment variable unless you are using `DuckDuckGo`, or `TencentSearch` that requires secret id as `TENCENT_SEARCH_SECRET_ID` and secret key as `TENCENT_SEARCH_SECRET_KEY`.
+- `--asy`: deploy asynchronous agents.
 
 ### Step4: Setup MindSearch Frontend
 
@@ -98,6 +100,7 @@ To use a different type of web search API, modify the `searcher_type` attribute 
 - `DuckDuckGoSearch`
 - `BraveSearch`
 - `BingSearch`
+- `TencentSearch`
 
 For example, to change to the Brave Search API, you would configure it as follows:
 
