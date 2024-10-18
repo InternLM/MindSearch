@@ -65,13 +65,11 @@ def draw_search_graph(adjacency_list: dict, suffix=".png", dpi=360) -> str:
     return path
 
 
-def rst_mem(history_planner: list, history_searcher: list):
+def rst_mem():
     """Reset the chatbot memory."""
-    history_planner = []
-    history_searcher = []
     if PLANNER_HISTORY:
         PLANNER_HISTORY.clear()
-    return history_planner, history_searcher, None, 0
+    return [], [], 0
 
 
 def format_response(gr_history, message, response, idx=-1):
@@ -242,7 +240,7 @@ with gr.Blocks(css=os.path.join(os.path.dirname(__file__), "css", "gradio_front.
        <h1 align='right'><img
         src=
         'https://raw.githubusercontent.com/InternLM/MindSearch/98fd84d566fe9e3adc5028727f72f2944098fd05/assets/logo.svg'
-         alt='MindSearch Logo1' class="logo"></h1> """
+         alt='MindSearch Logo1' class="logo" width="200"></h1> """
     )
     node_count = gr.State(0)
     with gr.Row():
@@ -272,10 +270,11 @@ with gr.Blocks(css=os.path.join(os.path.dirname(__file__), "css", "gradio_front.
             lines=1,
             container=False,
             elem_classes="editor",
+            scale=4,
         )
         # Buttons (now in the same Row)
-        submitBtn = gr.Button("submit", variant="primary", elem_classes="toolbarButton")
-        clearBtn = gr.Button("clear", variant="secondary", elem_classes="toolbarButton")
+        submitBtn = gr.Button("submit", variant="primary", elem_classes="toolbarButton", scale=1)
+        clearBtn = gr.Button("clear", variant="secondary", elem_classes="toolbarButton", scale=1)
     with gr.Row(elem_classes="examples-container"):
         examples_component = gr.Examples(
             [
@@ -304,7 +303,7 @@ with gr.Blocks(css=os.path.join(os.path.dirname(__file__), "css", "gradio_front.
         [planner, searcher, node_count],
         [planner, searcher, node_count],
     )
-    clearBtn.click(rst_mem, [planner, searcher], [planner, searcher], queue=False)
+    clearBtn.click(rst_mem, None, [planner, searcher, node_count], queue=False)
 
 demo.queue()
 demo.launch(server_name="127.0.0.1", server_port=7882, inbrowser=True, share=False)
