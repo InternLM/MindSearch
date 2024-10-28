@@ -21,8 +21,5 @@ RUN pip install --no-cache-dir \
     python-dotenv \ 
     lagent==0.2.4
 
-# lagent requires new lib: class_registry 
-RUN pip install --no-cache-dir class_registry 
-
 # Copy the mindsearch folder to the /root directory of the container
 COPY mindsearch /root/mindsearch

@@ -24,10 +24,7 @@ RUN pip install --no-cache-dir \
     uvicorn \
     griffe==0.48.0 \
     python-dotenv \ 
-    git+https://github.com/InternLM/lagent.git
-
-# lagent requires new lib: class_registry 
-RUN pip install --no-cache-dir class_registry 
+    lagent==0.2.4
 
 # Copy the mindsearch folder to the /root directory of the container
 COPY mindsearch /root/mindsearch

@@ -191,11 +191,11 @@ def main():
         print(t("DOCKER_LAUNCHER_COMPLETE"))
     except KeyboardInterrupt:
         print(t("KEYBOARD_INTERRUPT"))
-        stop_and_remove_containers()
+        # stop_and_remove_containers()
         sys.exit(0)
     except Exception as e:
         print(t("UNEXPECTED_ERROR", error=str(e)))
-        stop_and_remove_containers()
+        # stop_and_remove_containers()
         sys.exit(1)
 
 
