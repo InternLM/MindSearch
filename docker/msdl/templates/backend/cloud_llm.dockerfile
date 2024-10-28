@@ -19,7 +19,7 @@ RUN pip install --no-cache-dir \
     uvicorn \
     griffe==0.48.0 \
     python-dotenv \ 
-    git+https://github.com/InternLM/lagent.git
+    lagent==0.2.4
 
 # lagent requires new lib: class_registry 
 RUN pip install --no-cache-dir class_registry 
