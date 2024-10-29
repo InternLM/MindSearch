@@ -54,7 +54,7 @@ const RenderTest = () => {
       return node;
     });
   }
-  
+
   // 渲染过程中保持渲染文字可见
   const keepScrollTop = (divA: any, divB: any) => {
     // 获取 divB 的当前高度  
@@ -160,10 +160,35 @@ const RenderTest = () => {
     };
   }, []);
 
+  // 存储节点信息
+  const stashNodeInfo = (fullInfo: any, nodeName: string) => {
+    const content = JSON.parse(fullInfo.actions[0].result[0].content);
+    const searchListStashed: any = Object.keys(content).map(item => {
+      return { id: item, ...content[item] };
+    });
+    // 已完成节点信息存储
+    const nodeInfo = {
+      thinkingData: {
+        thought: fullInfo?.actions?.[0]?.thought
+      },
+      queries: fullInfo?.actions?.[0]?.args?.query,
+      readingData: {
+        thought: fullInfo?.actions?.[1]?.thought
+      },
+      searchList: searchListStashed,
+      conclusion: fullInfo?.response || '',
+      selectedIds: fullInfo?.actions?.[1]?.args?.select_ids,
+      subQuestion: fullInfo?.content || ''
+    };
+    const obj: any = JSON.parse(window.localStorage.getItem('nodesInfo') || '{}');
+    console.log('exsited history nodes-----', obj);
+    obj[nodeName] = nodeInfo;
+    window.localStorage.setItem('nodesInfo', JSON.stringify(obj));
+  };
+
   const resetNode = (targetNode: string) => {
     if (targetNode === 'response') return; // 如果开始response了，所有节点都渲染完了，不需要reset
     // 渲染下一个节点前，初始化状态
-    // const newData = findAndUpdateStatus(renderData, targetNode);
     console.log('reset node------', targetNode, renderData);
     setCurrentNode(null);
   };
@@ -192,6 +217,13 @@ const RenderTest = () => {
       }
       if (obj.current_node && obj.response.state === 3) {
         setNodeName(obj.current_node);
+        // 嫦娥6号上有哪些国际科学载荷？它们的作用分别是什么？
+        // console.log('nodeInfo A------', obj?.response?.nodes?.[obj.current_node]?.detail, obj?.response?.nodes?.[obj.current_node]?.detail?.state);
+        // 节点已结束
+        if (obj?.response?.nodes?.[obj.current_node]?.detail?.state === 0) {
+          console.log('node is end------', obj?.response?.nodes?.[obj.current_node]?.detail);
+          stashNodeInfo(obj?.response?.nodes?.[obj.current_node]?.detail, obj.current_node);
+        }
         // 有node
         setObj(obj);
         const newAdjList = obj.response?.adjacency_list;
@@ -252,7 +284,7 @@ const RenderTest = () => {
       const diff = currentTime - lastReceivedTime;
       // 如果超过10秒没有接收到新消息，则关闭连接  
       if (diff > 10000) {
-        console.warn("-----No new data received over 10 seconds-----");
+        console.warn("-----No new data received over 10 seconds, waiting or refresh page and try again-----");
         // eventSource.close();
         // message.warning('超过10s未收到新的返回数据，继续等待或刷新再试');
         lastReceivedTime = new Date().getTime();
