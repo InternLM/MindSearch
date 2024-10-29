@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="msdl",
-    version="0.1.0",
+    version="0.1.1",
     description="MindSearch Docker Launcher",
     packages=find_packages(),
     python_requires=">=3.7",

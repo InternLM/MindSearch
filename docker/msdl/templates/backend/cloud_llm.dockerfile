@@ -8,9 +8,6 @@ WORKDIR /root
 RUN apt-get update && apt-get install -y git && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Install specified dependency packages
-# Note: lmdeploy dependency is already included in the base image, no need to reinstall
-RUN pip install --no-cache-dir git+https://github.com/InternLM/lagent.git
-
 RUN pip install --no-cache-dir \
     duckduckgo_search==5.3.1b1 \
     einops \
@@ -20,7 +17,9 @@ RUN pip install --no-cache-dir \
     sse-starlette \
     termcolor \
     uvicorn \
-    griffe==0.48.0
+    griffe==0.48.0 \
+    python-dotenv \ 
+    lagent==0.2.4
 
 # Copy the mindsearch folder to the /root directory of the container
 COPY mindsearch /root/mindsearch
