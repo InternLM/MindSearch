@@ -1,0 +1,86 @@
+@import './var.less';
+
+// 单行省略
+.singleLine() {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+// 多行文本省略
+.ellispsis(@line) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    /* autoprefixer: off */
+    -webkit-box-orient: vertical;
+    /* autoprefixer: on */
+    -webkit-line-clamp: @line;
+}
+
+// 自定义滚动条
+.custom-scroll(@bg: transparent, @thumbBg: var(--grey-4)) {
+    &::-webkit-scrollbar {
+        width: 4px;
+        background: @bg;
+        height: 0px;
+    }
+    &::-webkit-scrollbar-thumb {
+        border-radius: 20px;
+        background: @bg;
+    }
+    &::-webkit-scrollbar-track {
+        border-radius: 20px;
+        background: @bg;
+        opacity: 0;
+    }
+    &:hover::-webkit-scrollbar-thumb {
+        background: @thumbBg;
+    }
+}
+
+.common-button(@hoverBgColor:var( --blue-3),@bgColor:var(--theme-color),@radius:8px,@color:var(--white-95)) {
+    border-radius: @radius;
+    background-color: @bgColor;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: @color;
+
+    &:hover {
+        background-color: @hoverBgColor;
+        cursor: pointer;
+    }
+}
+
+.diyScroll(@bg: var(--white), @thumbBg: @thumbGrey,@width:@scrollWidth) {
+    &::-webkit-scrollbar {
+        width: @width;
+        background: @bg;
+    }
+    &::-webkit-scrollbar-thumb {
+        border-radius: 90px;
+        background: @bg;
+    }
+    &::-webkit-scrollbar-track {
+        -webkit-box-shadow: inset 0 0 4px @bg;
+        border-radius: 90px;
+        background: @bg;
+        opacity: 0;
+    }
+    &:hover::-webkit-scrollbar-thumb {
+        background: @thumbBg;
+    }
+}
+
+.cursorBlink() {
+    &::after {
+        content: '';
+        border: 1px solid var(--black);
+        margin-left: 0px;
+        flex: 1;
+        -webkit-animation:
+            typing 3s steps(16) forwards,
+            cursor 1s infinite;
+    }
+}
