@@ -1,0 +1,231 @@
+.rightContent {
+  width: 44.44%;
+  max-width: 800px;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  padding: 24px 0 24px 24px;
+  border-radius: 16px;
+  border: 1px solid var(----line-2, #ebecf0);
+  background: var(---fill-0, #fff);
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+  display: flex;
+  justify-content: flex-start;
+  flex-direction: column;
+
+  .toggleIcon {
+    position: absolute;
+    right: 24px;
+    top: 28px;
+    cursor: pointer;
+  }
+
+  .titleNode {
+    color: #121316;
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 30px;
+    margin-bottom: 32px;
+    max-width: calc(100% - 40px);
+  }
+
+  .nodeInfo {
+    height: 100%;
+    overflow-y: auto;
+    padding-right: 24px;
+
+    &.forbidScroll {
+      overflow-y: hidden;
+    }
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background-color: rgba(255, 255, 255, 0);
+      border-radius: 100px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: rgba(255, 255, 255, 0);
+      border-radius: 100px;
+    }
+  }
+
+  .conclusion {
+    padding-top: 8px;
+    color: #121316;
+    font-size: 14px;
+    line-height: 24px;
+
+    ul {
+      padding-left: 24px;
+    }
+  }
+
+  .steps {
+    .title {
+      color: var(--100-text-5, #121316);
+      font-size: 20px;
+      font-weight: 600;
+      line-height: 30px;
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      position: relative;
+
+      .open {
+        position: absolute;
+        right: 0;
+        font-size: 20px;
+        font-weight: normal;
+        cursor: pointer;
+
+        span {
+          color: #121316;
+          // opacity: 0.6;
+        }
+      }
+
+      i {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background-color: #3477EB;
+        margin-right: 12px;
+      }
+    }
+
+    &.thinking,
+    &.select {
+      margin-bottom: 24px;
+    }
+
+    &.select {
+      .searchList {
+        margin-top: 0 !important;
+        border-radius: 8px;
+        background: var(--fill-2, #f4f5f9);
+        padding: 8px;
+      }
+    }
+
+    .con {
+      margin-left: 5px;
+      padding-top: 12px;
+      padding-left: 15px;
+      margin-bottom: 24px;
+      border-left: 1px solid #D7D8DD;
+      height: auto;
+
+      &.limitHeight {
+        max-height: calc(100vh - 320px);
+        overflow-y: auto;
+
+        &::-webkit-scrollbar {
+          width: 6px;
+        }
+
+        &::-webkit-scrollbar-track {
+          background-color: rgba(255, 255, 255, 0);
+          border-radius: 100px;
+        }
+
+        &::-webkit-scrollbar-thumb {
+          background-color: rgba(255, 255, 255, 0);
+          border-radius: 100px;
+        }
+      }
+
+      .draft {
+        margin-bottom: 20px;
+      }
+
+      p {
+        margin: 0;
+        line-height: 24px;
+      }
+
+      &.collapsed {
+        overflow: hidden;
+        height: 0;
+        padding-top: 24px;
+        margin-bottom: 0 !important;
+
+        // transition: all 1s;
+
+      }
+    }
+
+    &:last-child {
+      .collapsed {
+        padding-top: 0;
+      }
+    }
+  }
+
+  .query,
+  >.searchList {
+    margin-top: 24px;
+    margin-bottom: 24px;
+  }
+
+  .subTitle {
+    color: var(--100-text-5, #121316);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 24px;
+    margin-bottom: 12px;
+
+    span {
+      margin-right: 4px;
+    }
+  }
+
+  .searchList {
+    margin-top: 0 !important;
+    border-radius: 16px;
+    background: var(--fill-2, #f4f5f9);
+    padding: 8px;
+  }
+
+  .searchList {
+    .thought {
+      color: rgba(18, 19, 22, 0.8);
+      font-size: 14px;
+      line-height: 24px;
+      margin-bottom: 16px;
+    }
+
+    .scrollCon {
+      padding-right: 6px;
+      height: auto;
+      max-height: 542px;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    .scrollCon::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .scrollCon::-webkit-scrollbar-track {
+      background-color: rgba(255, 255, 255, 0);
+      border-radius: 100px;
+    }
+
+    .scrollCon::-webkit-scrollbar-thumb {
+      background-color: #ebecf0;
+      border-radius: 20px;
+    }
+
+    .inner {
+      width: 100%;
+      border-radius: 8px;
+      transition: all 0.5s ease;
+      box-sizing: border-box;
+    }
+  }
+}

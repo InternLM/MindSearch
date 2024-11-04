@@ -1,8 +1,6 @@
-import RenderTest from "@/pages/render";
-
+import MindSearchCon from '@/pages/mindsearch';
 import { ReactElement } from "react";
 import { Navigate, useRoutes } from "react-router-dom";
-
 interface RouteItem {
   path: string;
   needLogin?: boolean;
@@ -13,7 +11,7 @@ const routes: RouteItem[] = [
   {
     path: "/",
     needLogin: false,
-    element: <RenderTest />,
+    element: <MindSearchCon />,
   },
   {
     path: "*",
@@ -24,12 +22,6 @@ const routes: RouteItem[] = [
 const WrapperRoutes = () => {
   return useRoutes(
     routes.map((item: RouteItem) => {
-      if (item.needLogin) {
-        return {
-          ...item,
-          element: <></>,
-        };
-      }
       return item;
     }),
   );
