@@ -10,7 +10,7 @@ ENV BING_API_KEY=${BING_API_KEY}
 ENV PATH=/opt/conda/bin:$PATH
 
 # 克隆git仓库
-RUN git clone -b lagent_v1.0 https://github.com/braisedpork1964/MindSearch.git /app
+RUN git clone https://github.com/InternLM/MindSearch.git /app
 
 WORKDIR /app
 
