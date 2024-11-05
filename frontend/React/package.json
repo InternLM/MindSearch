@@ -5,7 +5,13 @@
 	"type": "module",
 	"scripts": {
 		"start": "vite --host --mode dev",
+		"start:dev": "vite --host --mode dev",
+		"start:staging": "vite --host --mode staging",
+		"start:prod": "vite --host --mode production",
 		"build": "tsc && vite build",
+		"build:dev": "tsc && vite build --mode dev",
+		"build:staging": "tsc && vite build --mode staging",
+		"build:prod": "tsc && vite build --mode production",
 		"preview": "vite preview",
 		"prettier": "prettier --write ."
 	},

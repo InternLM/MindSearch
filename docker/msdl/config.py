@@ -4,6 +4,7 @@ from pathlib import Path
 
 
 class FileSystemManager:
+
     @staticmethod
     def ensure_dir(dir_path):
         """Ensure the directory exists, create if it doesn't"""

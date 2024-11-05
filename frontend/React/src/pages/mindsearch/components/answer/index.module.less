@@ -1,0 +1,110 @@
+.answer {
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    width: 100%;
+
+    .avatar {
+        width: 32px;
+        height: 32px;
+        margin-right: 16px;
+        border-radius: 50%;
+        flex-shrink: 0;
+
+        img {
+            width: 100%;
+        }
+    }
+
+    .reaponseAarea {
+        display: flex;
+        flex-direction: column;
+        width: calc(100% - 48px);
+        background-color: #F4F5F9;
+        padding: 12px 16px;
+        border-radius: 16px;
+        overflow-x: hidden;
+    }
+
+    .inner {
+        width: 100%;
+        overflow-x: hidden;
+        background-color: #fff;
+        border-radius: 16px;
+        border: 1px solid var(----line-2, #EBECF0);
+        box-sizing: border-box;
+        transition: all 0.5s ease;
+        margin-bottom: 16px;
+        position: relative;
+    }
+
+    .graphIcon {
+        padding: 2px 8px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border-radius: 8px;
+        border: 1px solid var(----line-2, #EBECF0);
+        background: var(---fill-0, #FFF);
+        color: #121316CC;
+        font-size: 14px;
+        line-height: 24px;
+        cursor: pointer;
+
+        svg {
+            margin-left: 4px;
+        }
+
+        &:hover {
+            background-color: #D7D8DD;
+            color: #121316CC;
+
+            svg path {
+                fill: #121316CC;
+            }
+        }
+    }
+
+    .showGraph {
+        width: 118px;
+        margin-bottom: 16px;
+        border-radius: 8px;
+        border: 1px solid var(----line-2, #EBECF0);
+        background: var(---fill-0, #FFF);
+    }
+
+    .closeGraph {
+        position: absolute;
+        right: 12px;
+        bottom: 12px;
+    }
+
+    .reaponse {
+        color: #121316;
+        font-size: 14px;
+        line-height: 24px;
+        padding: 18px 42px;
+    }
+
+    // h3 {
+    //     font-size: 24px;
+    //     font-weight: 600;
+    //     line-height: 36px;
+    //     margin: 0 0 16px 0;
+    // }
+
+    // h4 {
+    //     font-size: 20px;
+    //     font-weight: 600;
+    //     line-height: 30px;
+    //     margin: 0 0 8px 0;
+    // }
+}
+
+.draft {
+    width: 100%;
+    white-space: wrap;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+}

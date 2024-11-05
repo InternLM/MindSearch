@@ -1,0 +1,150 @@
+article {
+    padding: 6px 16px;
+    border-radius: 8px;
+    height: 38px;
+    border: 1px solid transparent;
+    background: #fff;
+    color: #121316;
+    text-align: center;
+    font-size: 14px;
+    line-height: 24px;
+    position: relative;
+    box-sizing: border-box;
+
+    &.loading {
+        line-height: 20px;
+        border-radius: 8px;
+        overflow: hidden;
+        border: 1px solid transparent;
+        padding: 4px;
+
+        span {
+            color: #3477eb;
+            background-color: #fff;
+            border-radius: 4px;
+            line-height: 24px;
+            padding: 2px 12px;
+        }
+
+        .looping {
+            --border-width: 4px;
+            --follow-panel-linear-border: linear-gradient(90deg, #3477eb 0.58%, #FFB4BA 100.36%);
+
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: calc(100% + var(--border-width) * 3 - 8px);
+            height: 100%;
+            background: var(--follow-panel-linear-border);
+            background-size: 300% 300%;
+            background-position: 0 50%;
+            animation: moveGradient 4s linear infinite;
+        }
+    }
+
+    &.disabled {
+        border-radius: 8px;
+        border: 1px solid #d7d8dd;
+        color: rgba(18, 19, 22, 0.35);
+    }
+
+    &.finished {
+        cursor: pointer;
+        border: 1px solid #3477EB;
+
+        &:hover {
+            background-color: #E6F2FF;
+        }
+
+        .finishDot {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 6px;
+            height: 6px;
+            background-color: #3477EB;
+            border-radius: 50%;
+        }
+    }
+
+    &.forbidden {
+        cursor: not-allowed;
+    }
+
+    &.emptyNode {
+        padding: 0 !important;
+        border: 0;
+    }
+
+    &.active {
+        border-radius: 8px;
+        border: 1px solid var(---Brand1-5, #3477EB);
+        background: var(---Brand1-5, #3477EB);
+        color: #fff;
+
+        &:hover {
+            border: 1px solid var(---Brand1-5, #3477EB);
+            background: var(---Brand1-5, #3477EB);
+            color: #fff;
+        }
+
+        .dot {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            width: 6px;
+            height: 6px;
+            background-color: #fff;
+            border-radius: 50%;
+        }
+    }
+
+    &.init {
+        border: 1px solid transparent;
+        cursor: auto;
+    }
+
+    span {
+        display: block;
+        white-space: nowrap;
+        max-width: 160px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        position: relative;
+        z-index: 20;
+    }
+
+    span.status {
+        color: #4082fe;
+    }
+}
+
+ul.onlyone {
+    &:before {
+        opacity: 0;
+    }
+
+    >li {
+        margin-left: 0px;
+    }
+
+    &>li:after {
+        opacity: 0;
+    }
+
+    &>li:before {
+        // left: 0;
+    }
+}
+
+.endLine {
+    border-bottom: 1px solid #d7d8dd;
+    width: 3000px;
+    transition: width 1s ease-in-out;
+}
+
+@keyframes moveGradient {
+    50% {
+        background-position: 100% 50%;
+    }
+}
