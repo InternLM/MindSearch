@@ -4,7 +4,7 @@
 
 <img src="assets/logo.svg" style="width: 50%; height: auto;">
 
-[📃 Paper](https://arxiv.org/abs/2407.20183) | [💻 浦语入口](https://puyu.openxlab.org.cn/)
+[📃 Paper](https://arxiv.org/abs/2407.20183) | [💻 浦语入口](https://internlm-chat.intern-ai.org.cn/)
 
 [English](README.md) | 简体中文
 

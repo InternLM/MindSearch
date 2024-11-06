@@ -4,7 +4,7 @@
 
 <img src="assets/logo.svg" style="width: 50%; height: auto;">
 
-[📃 Paper](https://arxiv.org/abs/2407.20183) | [💻 Demo](https://puyu.openxlab.org.cn/)
+[📃 Paper](https://arxiv.org/abs/2407.20183) | [💻 Demo](https://internlm-chat.intern-ai.org.cn/)
 
 English | [简体中文](README_zh-CN.md)
 
@@ -17,7 +17,7 @@ English | [简体中文](README_zh-CN.md)
 
 ## 📅 Changelog
 
-- 2024/11/05: 🥳 MindSearch is now deployed on Puyu! Try it 👉 [click](https://puyu.openxlab.org.cn/) 👈
+- 2024/11/05: 🥳 MindSearch is now deployed on Puyu! Try it 👉 [click](https://internlm-chat.intern-ai.org.cn/) 👈
   -  Refactored the agent module based on [Lagent v0.5](https://github.com/InternLM/lagent) for better performance in concurrency.
   -  Improved the UI to embody the simultaneous multi-query search.
 
