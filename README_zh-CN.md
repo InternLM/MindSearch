@@ -77,9 +77,9 @@ python -m mindsearch.app --lang en --model_format internlm_server --search_engin
 首先配置Vite的API代理，指定实际后端URL
 
 ```bash
-HOST=...
-IP=...
-sed -i -r "s/target:\s*\"\"/target: \"${HOST}:${IP}\"/" frontend/React/vite.config.ts
+HOST="127.0.0.1"
+PORT=8002
+sed -i -r "s/target:\s*\"\"/target: \"${HOST}:${PORT}\"/" frontend/React/vite.config.ts
 ```
 
 ```bash

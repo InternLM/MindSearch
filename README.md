@@ -17,7 +17,7 @@ English | [简体中文](README_zh-CN.md)
 
 ## 📅 Changelog
 
-- 2024/11/05: 🥳 MindSearch is now deployed on Puyu! Try it 👉 [click](https://internlm-chat.intern-ai.org.cn/) 👈
+- 2024/11/05: 🥳 MindSearch is now deployed on Puyu! 👉 [Try it](https://internlm-chat.intern-ai.org.cn/) 👈
   -  Refactored the agent module based on [Lagent v0.5](https://github.com/InternLM/lagent) for better performance in concurrency.
   -  Improved the UI to embody the simultaneous multi-query search.
 
@@ -73,9 +73,9 @@ Providing following frontend interfaces,
 First configurate the backend URL for Vite proxy.
 
 ```bash
-HOST=...
-IP=...
-sed -i -r "s/target:\s*\"\"/target: \"${HOST}:${IP}\"/" frontend/React/vite.config.ts
+HOST="127.0.0.1"  # modify as you need
+PORT=8002
+sed -i -r "s/target:\s*\"\"/target: \"${HOST}:${PORT}\"/" frontend/React/vite.config.ts
 ```
 
 ```bash
