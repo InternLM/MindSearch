@@ -4,7 +4,7 @@
 
 <img src="assets/logo.svg" style="width: 50%; height: auto;">
 
-[🌐 Project Page](https://mindsearch.netlify.app/) | [📃 Paper](https://arxiv.org/abs/2407.20183) | [🤗 Hugging Face Space](https://huggingface.co/spaces/internlm/MindSearchReact)| [💻 ModelScope](https://www.modelscope.cn/studios/Shanghai_AI_Laboratory/MindSearch)
+[📃 Paper](https://arxiv.org/abs/2407.20183) | [💻 Demo](https://puyu.openxlab.org.cn/)
 
 English | [简体中文](README_zh-CN.md)
 
@@ -14,6 +14,13 @@ English | [简体中文](README_zh-CN.md)
 </p>
 
 ## ✨ MindSearch: Mimicking Human Minds Elicits Deep AI Searcher
+
+## 📅 Changelog
+
+- 2024/11/05: 🥳 MindSearch is now deployed on Puyu! Try it 👉 [click](https://puyu.openxlab.org.cn/) 👈
+  -  Refactored the agent module based on [Lagent v0.5](https://github.com/InternLM/lagent) for better performance in concurrency.
+  -  Improved the UI to embody the simultaneous multi-query search.
+
 
 ## ⚽️ Build Your Own MindSearch
 
@@ -62,6 +69,14 @@ python -m mindsearch.app --lang en --model_format internlm_server --search_engin
 Providing following frontend interfaces,
 
 - React
+
+First configurate the backend URL for Vite proxy.
+
+```bash
+HOST=...
+IP=...
+sed -i -r "s/target:\s*\"\"/target: \"${HOST}:${IP}\"/" frontend/React/vite.config.ts
+```
 
 ```bash
 # Install Node.js and npm
