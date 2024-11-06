@@ -4,7 +4,7 @@
 
 <img src="assets/logo.svg" style="width: 50%; height: auto;">
 
-[🌐 Project Page](https://mindsearch.netlify.app/) | [📃 Paper](https://arxiv.org/abs/2407.20183) | [🤗 Hugging Face Space](https://huggingface.co/spaces/internlm/MindSearchReact)| [💻 ModelScope](https://www.modelscope.cn/studios/Shanghai_AI_Laboratory/MindSearch)
+[📃 Paper](https://arxiv.org/abs/2407.20183) | [💻 浦语入口](https://internlm-chat.intern-ai.org.cn/)
 
 [English](README.md) | 简体中文
 
@@ -64,14 +64,23 @@ python -m mindsearch.app --lang en --model_format internlm_server --search_engin
   - `BingSearch` 为 Bing 搜索引擎。
   - `BraveSearch` 为 Brave 搜索引擎。
   - `GoogleSearch` 为 Google Serper 搜索引擎。
+  - `TencentSearch` 为 Tencent 搜索引擎。
     
-  请将网页搜索引擎 API 密钥设置为 `WEB_SEARCH_API_KEY` 环境变量，如果使用的是 `DuckDuckGo`，则无需设置。
+  请将 DuckDuckGo 和 Tencent 以外的网页搜索引擎 API 密钥设置为 `WEB_SEARCH_API_KEY` 环境变量。如果使用 DuckDuckGo，则无需设置；如果使用 Tencent，请设置 `TENCENT_SEARCH_SECRET_ID` 和 `TENCENT_SEARCH_SECRET_KEY`。
  
 ### 步骤3: 启动 MindSearch 前端
 
 提供以下几种前端界面：
 
 - React
+
+首先配置Vite的API代理，指定实际后端URL
+
+```bash
+HOST="127.0.0.1"
+PORT=8002
+sed -i -r "s/target:\s*\"\"/target: \"${HOST}:${PORT}\"/" frontend/React/vite.config.ts
+```
 
 ```bash
 # 安装 Node.js 和 npm

@@ -2,7 +2,6 @@ duckduckgo_search==5.3.1b1
 einops
 fastapi
 gradio==5.3.0
-gradio
 janus
 lagent==0.5.0rc1
 lmdeploy==0.5.3

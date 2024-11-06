@@ -116,15 +116,15 @@ Homebrew会自动下载Node.js的安装包，并处理相关的依赖项和安�
 
 ## 配置
 ### 接口请求配置
-- 如您需要配置的服务支持跨域，可至/src/config/cgi.ts中修改请求链接，请求链接为http://ip:port/path;
-- 如您需要配置的服务不支持跨域，可至vite.config.ts中配置proxy，示例如下：
+
+- 在vite.config.ts中配置proxy，示例如下：
 
   ```
     server: {
       port: 8080,
       proxy: {
         "/solve": {
-          target: "https://example.com",
+          target: "{HOST}:{PORT}",
           changeOrigin: true,
         }
       }

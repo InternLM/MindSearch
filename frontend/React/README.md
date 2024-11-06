@@ -168,21 +168,15 @@ pay attention to the real port in your terminal.maybe it won`t be 8080.
 
 # Config
 ## How to modify the request URL
-- Open the file `/src/config/cgi.ts`
-- Modify the value of `GET_SSE_DATA`, be like:
-```
-  export const GET_SSE_DATA = `http://${ip}:${port}/${path}`
-```
 
-## you can also modify the proxy
-- Open the file `vite.config.ts`, modify server like:
+- Open the file `vite.config.ts`, modify the target like:
 
   ```
     server: {
       port: 8080,
       proxy: {
         "/solve": {
-          target: "https://example.com",
+          target: "{HOST}:{PORT}",
           changeOrigin: true,
         }
       }
