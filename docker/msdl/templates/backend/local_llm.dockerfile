@@ -24,7 +24,7 @@ RUN pip install --no-cache-dir \
     uvicorn \
     griffe==0.48.0 \
     python-dotenv \ 
-    lagent==0.2.4
+    lagent==0.5.0rc1
 
 # Copy the mindsearch folder to the /root directory of the container
 COPY mindsearch /root/mindsearch
