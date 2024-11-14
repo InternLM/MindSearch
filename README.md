@@ -4,7 +4,7 @@
 
 <img src="assets/logo.svg" style="width: 50%; height: auto;">
 
-[🌐 Project Page](https://mindsearch.netlify.app/) | [📃 Paper](https://arxiv.org/abs/2407.20183) | [🤗 Hugging Face Space](https://huggingface.co/spaces/internlm/MindSearchReact)| [💻 ModelScope](https://www.modelscope.cn/studios/Shanghai_AI_Laboratory/MindSearch)
+[📃 Paper](https://arxiv.org/abs/2407.20183) | [💻 Demo](https://internlm-chat.intern-ai.org.cn/)
 
 English | [简体中文](README_zh-CN.md)
 
@@ -14,6 +14,13 @@ English | [简体中文](README_zh-CN.md)
 </p>
 
 ## ✨ MindSearch: Mimicking Human Minds Elicits Deep AI Searcher
+
+## 📅 Changelog
+
+- 2024/11/05: 🥳 MindSearch is now deployed on Puyu! 👉 [Try it](https://internlm-chat.intern-ai.org.cn/) 👈
+  -  Refactored the agent module based on [Lagent v0.5](https://github.com/InternLM/lagent) for better performance in concurrency.
+  -  Improved the UI to embody the simultaneous multi-query search.
+
 
 ## ⚽️ Build Your Own MindSearch
 
@@ -39,7 +46,7 @@ mv .env.example .env
 Setup FastAPI Server.
 
 ```bash
-python -m mindsearch.app --lang en --model_format internlm_server --search_engine DuckDuckGoSearch
+python -m mindsearch.app --lang en --model_format internlm_server --search_engine DuckDuckGoSearch --asy 
 ```
 
 - `--lang`: language of the model, `en` for English and `cn` for Chinese.
@@ -52,14 +59,24 @@ python -m mindsearch.app --lang en --model_format internlm_server --search_engin
   - `BingSearch` for Bing search engine.
   - `BraveSearch` for Brave search web api engine.
   - `GoogleSearch` for Google Serper web search api engine.
+  - `TencentSearch` for Tencent search api engine.
   
-  Please set your Web Search engine API key as the `WEB_SEARCH_API_KEY` environment variable unless you are using `DuckDuckGo`.
+  Please set your Web Search engine API key as the `WEB_SEARCH_API_KEY` environment variable unless you are using `DuckDuckGo`, or `TencentSearch` that requires secret id as `TENCENT_SEARCH_SECRET_ID` and secret key as `TENCENT_SEARCH_SECRET_KEY`.
+- `--asy`: deploy asynchronous agents.
 
 ### Step4: Setup MindSearch Frontend
 
 Providing following frontend interfaces,
 
 - React
+
+First configurate the backend URL for Vite proxy.
+
+```bash
+HOST="127.0.0.1"  # modify as you need
+PORT=8002
+sed -i -r "s/target:\s*\"\"/target: \"${HOST}:${PORT}\"/" frontend/React/vite.config.ts
+```
 
 ```bash
 # Install Node.js and npm
@@ -98,6 +115,7 @@ To use a different type of web search API, modify the `searcher_type` attribute 
 - `DuckDuckGoSearch`
 - `BraveSearch`
 - `BingSearch`
+- `TencentSearch`
 
 For example, to change to the Brave Search API, you would configure it as follows:
 

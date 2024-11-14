@@ -55,8 +55,7 @@ def copy_backend_dockerfile(choice):
             "BACKEND_DOCKERFILE_COPIED",
             source_path=str(source_path),
             dest_path=str(dest_path),
-        )
-    )
+        ))
 
 
 def copy_frontend_dockerfile():
@@ -75,19 +74,30 @@ def copy_frontend_dockerfile():
             "FRONTEND_DOCKERFILE_COPIED",
             source_path=str(source_path),
             dest_path=str(dest_path),
-        )
-    )
+        ))
 
 
 def get_user_choices():
     backend_language_choices = [
-        {"name": t("CHINESE"), "value": "cn"},
-        {"name": t("ENGLISH"), "value": "en"},
+        {
+            "name": t("CHINESE"),
+            "value": "cn"
+        },
+        {
+            "name": t("ENGLISH"),
+            "value": "en"
+        },
     ]
 
     model_deployment_type = [
-        {"name": t("CLOUD_MODEL"), "value": CLOUD_LLM_DOCKERFILE},
-        {"name": t("LOCAL_MODEL"), "value": LOCAL_LLM_DOCKERFILE},
+        {
+            "name": t("CLOUD_MODEL"),
+            "value": CLOUD_LLM_DOCKERFILE
+        },
+        {
+            "name": t("LOCAL_MODEL"),
+            "value": LOCAL_LLM_DOCKERFILE
+        },
     ]
 
     backend_language = inquirer.select(
@@ -103,7 +113,10 @@ def get_user_choices():
     model_formats = get_model_formats(model)
     model_format = inquirer.select(
         message=t("MODEL_FORMAT_CHOICE"),
-        choices=[{"name": format, "value": format} for format in model_formats],
+        choices=[{
+            "name": format,
+            "value": format
+        } for format in model_formats],
     ).execute()
 
     # If the model is cloud_llm, ask for the API key
@@ -118,7 +131,8 @@ def get_user_choices():
 
         if existing_api_key:
             use_existing = inquirer.confirm(
-                message=t("CONFIRM_USE_EXISTING_API_KEY", ENV_VAR_NAME=env_var_name),
+                message=t(
+                    "CONFIRM_USE_EXISTING_API_KEY", ENV_VAR_NAME=env_var_name),
                 default=True,
             ).execute()
 
@@ -126,17 +140,16 @@ def get_user_choices():
                 return backend_language, model, model_format
             else:
                 print(
-                    t("CONFIRM_OVERWRITE_EXISTING_API_KEY", ENV_VAR_NAME=env_var_name)
-                )
+                    t("CONFIRM_OVERWRITE_EXISTING_API_KEY",
+                      ENV_VAR_NAME=env_var_name))
         else:
             print(t("PLEASE_INPUT_NEW_API_KEY", ENV_VAR_NAME=env_var_name))
 
         while True:
             api_key = inquirer.secret(
                 message=t(
-                    "PLEASE_INPUT_NEW_API_KEY_FROM_ZERO", ENV_VAR_NAME=env_var_name
-                )
-            ).execute()
+                    "PLEASE_INPUT_NEW_API_KEY_FROM_ZERO",
+                    ENV_VAR_NAME=env_var_name)).execute()
             cleaned_api_key = clean_api_key(api_key)
 
             if validate_api_key(cleaned_api_key, env_var_name, t):
@@ -145,8 +158,7 @@ def get_user_choices():
             else:
                 print(t("INVALID_API_KEY_FORMAT"))
                 retry = inquirer.confirm(
-                    message=t("RETRY_API_KEY_INPUT"), default=True
-                ).execute()
+                    message=t("RETRY_API_KEY_INPUT"), default=True).execute()
                 if not retry:
                     print(t("API_KEY_INPUT_CANCELLED"))
                     sys.exit(1)
@@ -191,11 +203,11 @@ def main():
         print(t("DOCKER_LAUNCHER_COMPLETE"))
     except KeyboardInterrupt:
         print(t("KEYBOARD_INTERRUPT"))
-        stop_and_remove_containers()
+        # stop_and_remove_containers()
         sys.exit(0)
     except Exception as e:
         print(t("UNEXPECTED_ERROR", error=str(e)))
-        stop_and_remove_containers()
+        # stop_and_remove_containers()
         sys.exit(1)
 
 

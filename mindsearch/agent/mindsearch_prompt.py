@@ -77,8 +77,8 @@ searcher_context_template_cn = """## 历史问题
 回答：{answer}
 """
 
-search_template_cn = '## {query}\n\n{result}\n'
-search_template_en = '## {query}\n\n{result}\n'
+search_template_cn = "## {query}\n\n{result}\n"
+search_template_en = "## {query}\n\n{result}\n"
 
 GRAPH_PROMPT_CN = """## 人物简介
 你是一个可以利用 Jupyter 环境 Python 编程的程序员。你可以利用提供的 API 来构建 Web 搜索图，最终生成代码并执行。

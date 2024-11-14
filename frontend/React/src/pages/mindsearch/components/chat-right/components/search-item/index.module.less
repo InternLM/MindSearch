@@ -1,0 +1,101 @@
+.searchItem {
+    border-radius: 12px;
+    margin-bottom: 4px;
+    padding: 8px;
+    transition: all 0.5s ease-in-out;
+    display: flex;
+    justify-content: flex-start;
+    align-items: flex-start;
+    cursor: pointer;
+
+    .inner {
+        width: 100%;
+        overflow: hidden;
+    }
+
+    &:hover {
+        background-color: #ebecf0;
+    }
+
+    .num {
+        color: var(--60-text-3, rgba(18, 19, 22, 0.6));
+        font-size: 12px;
+        font-weight: 600;
+        line-height: 18px;
+        margin-right: 7px;
+    }
+
+    p {
+        white-space: wrap;
+        max-width: 95%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin: 0 !important;
+    }
+
+    // .origin {
+    //     display: flex;
+    //     justify-content: flex-start;
+    //     align-items: center;
+    //     margin-bottom: 2px;
+
+    //     .icon {
+    //         width: 16px;
+    //         height: 16px;
+    //         border-radius: 4px;
+    //         background-color: #6f7f9b;
+    //         margin-right: 2px;
+    //     }
+
+    //     span {
+    //         color: var(--60-text-3, rgba(18, 19, 22, 0.60));
+    //         font-size: 12px;
+    //         font-weight: 400;
+    //         line-height: 18px;
+    //     }
+    // }
+
+    p.title {
+        overflow: hidden;
+        color: var(---Brand1-5, #3477eb);
+        text-overflow: ellipsis;
+        font-size: 14px;
+        line-height: 24px;
+        margin-bottom: 2px;
+        font-weight: normal;
+
+        a {
+            text-decoration: none;
+            color: var(---Brand1-5, #3477eb);
+            font-weight: normal;
+        }
+    }
+
+    p.url {
+        color: var(--60-text-3, rgba(18, 19, 22, 0.6));
+        font-size: 12px;
+        line-height: 18px;
+        height: 18px;
+        overflow: hidden;
+    }
+
+    p.summ {
+        color: rgba(18, 19, 22, 0.8);
+        font-size: 13px;
+        line-height: 20px;
+        white-space: wrap;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    &.highLight {
+        background: var(--brand-11, #e6f2ff);
+
+        &:hover {
+            background-color: #b3d6ff;
+        }
+    }
+}

@@ -1,135 +1,184 @@
 # Notice
-问题回答过程中离开页面后再回到页面，会导致sse重连！
-# 开始
-## 请使用大于18.0.0的node版本
-## 准备node.js开发环境
-Node.js 是一个基于 Chrome V8 引擎的 JavaScript 运行环境，允许你在服务器端运行 JavaScript。以下是在 Windows、Linux 和 macOS 上安装 Node.js 的详细步骤。
+- If you leave the page (Make the page invisible) and come back again, it will cause sse to reconnect.
+- the project requires Node.js version >= 18.0.0.
 
-### 在 Windows 上安装 Node.js
-- 步骤 1: 访问 Node.js 官网
+# Prepare your dev-environment for frontend
+[Node.js](https://nodejs.org/en)® is a free, open-source, cross-platform JavaScript runtime environment that lets developers create servers, web apps, command line tools and scripts.
 
-打开浏览器，访问 [Node.js](https://nodejs.org/zh-cn/download/prebuilt-installer) 官方网站。
+# Node.js Installation Guide (Windows, Linux, macOS)
+## Windows Installation
+- Step 1: Download Node.js
 
-- 步骤 2: 下载 Node.js 安装包
+  1. Open your web browser and visit the [Node.js official website](https://nodejs.org/en).
 
-选择你需要的nodejs版本，设备的类型，点击下载，示例如下图：
-![windows install](./windows-.png)
+  2. Navigate to the "Downloads" section.
 
-- 步骤 3: 安装 Node.js
+  3. Select the desired version (LTS recommended for long-term stability). As of August 2024, the latest LTS version might be v20.x.x.
 
-双击下载的安装包开始安装。
+  4. Click on the "Windows Installer (.msi)" link to download the installation package.
 
-跟随安装向导的指示进行安装。在安装过程中，你可以选择安装位置、是否将 Node.js 添加到系统 PATH 环境变量等选项。推荐选择“添加到 PATH”以便在任何地方都能通过命令行访问 Node.js。
-安装完成后，点击“Finish”结束安装。
+- Step 2: Install Node.js
 
-- 步骤 4: 验证安装
+  1. Double-click the downloaded .msi file to start the installation wizard.
 
-打开命令提示符（CMD）或 PowerShell。
-输入 node -v 并回车，如果系统返回了 Node.js 的版本号，说明安装成功。
-接着，输入 npm -v 并回车，npm 是 Node.js 的包管理器，如果返回了版本号，表示 npm 也已正确安装。
+  2. Click "Next" to proceed.
 
-### 在 Linux 上安装 Node.js
-注意： 由于 Linux 发行版众多，以下以 Ubuntu 为例说明，其他发行版（如 CentOS、Debian 等）的安装方式可能略有不同，可自行查询对应的安装办法。
+  3. Read and accept the license agreement by checking the "I accept the terms in the License Agreement" box.
 
-- 步骤 1: 更新你的包管理器
+  4. Click "Next" again and select the installation directory. It's recommended to change the default location to avoid installing in the C drive.
 
-打开终端。
+  5. Continue clicking "Next" to use the default settings until you reach the "Install" button.
 
-输入 sudo apt update 并回车，以更新 Ubuntu 的包索引。
+  6. Click "Install" to start the installation process.
 
-- 步骤 2: 安装 Node.js
+  7. Wait for the installation to complete and click "Finish" to exit the installation wizard.
 
-对于 Ubuntu 18.04 及更高版本，Node.js 可以直接从 Ubuntu 的仓库中安装。
-输入 sudo apt install nodejs npm 并回车。
-对于旧版本的 Ubuntu 或需要安装特定版本的 Node.js，你可能需要使用如 NodeSource 这样的第三方仓库。
+- Step 3: Verify Installation
+  1. Open the Command Prompt (cmd) by pressing `Win + R`, typing `cmd`, and pressing Enter.
+  2. Type `node -v` and press Enter. You should see the installed Node.js version displayed.
+  3. Type `npm -v`  and press Enter to verify the installed npm version. npm is the package manager that comes bundled with Node.js.
 
-- 步骤 3: 验证安装
+- Step 4: Configure npm Global Path (Optional)
+  If you want to change the default global installation path for npm, follow these steps:
 
-在终端中，输入 node -v 和 npm -v 来验证 Node.js 和 npm 是否已正确安装。
+1. Open the Command Prompt (cmd) as an administrator.
 
-### 在 macOS 上安装 Node.js
+2. Navigate to your Node.js installation directory (e.g., C:\Program Files\nodejs).
 
-#### 下载安装
-- 步骤 1: 访问 Node.js 官网
+3. Create two new folders named node_global and node_cache.
 
-打开浏览器，访问 Node.js 官方网站。
+4. Run the following commands to set the new paths:
 
-- 步骤 2: 下载 Node.js 安装包
+   ```bash
+   npm config set prefix "C:\Program Files\nodejs\node_global"  
+   npm config set cache "C:\Program Files\nodejs\node_cache"
+   ```
 
-在首页找到 macOS 对应的安装包（通常是 .pkg 文件），点击下载。
+5. Open the Environment Variables settings in the System Properties.
+6. Add `C:\Program Files\nodejs\node_global` to the `PATH` variable under User Variables.
+7. Optionally, create a new system variable named `NODE_PATH` and set its value to ` C:\Program Files\nodejs\node_global\node_modules`.
 
-- 步骤 3: 安装 Node.js
+## Linux Installation
+- Step 1: Update Your System
+  Before installing Node.js, ensure your Linux system is up-to-date:
 
-找到下载的 .pkg 文件，双击打开。
-跟随安装向导的指示进行安装。
-安装完成后，点击“Close”结束安装。
+  ```bash
+  sudo apt-get update  
+  sudo apt-get upgrade
+  ```
 
-- 步骤 4: 验证安装
+- Step 2: Install Dependencies
+  Node.js requires certain dependencies to function properly:
 
-打开终端。
-
-输入 node -v 和 npm -v 来验证 Node.js 和 npm 是否已正确安装。
-
-#### 使用HomeBrew安装
-前提条件：确保你的macOS上已经安装了Homebrew。如果尚未安装，可以通过以下命令进行安装（以终端操作为例）：
+```bash
+sudo apt-get install build-essential libssl-dev
 ```
-  /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-```
-按照提示输入密码以确认安装。安装过程中，可能需要你同意许可协议等。
 
-- 打开终端：
-在macOS上找到并打开“终端”应用程序。
+- Step 3: Download and Install Node.js
+  You can download the Node.js source code or use a package manager like `curl` or `wget` to download a pre-built binary. For simplicity, this guide assumes you're using a package manager.
 
-- 使用Homebrew安装Node.js：
-在终端中输入以下命令来安装最新版本的Node.js
-```
-  brew install node
-```
-Homebrew会自动下载Node.js的安装包，并处理相关的依赖项和安装过程。你需要等待一段时间，直到安装完成。
+1. Navigate to the Node.js download page for package managers.
+   Follow the instructions for your Linux distribution. For example, on Ubuntu, you can use:
 
-- 验证安装：
-安装完成后，你可以通过输入以下命令来验证Node.js是否成功安装：
-```
-  node -v
-```
-如果终端输出了Node.js的版本号，那么表示安装成功。同时，你也可以通过输入npm -v来验证npm（Node.js的包管理器）是否也成功安装。
+   ```bash
+   curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -  
+   sudo apt-get install -y nodejs
+   ```
 
-完成以上步骤后，你应该能在你的 Windows、Linux 或 macOS 系统上成功安装并运行 Node.js。
+   Replace 20.x with the desired version number if you don't want the latest version.
 
-### 更多
-如需了解更多，可参照：https://nodejs.org/en
+- Step 4: Verify Installation
+  1. Open a terminal.
+  2. Type `node -v` and press Enter to check the Node.js version.
+  3. Type `npm -v` and press Enter to verify the npm version.
 
-如环境已经准备好，跳转下一步
 
-## 安装依赖
-进入前端项目根目录
+## Installing Node.js on macOS
+
+Installing Node.js on macOS is a straightforward process that can be accomplished using the official installer from the Node.js website or through package managers like Homebrew. This guide will cover both methods.
+
+### Method 1: Using the Official Installer
+- Visit the Node.js Website
+  - Open your web browser and navigate to https://nodejs.org/.
+- Download the Installer
+  - Scroll down to the "Downloads" section.
+  - Click on the "macOS Installer" button to download the .pkg file. Ensure you download the latest version, which as of August 2024, might be v20.x.x or higher.
+- Install Node.js
+  - Once the download is complete, locate the .pkg file in your Downloads folder.
+  - Double-click the file to start the installation process.
+  - Follow the on-screen instructions. Typically, you'll need to agree to the license agreement, select an installation location (the default is usually fine), and click "Continue" or "Install" until the installation is complete.
+- Verify the Installation
+  - Open the Terminal application by going to "Finder" > "Applications" > "Utilities" > "Terminal" or using Spotlight Search (press `Cmd + Space` and type "Terminal").
+  - Type `node -v` and press Enter. This command should display the installed version of Node.js.
+  - Type `npm -v` and press Enter to verify that npm, the Node.js package manager, is also installed.
+
+### Method 2: Using Homebrew
+If you prefer to use a package manager, Homebrew is a popular choice for macOS.
+
+- Install Homebrew (if not already installed)
+
+  - Open the Terminal.
+
+  - Copy and paste the following command into the Terminal and press Enter:
+    ```bash
+    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+    ```
+
+  - Follow the on-screen instructions to complete the Homebrew installation.
+      
+- Install Node.js with Homebrew
+  - Once Homebrew is installed, update your package list by running brew update in the Terminal.
+  - To install Node.js, run the following command in the Terminal:
+  ```bash
+      brew install node
+  ```
+  - Homebrew will download and install the latest version of Node.js and npm.
+- Verify the Installation
+  - As with the official installer method, you can verify the installation by typing node -v and npm -v in the Terminal and pressing Enter.
+
+### Additional Configuration (Optional)
+- Configure npm's Global Installation Path (if desired):
+  - You may want to change the default location where globally installed npm packages are stored. Follow the steps outlined in the Node.js documentation or search for guides online to configure this.
+- Switch to a Different Node.js Version (if needed):
+  - If you need to switch between multiple Node.js versions, consider using a version manager like nvm (Node Version Manager). Follow the instructions on the nvm GitHub page to install and use it.
+
+
+By following these steps, you should be able to successfully install Node.js on your system. Remember to keep your Node.js and npm versions up-to-date to take advantage of the latest features and security updates.
+
+If your env has been prepared, you can 
+
+# Installation and Setup Instructions
+
+## Installation
 ```
   npm install
 ```
 
-## 启动
+## Start Server
 ```
   npm start
 ```
 
-启动成功后，界面将出现可访问的本地url
+## Visit Server
+```
+  http://localhost:8080
+```
 
-## 配置
-### 接口请求配置
-- 如您需要配置的服务支持跨域，可至/src/config/cgi.ts中修改请求链接，请求链接为http://ip:port/path;
-- 如您需要配置的服务不支持跨域，可至vite.config.ts中配置proxy，示例如下：
+pay attention to the real port in your terminal.maybe it won`t be 8080.
+
+# Config
+## How to modify the request URL
+
+- Open the file `vite.config.ts`, modify the target like:
 
   ```
     server: {
       port: 8080,
       proxy: {
         "/solve": {
-          target: "https://example.com",
+          target: "{HOST}:{PORT}",
           changeOrigin: true,
         }
       }
     }
   ```
-
-## 知悉
-- 前端服务基于react开发，如需了解react相关知识，可参考：https://react.dev/
