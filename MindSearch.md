@@ -5,24 +5,24 @@
 2. 要集成的相关信息散布在多个网页中，存在信息干扰；
 3. 大量的网络内容可能超过大语言模型可处理的上下文长度。<br>
 受人类解决这些问题时的认知过程的启发，MindSearch模拟人类在网络信息搜索和整合中的思维过程，通过一个简单而有效的基于LLM的多代理框架来实例化，该框架由WebPlanner（网络规划师）和WebSearcher组成。
-MindSearch的多代理设计使整个框架能够在3分钟内从更大规模（超过300个）网页中并行地寻找和整合信息，值得3小时的人力努力，可以用ChatGPT-4o或InternLM2.5-7B模型作为基座。MindSearch在Closed-Set  （封闭集）和 Open-Set （开放集）QA问题的深度、广度以及准确度（facticity）方面的响应质量都有显著提高。此外，基于InternLM2.5-7B的MindSearch的反应比ChatGPT-Web（GPT-4o）和Perplexity.ai 更可取，这意味着开源模型的 MindSearch已经可以为人工智能搜索引擎提供一个有竞争力的解决方案。<br>
-![image](/MindSearch/assets/1.PNG)
-![image](/MindSearch/assets/2.PNG)
+MindSearch的多代理设计使整个框架能够在3分钟内从更大规模（超过300个）网页中并行地寻找和整合信息，值得3小时的人力努力，可以用ChatGPT-4o或InternLM2.5-7B模型作为基座。MindSearch在Closed-Set  （封闭集）和 Open-Set （开放集）QA问题的深度、广度以及准确度（facticity）方面的响应质量都有显著提高。此外，基于InternLM2.5-7B的MindSearch的反应比ChatGPT-Web（GPT-4o）和Perplexity.ai 更可取，这意味着开源模型的 MindSearch已经可以为人工智能搜索引擎提供一个有竞争力的解决方案。
+![image](assets/1.PNG1.PNG)
+![image](assets/1.PNG2.PNG)
 ## 2 WebPlanner and WebSearcher
 MindSearch框架由一个WebPlanner和一组WebSearcher组成。
-![image](/MindSearch/assets/3.PNG)
+![image](assets/1.PNG3.PNG)
 ### 2.1 WebPlanner: Planning via Graph Construction   (通过图形构建进行规划)<br>
 WebPlanner充当高级规划员，协调推理步骤和协调其他代理。
 为了提高LLM处理复杂问题的能力，将解决问题的过程建模为一个有向无环图（DAG）。<br>
 给定一个用户问题Q，解轨迹表示为G(Q)=V，E，其中V是一组节点V，每个节点代表一个独立的网络搜索，包括一个辅助启动节点（初始问题）和一个END节点（最终答案）。E表示有向边，表示节点（搜索内容）之间的推理拓扑关系（搜索内容）。这种DAG形式主义捕获了寻找最优执行路径的复杂性，为LLM提供了更正式和直观的表示。<br>
 预定义了原子代码函数，以将节点或边添加到图中。<br>
 在每个回合中，LLM首先读取整个对话，包括之前生成的代码和web搜索结果，然后输出思想和新代码用于思维导图的推理，这是由Python解释器执行的。在执行期间，一旦一个节点被添加到推理图中，它将调用一个WebSearcher来执行搜索过程并总结信息。<br>
-![image](/MindSearch/assets/3.PNG)
+![image](assets/1.PNG3.PNG)
 图中通过一个具体的例子，说明WebPlanner如何通过规划作为编码一步一步地解决这个问题。在每个回合中，Web计划程序会输出一系列的想法和生成的代码。该代码将被执行，并将搜索结果提供给规划器。在最后一轮，Web规划程序直接提供最终响应，无需生成任何代码。<br>
 由于新添加的节点只依赖于前面步骤中生成的节点，因此我们可以将它们并行化，以实现更快的信息聚合速度。收集所有信息后，计划器通过添加结束节点生成最终响应. <br>
 通过与Python解释器的集成，WebPlanner通过统一的代码操作与图进行交互，动态地构建推理路径。这种“code as planning”的过程使LLM能够充分利用其优越的代码生成能力，在长上下文场景中有利于控制和数据流，并在解决复杂问题时获得更好的性能。<br>
 ### 2.2 WebSearcher: Web Browsing with Hierarchical Retrieval （使用层次检索的网页浏览）<br>
-![image](/MindSearch/assets/4.PNG)
+![image](assets/1.PNG4.PNG)
 WebSearcher作为一个复杂的 RAG (Retrieve-and-Generate)（检索和生成）代理，由query rewrite（查询重写）、search content aggregation（搜索内容聚合）、detailed page selection（详细的页面选择）、final summarization（最终的总结）四部分组成，具有互联网访问权限，根据搜索结果总结有价值的响应。<br>
 WebSearcher采用了一种直接的从粗到细的选择策略。最初，LLM根据WebPlanner分配的问题生成几个类似的查询，以扩大搜索内容，从而提高相关信息的召回率。然后，这些查询通过各种搜索api执行，如谷歌、Bing和DuckDuckGo，它们返回关键内容，包括webURLs, titles, and summaries。搜索结果会根据weburl自动合并，并提示LLM选择最有价值的页面进行详细阅读。然后，将所选weburl的完整内容添加到LLM的输入中。在阅读了这些结果后，LLM会根据搜索结果生成一个响应来回答原始问题。这种层次检索方法大大降低了浏览大量网页的难度，并允许有效地提取具有深度细节的高度相关的信息。<br>
 # MindSearch 架构及代码分析
@@ -31,15 +31,15 @@ WebSearcher采用了一种直接的从粗到细的选择策略。最初，LLM根
 CodeSpaces 相当于自己有了一个云主机，真正实现了云端开发，CodeSpaces 和 Github 做了很好的集成，可以很方便的针对 Github 项目做修改，而且可以根据自己的需要自定义服务器配置和环境，很多开源项目已经集成了 CodeSpaces 的支持，可以很方便的在线开发。<br>
 #### 1.1 Fork  MindSearch  &  目录结构
 项目地址：https://github.com/InternLM/MindSearch
-![image](/MindSearch/assets/5.PNG)
+![image](assets/1.PNG5.PNG)
 创建 fork 完成后，打开codespace主页，新建一个codespaces环境配置，点击右上角的New codespace。<br>
 （由于直接使用模板快速开始，最终可能会出现Network Error）<br>
-![image](/MindSearch/assets/6.PNG)
+![image](assets/1.PNG6.PNG)
 选择刚刚fork 的仓库，这时它会自动选择main主枝，Southeast Asia ，请务必将Southeast Asia换为**其他地区**，比如US West 、Europe West 否则可能会出现Network Error。<br>
-![image](/MindSearch/assets/7.PNG)
-![image](/MindSearch/assets/8.PNG)
+![image](assets/1.PNG7.PNG)
+![image](assets/1.PNG8.PNG)
 刚进去是背景是现代浅色，有些刺眼，这时可以，点击左下角的设置--主题--颜色主题--- 有三种深色，选一个即可，便和我们开发机里的vscode一样了，对眼睛友好。<br>
-![image](/MindSearch/assets/9.PNG)
+![image](assets/1.PNG9.PNG)
 ##### 1.1.1 ：虚拟环境  
 ```python
 # 创建环境
@@ -486,11 +486,11 @@ gpt4  qwen  internlm_silicon  模型相关配置<br>
 至此，我们对MindSearch有了一定的了解。接下来，让我们开始MindSearch 实践之旅。
 # MindSearch 实践之旅
 由介绍和models.py知，MindSearch可以用ChatGPT-4o或InternLM2.5-7B等模型作为基座，想要开展MindSearch实践，模型API_KEY是必不可少的。Siliconflow硅基流动提供了一些模型免费的api ,接下来，我们注册账户并获取API_KEY。https://siliconflow.cn/zh-cn/models
-![image](/MindSearch/assets/10.PNG)
+![image](assets/1.PNG10.PNG)
 #### 1.3 SILICON_API_KEY 获取
 https://account.siliconflow.cn/login
 https://cloud.siliconflow.cn/account/ak
-![image](/MindSearch/assets/11.PNG)
+![image](assets/1.PNG11.PNG)
 **回到 codespace 中。**
 ##### 1.3.1 配置环境变量API_KEY
 ```python
@@ -518,7 +518,7 @@ Ps: 若出现 ModuleNotFoundError: No module named 'griffe.enumerations'<br>
  若出现ImportError: cannot import name 'AutoRegister' from 'class_registry' (/opt/conda/envs/mindsearch/lib/python3.10/site-packages/class_registry/__init__.py) #202<br>
 终端运行 ：pip install class_registry<br>
 参考：https://github.com/InternLM/MindSearch/issues/202
-![image](/MindSearch/assets/12.PNG)
+![image](assets/1.PNG12.PNG)
 ##### 1.3.2  前端启动
 由于codespace自动进行端口转发，我们便不需要打开打开powerShell 做端口映射。点击“ + ” 号，新建终端。
 ```python
@@ -529,8 +529,8 @@ cd /workspaces/MindSearch/
 ```python
 python frontend/mindsearch_gradio.py
 ```
-![image](/MindSearch/assets/13.PNG)
-![image](/MindSearch/assets/14.PNG)
+![image](assets/1.PNG13.PNG)
+![image](assets/1.PNG14.PNG)
 可以清晰地看到 MindSearch 高级规划员 WebPlanner 推理步骤 与 WebSearcher 搜索结果。
 ## MindSearch 部署  
 分为 **Space 空间**  **令牌**  **推送** 三部分
@@ -538,13 +538,13 @@ python frontend/mindsearch_gradio.py
 ##### 1.4.1 创建Space 空间 
 1.4.1 
 https://huggingface.co/spaces ，并点击 Create new Space，如下图所示。
-![image](/MindSearch/assets/15.PNG)
+![image](assets/1.PNG15.PNG)
 选择公开方便大家可以看到。接下来，我们进入 Settings，配置硅基流动的 api_key。<br>
 往下滑，选择 New secrets，name 一栏输入 SILICON_API_KEY，value 一栏输入你的API_KEY的内容。
-![image](/MindSearch/assets/16.PNG)
+![image](assets/1.PNG16.PNG)
 ##### 1.4.2 创建一个有写权限的token,点击右上角的头像，点击设置，找到Access Tokens ,新建token。
-![image](/MindSearch/assets/17.PNG)
-![image](/MindSearch/assets/18.PNG)
+![image](assets/1.PNG17.PNG)
+![image](assets/1.PNG18.PNG)
 ##### 1.4.3 新建目录 & 推送代码
 新空间已创建，请按照以下步骤开始。新建一个目录，创建 gradio app.py 文件，然后 commit 并推送（或者，您可以直接在浏览器中创建 app.py 文件。）<br>
 回到 codespace 中，由于将整个Mindsearch的推送会有很多问题（git submodule无法提交代码，space中项目启动失败等）。我们选择新建一个目录
@@ -771,30 +771,30 @@ cd <仓库名称>
 cp -r /workspaces/MindSearch/mindsearch_deploy/* .
 . 一定不能少
 ```
-![image](/MindSearch/assets/19.PNG)
+![image](assets/1.PNG19.PNG)
 选择codespaces-blank  看一下仓库里的文件全不全。  （patriotism是我的仓库名）<br>
 最终如下：
-![image](/MindSearch/assets/20.PNG)
+![image](assets/1.PNG20.PNG)
 ```python
 git add .
 git commit -m "update"
 git push
 ```
-![image](/MindSearch/assets/21.PNG)
+![image](assets/1.PNG21.PNG)
 #### 1.5 部署gitee.ai
 考虑到上传huggingface有一定的困难，部署到国内gitee.ai上，也是一个不错的选择。<br>
  https://ai.gitee.com/  （整体操作和HuggingFace Space类似）
-![image](/MindSearch/assets/22.PNG)
+![image](assets/1.PNG22.PNG)
 ##### 1.5.1 进入工作台后，点击应用，新建应用。
-![image](/MindSearch/assets/23.PNG)
+![image](assets/1.PNG23.PNG)
 在输入 应用名称  并选择 许可证 后，其它配置如下所示。
-![image](/MindSearch/assets/24.PNG)
+![image](assets/1.PNG24.PNG)
 同样需要添加app.py入口文件<br>
 点击设置，选择功能，新建密钥，键： SILICON_API_KEY，值：硅基流动的 api_key。
-![image](/MindSearch/assets/25.PNG)
+![image](assets/1.PNG25.PNG)
 ##### 1.5.2 私人令牌
 进入gitee -- 个人设置 -- 私人令牌 。
-![image](/MindSearch/assets/26.PNG)
+![image](assets/1.PNG26.PNG)
 复制令牌<br>
 从gitee.ai把空的代码仓库clone到codespace。
 ```python
@@ -811,16 +811,16 @@ git add .
 git commit -m "update"
 git push
 ```
-![image](/MindSearch/assets/27.PNG)
+![image](assets/1.PNG27.PNG)
 #### 部署到 Modelers
 天翼云与华为联合打造的魔乐（Modelers）开发者社区正式上线发布。 通过建设社区，双方将携手使能 AI 应用创新，共促国产 AI 生态繁荣   https://modelers.cn/
 ##### 1.6.1  创建空间 
 选择和前两个差不多，在这里可以上传自选封面图。https://modelers.cn/spaces/new
-![image](/MindSearch/assets/28.PNG)
+![image](assets/1.PNG28.PNG)
 这是一个基于CPU的gradio类型体验空间，我们需要至少上传app.py和requirements.txt两个文件。当文件内容符合gradio和python编程规范后，空间会自动触发镜像构建，并运行gradio服务。找到设置，创建机密变量。
-![image](/MindSearch/assets/29.PNG)
+![image](assets/1.PNG29.PNG)
 ##### 1.6.2 创建一个有write权限的令牌。
-![image](/MindSearch/assets/30.PNG)
+![image](assets/1.PNG30.PNG)
 ##### 1.6.3 推送代码
 ```python
 cd /workspaces/codespaces-blank
