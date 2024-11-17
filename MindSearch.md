@@ -22,7 +22,7 @@ WebPlanner充当高级规划员，协调推理步骤和协调其他代理。
 由于新添加的节点只依赖于前面步骤中生成的节点，因此我们可以将它们并行化，以实现更快的信息聚合速度。收集所有信息后，计划器通过添加结束节点生成最终响应. <br>
 通过与Python解释器的集成，WebPlanner通过统一的代码操作与图进行交互，动态地构建推理路径。这种“code as planning”的过程使LLM能够充分利用其优越的代码生成能力，在长上下文场景中有利于控制和数据流，并在解决复杂问题时获得更好的性能。<br>
 ### 2.2 WebSearcher: Web Browsing with Hierarchical Retrieval （使用层次检索的网页浏览）<br>
-![Alt Text](assets/4.PNG)
+![Alt Text](assets/5.PNG)
 WebSearcher作为一个复杂的 RAG (Retrieve-and-Generate)（检索和生成）代理，由query rewrite（查询重写）、search content aggregation（搜索内容聚合）、detailed page selection（详细的页面选择）、final summarization（最终的总结）四部分组成，具有互联网访问权限，根据搜索结果总结有价值的响应。<br>
 WebSearcher采用了一种直接的从粗到细的选择策略。最初，LLM根据WebPlanner分配的问题生成几个类似的查询，以扩大搜索内容，从而提高相关信息的召回率。然后，这些查询通过各种搜索api执行，如谷歌、Bing和DuckDuckGo，它们返回关键内容，包括webURLs, titles, and summaries。搜索结果会根据weburl自动合并，并提示LLM选择最有价值的页面进行详细阅读。然后，将所选weburl的完整内容添加到LLM的输入中。在阅读了这些结果后，LLM会根据搜索结果生成一个响应来回答原始问题。这种层次检索方法大大降低了浏览大量网页的难度，并允许有效地提取具有深度细节的高度相关的信息。<br>
 # MindSearch 架构及代码分析
@@ -31,15 +31,15 @@ WebSearcher采用了一种直接的从粗到细的选择策略。最初，LLM根
 CodeSpaces 相当于自己有了一个云主机，真正实现了云端开发，CodeSpaces 和 Github 做了很好的集成，可以很方便的针对 Github 项目做修改，而且可以根据自己的需要自定义服务器配置和环境，很多开源项目已经集成了 CodeSpaces 的支持，可以很方便的在线开发。<br>
 #### 1.1 Fork  MindSearch  &  目录结构
 项目地址：https://github.com/InternLM/MindSearch
-![Alt Text](assets/5.PNG)
+![Alt Text](assets/6.PNG)
 创建 fork 完成后，打开codespace主页，新建一个codespaces环境配置，点击右上角的New codespace。<br>
 （由于直接使用模板快速开始，最终可能会出现Network Error）<br>
-![Alt Text](assets/6.PNG)
+![Alt Text](assets/7(2).PNG)
 选择刚刚fork 的仓库，这时它会自动选择main主枝，Southeast Asia ，请务必将Southeast Asia换为**其他地区**，比如US West 、Europe West 否则可能会出现Network Error。<br>
-![Alt Text](assets/7.PNG)
 ![Alt Text](assets/8.PNG)
-刚进去是背景是现代浅色，有些刺眼，这时可以，点击左下角的设置--主题--颜色主题--- 有三种深色，选一个即可，便和我们开发机里的vscode一样了，对眼睛友好。<br>
 ![Alt Text](assets/9.PNG)
+刚进去是背景是现代浅色，有些刺眼，这时可以，点击左下角的设置--主题--颜色主题--- 有三种深色，选一个即可，便和我们开发机里的vscode一样了，对眼睛友好。<br>
+![Alt Text](assets/10.PNG)
 ##### 1.1.1 ：虚拟环境  
 ```python
 # 创建环境
