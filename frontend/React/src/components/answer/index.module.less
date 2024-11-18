@@ -1,0 +1,116 @@
+.answer {
+  border-radius: 8px;
+  background: rgba(33, 38, 192, 0.10);
+  padding: 12px;
+
+  .inner {
+    width: 100%;
+    background-color: #fff;
+    border-radius: 4px;
+    padding: 8px;
+    box-sizing: border-box;
+    transition: all 0.5s ease;
+    margin-bottom: 18px;
+  }
+
+
+  .response {
+    color: #121316;
+    font-size: 14px;
+    line-height: 24px;
+    padding: 18px 42px;
+
+    h3 {
+      font-size: 24px;
+      font-weight: 600;
+      line-height: 36px;
+      margin: 0 0 16px 0;
+    }
+
+    h4 {
+      font-size: 20px;
+      font-weight: 600;
+      line-height: 30px;
+      margin: 0 0 8px 0;
+    }
+
+    p {
+      color: rgba(18, 19, 22, 0.80);
+      font-size: 16px;
+      font-weight: 400;
+      line-height: 28px;
+      margin: 0 0 16px 0;
+    }
+
+    ul {
+      margin-bottom: 8px;
+      padding-left: 22px;
+    }
+
+    li {
+      color: rgba(18, 19, 22, 0.80);
+      font-size: 16px;
+      font-weight: 400;
+      line-height: 28px;
+
+      p {
+        margin-bottom: 4px;
+      }
+    }
+  }
+}
+
+.draft {
+  width: 100%;
+  white-space: wrap;
+  // display: flex;
+  // justify-content: flex-start;
+  // align-items: flex-start;
+
+  .loading,
+  .loading>div {
+    position: relative;
+    box-sizing: border-box;
+  }
+
+  .loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0;
+    color: #fff;
+    background-color: #f90;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    margin-right: 3px;
+    flex-shrink: 0;
+  }
+
+  .loading>div {
+    display: inline-block;
+    float: none;
+    background-color: currentColor;
+    border: 0 solid currentColor;
+  }
+
+  .loading>div:nth-child(1) {
+    animation-delay: -200ms;
+  }
+
+  .loading>div:nth-child(2) {
+    animation-delay: -100ms;
+  }
+
+  .loading>div:nth-child(3) {
+    animation-delay: 0ms;
+  }
+
+  .loading>div {
+    width: 3px;
+    height: 3px;
+    margin: 2px 1px;
+    border-radius: 100%;
+    animation: ball-pulse 1s ease infinite;
+  }
+}

@@ -1,0 +1,338 @@
+// inspired by https://www.youtube.com/watch?v=Pl1Gw14pS2I
+.mainPage {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  padding: 0 60px 24px;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+  min-width: 1280px;
+  max-width: 1920px;
+  margin: 0 auto;
+
+  .chatContent {
+    position: relative;
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: column;
+    flex-grow: 1;
+    margin-right: 40px;
+    height: calc(100% - 24px);
+    overflow-y: hidden;
+    padding: 32px 0 0 0;
+    box-sizing: border-box;
+
+    .top {
+      height: calc(100% - 110px);
+      overflow-y: auto;
+      margin-bottom: 40px;
+    }
+
+    .top::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .top::-webkit-scrollbar-track {
+      background-color: rgba(255, 255, 255, 0);
+      border-radius: 100px;
+    }
+
+    .top::-webkit-scrollbar-thumb {
+      background-color: rgba(255, 255, 255, 0);
+      border-radius: 100px;
+    }
+
+    .question {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 40px;
+
+      span {
+        padding: 12px 20px;
+        color: #121316;
+        font-size: 14px;
+        line-height: 24px;
+        border-radius: 8px;
+        background: #FFF;
+        max-width: 93.75%;
+      }
+    }
+
+    .sendArea {
+      display: flex;
+      width: 100%;
+      box-sizing: border-box;
+      padding: 10px 12px 10px 24px;
+      justify-content: space-between;
+      align-items: center;
+      border-radius: 8px;
+      border: 2px solid var(--fill-5, #464A53);
+      background: #FFF;
+      position: relative;
+
+      :global {
+        .ant-input {
+          &:focus {
+            box-shadow: none !important;
+            outline: 0 !important;
+          }
+        }
+      }
+
+      input {
+        height: 36px;
+        line-height: 36px;
+        flex-grow: 1;
+        border: 0;
+        outline: 0;
+
+        &:focus {
+          border: 0;
+          outline: 0;
+        }
+      }
+
+      button {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        border: 0;
+        background-color: #fff;
+        cursor: pointer;
+        padding: 8px;
+        width: 65px;
+        flex-shrink: 0;
+
+        img {
+          margin-right: 4px;
+        }
+      }
+    }
+
+    .notice {
+      color: #12131659;
+      padding-top: 8px;
+      text-align: center;
+      font-weight: 400;
+      font-size: 12px;
+      line-height: 18px;
+
+      a {
+        text-decoration: none;
+        color: #444;
+        display: inline-flex;
+        align-items: center;
+
+        span {
+          font-size: 18px;
+        }
+      }
+    }
+  }
+
+  .progressContent {
+    width: 44.44%;
+    flex-shrink: 0;
+    box-sizing: border-box;
+    padding: 24px;
+    border-radius: 8px;
+    border: rgba(33, 38, 192, 0.10);
+    background: rgba(255, 255, 255, 0.80);
+    height: calc(100% - 60px);
+    overflow-y: auto;
+    position: relative;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background-color: rgba(255, 255, 255, 0);
+      border-radius: 100px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: rgba(255, 255, 255, 0);
+      border-radius: 100px;
+    }
+
+    .toggleIcon {
+      position: absolute;
+      right: 24px;
+      top: 28px;
+      cursor: pointer;
+    }
+  }
+}
+
+pre {
+  margin: 0;
+  padding-top: 8px;
+  color: #121316;
+  font-size: 14px;
+  line-height: 24px;
+  font-family: 'PingFang SC', 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+  white-space: wrap;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+}
+
+.draft {
+  width: 100%;
+  white-space: wrap;
+  // display: flex;
+  // justify-content: flex-start;
+  // align-items: flex-start;
+
+  .loading,
+  .loading>div {
+    position: relative;
+    box-sizing: border-box;
+  }
+
+  .loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0;
+    color: #fff;
+    background-color: #f90;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    margin-right: 3px;
+    flex-shrink: 0;
+  }
+
+  .loading>div {
+    display: inline-block;
+    float: none;
+    background-color: currentColor;
+    border: 0 solid currentColor;
+  }
+
+  .loading>div:nth-child(1) {
+    animation-delay: -200ms;
+  }
+
+  .loading>div:nth-child(2) {
+    animation-delay: -100ms;
+  }
+
+  .loading>div:nth-child(3) {
+    animation-delay: 0ms;
+  }
+
+  .loading>div {
+    width: 3px;
+    height: 3px;
+    margin: 2px 1px;
+    border-radius: 100%;
+    animation: ball-pulse 1s ease infinite;
+  }
+}
+
+.showRight {
+  position: fixed;
+  top: 80px;
+  right: -12px;
+  width: 64px;
+  cursor: pointer;
+
+  img {
+    width: 100%;
+  }
+}
+
+@keyframes ball-pulse {
+
+  0%,
+  60%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  30% {
+    opacity: 0.1;
+    transform: scale(0.01);
+  }
+}
+
+@keyframes moveGradient {
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes fadeIn {
+  0% {
+    width: 0;
+    opacity: 0;
+  }
+
+  100% {
+    width: auto;
+    opacity: 1;
+  }
+}
+
+@keyframes unfold {
+  0% {
+    height: auto;
+  }
+
+  100% {
+    height: 0;
+  }
+}
+
+
+.loading99 {
+  margin: 20px;
+  position: relative;
+  width: 1px;
+  height: 1px;
+}
+
+.loading99:before,
+.loading99:after {
+  position: absolute;
+  display: inline-block;
+  width: 15px;
+  height: 15px;
+  content: "";
+  border-radius: 100%;
+  background-color: #5551FF;
+}
+
+.loading99:before {
+  left: -15px;
+  animation: ball-pulse infinite 0.75s -0.4s cubic-bezier(0.2, 0.68, 0.18, 1.08);
+}
+
+.loading99:after {
+  right: -15px;
+  animation: ball-pulse infinite 0.75s cubic-bezier(0.2, 0.68, 0.18, 1.08);
+}
+
+@keyframes ball-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(0.1);
+    opacity: 0.6;
+  }
+
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}

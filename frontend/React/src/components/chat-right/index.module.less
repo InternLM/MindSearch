@@ -1,0 +1,234 @@
+.rightContent {
+  width: 44.44%;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  padding: 24px;
+  border-radius: 8px;
+  border: rgba(33, 38, 192, 0.10);
+  background: rgba(255, 255, 255, 0.80);
+  height: calc(100% - 24px);
+  overflow-y: auto;
+  position: relative;
+
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background-color: rgba(255, 255, 255, 0);
+    border-radius: 100px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0);
+    border-radius: 100px;
+  }
+
+  .toggleIcon {
+    position: absolute;
+    right: 24px;
+    top: 28px;
+    cursor: pointer;
+  }
+
+  .titleNode {
+    color: #121316;
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 36px;
+    margin-bottom: 24px;
+  }
+
+  .conclusion {
+    padding-top: 8px;
+    color: #121316;
+    font-size: 14px;
+    line-height: 24px;
+
+    ul {
+      padding-left: 24px;
+    }
+  }
+
+  .steps {
+    margin-bottom: 24px;
+
+    .title {
+      color: var(--100-text-5, #121316);
+      font-size: 20px;
+      font-weight: 600;
+      line-height: 30px;
+      display: flex;
+      justify-content: flex-start;
+      align-items: center;
+      position: relative;
+
+      .open {
+        position: absolute;
+        right: 0;
+        font-size: 20px;
+        font-weight: normal;
+
+        span {
+          color: #121316;
+          opacity: 0.6;
+        }
+      }
+
+      i {
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background-color: #2126C0;
+        margin-right: 8px;
+      }
+    }
+
+    &.thinking,
+    &.select {
+      margin-bottom: 24px;
+    }
+
+    &.select {
+      .searchList {
+        margin-top: 0 !important;
+        border-radius: 8px;
+        background: var(--fill-2, #F4F5F9);
+        padding: 8px;
+      }
+    }
+
+    .con {
+      margin-left: 5px;
+      padding-top: 8px;
+      padding-left: 15px;
+      border-left: 1px solid rgba(33, 38, 192, 0.20);
+      height: auto;
+
+      &.collapsed {
+        overflow: hidden;
+        height: 0;
+        padding-top: 0;
+        transition: all 1s;
+      }
+    }
+  }
+
+  .query,
+  >.searchList {
+    margin-top: 24px;
+    margin-bottom: 24px;
+  }
+
+  .subTitle {
+    color: var(--100-text-5, #121316);
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 24px;
+    margin-bottom: 4px;
+
+    span {
+      margin-right: 4px;
+    }
+  }
+
+  .query {
+    &-Item {
+      display: inline-flex;
+      padding: 4px 8px;
+      margin-right: 4px;
+      margin-bottom: 4px;
+      border-radius: 4px;
+      border: 1px solid #EBECF0;
+      color: rgba(18, 19, 22, 0.80);
+      font-size: 14px;
+      line-height: 24px;
+      height: 32px;
+      box-sizing: border-box;
+      overflow: hidden;
+      // animation: fadeIn linear 2s;
+    }
+  }
+
+  .searchList {
+    margin-top: 0 !important;
+    border-radius: 8px;
+    background: var(--fill-2, #F4F5F9);
+    padding: 8px;
+  }
+
+  .searchList {
+    .thought {
+      color: rgba(18, 19, 22, 0.80);
+      font-size: 14px;
+      line-height: 24px;
+      margin-bottom: 16px;
+    }
+
+    .scrollCon {
+      padding-right: 6px;
+      max-height: 300px;
+      overflow-y: auto;
+      position: relative;
+    }
+
+    .scrollCon::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .scrollCon::-webkit-scrollbar-track {
+      background-color: rgba(255, 255, 255, 0);
+      border-radius: 100px;
+    }
+
+    .scrollCon::-webkit-scrollbar-thumb {
+      background-color: #d7d8dd;
+      border-radius: 100px;
+    }
+
+    .inner {
+      width: 100%;
+      border-radius: 8px;
+      background: var(--fill-2, #F4F5F9);
+      transition: all 0.5s ease;
+      box-sizing: border-box;
+      padding: 8px;
+    }
+
+    .searchItem {
+      border-radius: 8px;
+      background: var(---fill-0, #FFF);
+      margin-bottom: 6px;
+      padding: 4px 8px;
+      transition: all 0.5s ease-in-out;
+
+      &.highLight {
+        border: 1px solid var(---Success-6, #00B365);
+        background: linear-gradient(0deg, rgba(218, 242, 228, 0.40) 0%, rgba(218, 242, 228, 0.40) 100%), #FFF;
+      }
+
+      p {
+        white-space: nowrap;
+        max-width: 95%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin: 0;
+      }
+
+      p.summ {
+        color: rgba(18, 19, 22, 0.80);
+        font-size: 13px;
+        line-height: 20px;
+        margin-bottom: 2px;
+      }
+
+      p.url {
+        color: var(--60-text-3, rgba(18, 19, 22, 0.60));
+        font-size: 12px;
+        line-height: 18px;
+        padding-left: 20px;
+      }
+    }
+  }
+}
+
