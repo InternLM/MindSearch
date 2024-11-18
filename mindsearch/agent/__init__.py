@@ -14,6 +14,10 @@ from .mindsearch_prompt import (
     FINAL_RESPONSE_EN,
     GRAPH_PROMPT_CN,
     GRAPH_PROMPT_EN,
+    fewshot_example_cn,
+    fewshot_example_en,
+    graph_fewshot_example_cn,
+    graph_fewshot_example_en,
     searcher_context_template_cn,
     searcher_context_template_en,
     searcher_input_template_cn,
@@ -44,6 +48,12 @@ def init_agent(lang="cn",
         LLM.setdefault(model_format, {}).setdefault(mode, llm)
 
     date = datetime.now().strftime("The current date is %Y-%m-%d.")
+    interpreter_prompt = GRAPH_PROMPT_CN if lang == 'cn' else GRAPH_PROMPT_EN
+    plugin_prompt = searcher_system_prompt_cn if lang == 'cn' else searcher_system_prompt_en
+    if not model_format.lower().startswith('internlm'):
+        interpreter_prompt += graph_fewshot_example_cn if lang == 'cn' else graph_fewshot_example_en
+        plugin_prompt += fewshot_example_cn if lang == 'cn' else fewshot_example_en
+
     plugins = [(dict(
         type=AsyncWebBrowser if use_async else WebBrowser,
         searcher_type=search_engine,
@@ -59,17 +69,13 @@ def init_agent(lang="cn",
     agent = (AsyncMindSearchAgent if use_async else MindSearchAgent)(
         llm=llm,
         template=date,
-        output_format=InterpreterParser(
-            template=GRAPH_PROMPT_CN if lang == "cn" else GRAPH_PROMPT_EN),
+        output_format=InterpreterParser(template=interpreter_prompt),
         searcher_cfg=dict(
             llm=llm,
             plugins=plugins,
             template=date,
             output_format=PluginParser(
-                template=searcher_system_prompt_cn
-                if lang == "cn" else searcher_system_prompt_en,
-                tool_info=get_plugin_prompt(plugins),
-            ),
+                template=plugin_prompt, tool_info=get_plugin_prompt(plugins)),
             user_input_template=(searcher_input_template_cn if lang == "cn"
                                  else searcher_input_template_en),
             user_context_template=(searcher_context_template_cn if lang == "cn"
