@@ -6,6 +6,7 @@ janus
 lagent==0.5.0rc1
 lmdeploy==0.5.3
 matplotlib
+pillow
 pydantic==2.6.4
 python-dotenv
 pyvis

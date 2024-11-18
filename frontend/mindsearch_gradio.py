@@ -17,6 +17,7 @@ from schemdraw import flow
 
 PLANNER_HISTORY = []
 SEARCHER_HISTORY = []
+DEFAULT_GRAPH_PATH = None
 
 
 def create_search_graph(adjacency_list: dict):
@@ -289,11 +290,19 @@ with gr.Blocks(css=os.path.join(os.path.dirname(__file__), "css", "gradio_front.
     def user(query, history):
         history.append(ChatMessage(role="user", content=query))
         history.append(ChatMessage(role="assistant", content=""))
-        graph_path = draw_search_graph({"root": []})
+
+        global DEFAULT_GRAPH_PATH
+        if not DEFAULT_GRAPH_PATH:
+            from PIL import Image
+
+            DEFAULT_GRAPH_PATH = tempfile.mktemp(suffix=".png")
+            Image.new("RGBA", (1000, 1), (0, 0, 0, 0)).save(DEFAULT_GRAPH_PATH, "PNG")
         history.append(
             ChatFileMessage(
                 role="assistant",
-                file=gr.FileData(path=graph_path, mime_type=mimetypes.guess_type(graph_path)[0]),
+                file=gr.FileData(
+                    path=DEFAULT_GRAPH_PATH, mime_type=mimetypes.guess_type(DEFAULT_GRAPH_PATH)[0]
+                ),
             )
         )
         return "", history
