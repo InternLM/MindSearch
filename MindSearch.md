@@ -4,7 +4,7 @@
 **1. 在面对复杂请求时，搜索引擎难以一次性精确回复所需的全量网络信息；** <br>
 **2. 要集成的相关信息散布在多个网页中，存在信息干扰；** <br>
 **3. 大量的网络内容可能超过大语言模型可处理的上下文长度。** <br>
-受人类解决这些问题时的认知过程的启发，MindSearch模拟人类在网络信息搜索和整合中的思维过程，通过一个简单而有效的基于LLM的多代理框架来实例化，该框架由WebPlanner（网络规划师）和WebSearcher组成。
+受人类解决这些问题时的认知过程的启发，MindSearch模拟人类在网络信息搜索和整合中的思维过程，通过一个简单而有效的基于LLM的多代理框架来实例化，该框架由WebPlanner（网络规划师）和WebSearcher组成。<br>
 MindSearch的多代理设计使整个框架能够在3分钟内从更大规模（超过300个）网页中并行地寻找和整合信息，值得3小时的人力努力，可以用ChatGPT-4o或InternLM2.5-7B模型作为基座。MindSearch在Closed-Set  （封闭集）和 Open-Set （开放集）QA问题的深度、广度以及准确度（facticity）方面的响应质量都有显著提高。此外，基于InternLM2.5-7B的MindSearch的反应比ChatGPT-Web（GPT-4o）和Perplexity.ai 更可取，这意味着开源模型的 MindSearch已经可以为人工智能搜索引擎提供一个有竞争力的解决方案。<br>
 ![Alt Text](assets/1.PNG)
 ![Alt Text](assets/2.PNG)
@@ -32,7 +32,7 @@ CodeSpaces 相当于自己有了一个云主机，真正实现了云端开发，
 #### 1.1 Fork  MindSearch  &  目录结构
 项目地址：https://github.com/InternLM/MindSearch
 ![Alt Text](assets/6.png)
-创建 fork 完成后，打开codespace主页，新建一个codespaces环境配置，点击右上角的New codespace。<br>
+创建 fork 完成后，打开<a herf= https://github.com/codespaces>codespace</a>主页，新建一个codespaces环境配置，点击右上角的New codespace。<br>
 （由于直接使用模板快速开始，最终可能会出现Network Error）<br>
 ![Alt Text](assets/7.1.png)
 选择刚刚fork 的仓库，这时它会自动选择main主枝，Southeast Asia ，请务必将Southeast Asia换为**其他地区**，比如US West 、Europe West 否则可能会出现Network Error。
@@ -536,15 +536,16 @@ python frontend/mindsearch_gradio.py
 分为 **Space 空间**  **令牌**  **推送** 三部分
 #### 1.4 部署到 HuggingFace Space
 ##### 1.4.1 创建Space 空间 
-1.4.1 
 https://huggingface.co/spaces ，并点击 Create new Space，如下图所示。
 ![Alt Text](assets/16.png)
-选择公开方便大家可以看到。接下来，我们进入 Settings，配置硅基流动的 api_key。<br>
-往下滑，选择 New secrets，name 一栏输入 SILICON_API_KEY，value 一栏输入你的API_KEY的内容。
+在输入 Space name 并选择 License 后，其它配置如下所示。
 ![Alt Text](assets/17.png)
-##### 1.4.2 创建一个有写权限的token,点击右上角的头像，点击设置，找到Access Tokens ,新建token。
+选择公开方便大家可以看到。接下来，我们进入 Settings，配置硅基流动的 api_key。<br>
+往下滑，选择 New secrets，name 一栏输入 SILICON_API_KEY，value 一栏输入你的API_KEY的内容。<br>
 ![Alt Text](assets/18.png)
+##### 1.4.2 创建一个有写权限的token,点击右上角的头像，点击设置，找到Access Tokens ,新建token。
 ![Alt Text](assets/19.png)
+![Alt Text](assets/20.png)
 ##### 1.4.3 新建目录 & 推送代码
 新空间已创建，请按照以下步骤开始。新建一个目录，创建 gradio app.py 文件，然后 commit 并推送（或者，您可以直接在浏览器中创建 app.py 文件。）<br>
 回到 codespace 中，由于将整个Mindsearch的推送会有很多问题（git submodule无法提交代码，space中项目启动失败等）。我们选择新建一个目录
@@ -771,30 +772,30 @@ cd <仓库名称>
 cp -r /workspaces/MindSearch/mindsearch_deploy/* .
 . 一定不能少
 ```
-![Alt Text](assets/20.png)
+![Alt Text](assets/21.png)
 选择codespaces-blank  看一下仓库里的文件全不全。  （patriotism是我的仓库名）<br>
 最终如下：
-![Alt Text](assets/21.png)
+![Alt Text](assets/22.png)
 ```python
 git add .
 git commit -m "update"
 git push
 ```
-![Alt Text](assets/22.png)
+![Alt Text](assets/23.png)
 #### 1.5 部署gitee.ai
 考虑到上传huggingface有一定的困难，部署到国内gitee.ai上，也是一个不错的选择。<br>
  https://ai.gitee.com/  （整体操作和HuggingFace Space类似）
-![Alt Text](assets/23.png)
-##### 1.5.1 进入工作台后，点击应用，新建应用。
 ![Alt Text](assets/24.png)
-在输入 应用名称  并选择 许可证 后，其它配置如下所示。
+##### 1.5.1 进入工作台后，点击应用，新建应用。
 ![Alt Text](assets/25.png)
+在输入 应用名称  并选择 许可证 后，其它配置如下所示。
+![Alt Text](assets/26.png)
 同样需要添加app.py入口文件<br>
 点击设置，选择功能，新建密钥，键： SILICON_API_KEY，值：硅基流动的 api_key。
-![Alt Text](assets/26.png)
+![Alt Text](assets/27.png)
 ##### 1.5.2 私人令牌
 进入gitee -- 个人设置 -- 私人令牌 。
-![Alt Text](assets/27.png)
+![Alt Text](assets/28.png)
 复制令牌<br>
 从gitee.ai把空的代码仓库clone到codespace。
 ```python
@@ -811,16 +812,16 @@ git add .
 git commit -m "update"
 git push
 ```
-![Alt Text](assets/28.png)
+![Alt Text](assets/29.png)
 #### 部署到 Modelers
 天翼云与华为联合打造的魔乐（Modelers）开发者社区正式上线发布。 通过建设社区，双方将携手使能 AI 应用创新，共促国产 AI 生态繁荣   https://modelers.cn/
 ##### 1.6.1  创建空间 
 选择和前两个差不多，在这里可以上传自选封面图。https://modelers.cn/spaces/new
-![Alt Text](assets/29.png)
-这是一个基于CPU的gradio类型体验空间，我们需要至少上传app.py和requirements.txt两个文件。当文件内容符合gradio和python编程规范后，空间会自动触发镜像构建，并运行gradio服务。找到设置，创建机密变量。
 ![Alt Text](assets/30.png)
-##### 1.6.2 创建一个有write权限的令牌。
+这是一个基于CPU的gradio类型体验空间，我们需要至少上传app.py和requirements.txt两个文件。当文件内容符合gradio和python编程规范后，空间会自动触发镜像构建，并运行gradio服务。找到设置，创建机密变量。
 ![Alt Text](assets/31.png)
+##### 1.6.2 创建一个有write权限的令牌。
+![Alt Text](assets/32.png)
 ##### 1.6.3 推送代码
 ```python
 cd /workspaces/codespaces-blank
@@ -842,7 +843,8 @@ git push -u origin main
 - 应用 https://mindsearch.openxlab.org.cn/
 - Web https://mindsearch.netlify.app/
 
-**鸣谢以下文章作者和MindSearch兴趣小组以及张富才大佬的建议及赵老师的指导。**
+**鸣谢以下文章作者和MindSearch兴趣小组以及张富才大佬的建议及赵老师的指导。** <br>
+
 参考文章：
 - https://github.com/InternLM/MindSearch/issues/202
 - https://freeaihunter.com/cn
