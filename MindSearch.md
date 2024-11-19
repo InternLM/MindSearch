@@ -32,7 +32,7 @@ CodeSpaces 相当于自己有了一个云主机，真正实现了云端开发，
 #### 1.1 Fork  MindSearch  &  目录结构
 项目地址：https://github.com/InternLM/MindSearch
 ![Alt Text](assets/6.png)
-创建 fork 完成后，打开<a herf= https://github.com/codespaces>codespace</a>主页，新建一个codespaces环境配置，点击右上角的New codespace。<br>
+创建 fork 完成后，打开[codespace](https://github.com/codespaces)主页，新建一个codespaces环境配置，点击右上角的New codespace。<br>
 （由于直接使用模板快速开始，最终可能会出现Network Error）<br>
 ![Alt Text](assets/7.1.png)
 选择刚刚fork 的仓库，这时它会自动选择main主枝，Southeast Asia ，请务必将Southeast Asia换为**其他地区**，比如US West 、Europe West 否则可能会出现Network Error。
