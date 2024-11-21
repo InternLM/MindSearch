@@ -57,11 +57,22 @@ def clean_api_key(api_key):
 @lru_cache(maxsize=None)
 def validate_api_key(api_key, key_type, t):
     basic_pattern = r"^sk-[A-Za-z0-9]+$"
+    web_search_pattern = r"^[A-Za-z0-9_\-\.]+$"
+    tencent_pattern = r"^[A-Za-z0-9]+$"
 
     validation_rules = {
+        # Model API Keys
         "SILICON_API_KEY": basic_pattern,
         "OPENAI_API_KEY": basic_pattern,
         "QWEN_API_KEY": basic_pattern,
+        # Search Engine API Keys
+        "BING_SEARCH_API_KEY": web_search_pattern,
+        "BRAVE_SEARCH_API_KEY": web_search_pattern,
+        "GOOGLE_SERPER_API_KEY": web_search_pattern,
+        "TENCENT_SEARCH_SECRET_ID": tencent_pattern,
+        "TENCENT_SEARCH_SECRET_KEY": tencent_pattern,
+        # Legacy support
+        "WEB_SEARCH_API_KEY": web_search_pattern,
     }
 
     if key_type not in validation_rules:
@@ -69,6 +80,34 @@ def validate_api_key(api_key, key_type, t):
 
     pattern = validation_rules[key_type]
     return re.match(pattern, api_key) is not None
+
+
+def save_api_key_to_env(key_type, api_key, t):
+    """Save API key to .env file
+    
+    Args:
+        key_type: Environment variable name or model format
+        api_key: API key value
+        t: Translation function
+    """
+    # Convert model format to env var name if needed
+    env_var_name = {
+        "internlm_silicon": "SILICON_API_KEY",
+        "gpt4": "OPENAI_API_KEY",
+        "qwen": "QWEN_API_KEY",
+    }.get(key_type, key_type)  # If not a model format, use key_type directly
+
+    if not validate_api_key(api_key, env_var_name, t):
+        raise ValueError(t("INVALID_API_KEY", KEY_TYPE=env_var_name))
+
+    env_vars = read_env_file()
+    env_vars[env_var_name] = api_key
+
+    with ENV_FILE_PATH.open("w") as env_file:
+        for key, value in env_vars.items():
+            env_file.write(f"{key}={value}\n")
+
+    print(t("API_KEY_SAVED", ENV_VAR_NAME=env_var_name))
 
 
 def ensure_directory(path):
@@ -92,29 +131,6 @@ def copy_templates_to_temp(template_files):
         else:
             print(t("FILE_NOT_FOUND", file=filename))
             sys.exit(1)
-
-
-def save_api_key_to_env(model_format, api_key, t):
-    env_var_name = {
-        "internlm_silicon": "SILICON_API_KEY",
-        "gpt4": "OPENAI_API_KEY",
-        "qwen": "QWEN_API_KEY",
-    }.get(model_format)
-
-    if not env_var_name:
-        raise ValueError(t("UNKNOWN_MODEL_FORMAT", MODEL_FORMAT=model_format))
-
-    if not validate_api_key(api_key, env_var_name, t):
-        raise ValueError(t("INVALID_API_KEY", KEY_TYPE=env_var_name))
-
-    env_vars = read_env_file()
-    env_vars[env_var_name] = api_key
-
-    with ENV_FILE_PATH.open("w") as env_file:
-        for key, value in env_vars.items():
-            env_file.write(f"{key}={value}\n")
-
-    print(t("API_KEY_SAVED", ENV_VAR_NAME=env_var_name))
 
 
 def modify_docker_compose(model_type, backend_language, model_format, search_engine):

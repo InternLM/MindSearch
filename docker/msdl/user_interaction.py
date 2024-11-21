@@ -32,19 +32,19 @@ SEARCH_ENGINES = {
         "name": "Bing",
         "key": "BING",
         "requires_key": True,
-        "env_var": "WEB_SEARCH_API_KEY"
+        "env_var": "BING_SEARCH_API_KEY"
     },
     "BraveSearch": {
         "name": "Brave",
         "key": "BRAVE",
         "requires_key": True,
-        "env_var": "WEB_SEARCH_API_KEY"
+        "env_var": "BRAVE_SEARCH_API_KEY"
     },
     "GoogleSearch": {
         "name": "Google Serper",
         "key": "GOOGLE",
         "requires_key": True,
-        "env_var": "WEB_SEARCH_API_KEY"
+        "env_var": "GOOGLE_SERPER_API_KEY"
     },
     "TencentSearch": {
         "name": "Tencent",
@@ -118,6 +118,30 @@ def get_model_format(model):
         } for format in model_formats],
     ).execute()
 
+def _handle_api_key_input(env_var_name, message=None):
+    """Handle API key input and validation for a given environment variable"""
+    if message is None:
+        message = t("PLEASE_INPUT_NEW_API_KEY", ENV_VAR_NAME=env_var_name)
+    print(message)
+    
+    while True:
+        api_key = inquirer.secret(
+            message=t("PLEASE_INPUT_NEW_API_KEY_FROM_ZERO", ENV_VAR_NAME=env_var_name)
+        ).execute()
+        cleaned_api_key = clean_api_key(api_key)
+
+        try:
+            save_api_key_to_env(env_var_name, cleaned_api_key, t)
+            break
+        except ValueError as e:
+            print(str(e))
+            retry = inquirer.confirm(
+                message=t("RETRY_API_KEY_INPUT"), default=True
+            ).execute()
+            if not retry:
+                print(t("API_KEY_INPUT_CANCELLED"))
+                sys.exit(1)
+
 def handle_api_key_input(model, model_format):
     """Handle API key input and validation"""
     if model != CLOUD_LLM_DOCKERFILE:
@@ -141,26 +165,19 @@ def handle_api_key_input(model, model_format):
             return
 
         print(t("CONFIRM_OVERWRITE_EXISTING_API_KEY", ENV_VAR_NAME=env_var_name))
-    else:
-        print(t("PLEASE_INPUT_NEW_API_KEY", ENV_VAR_NAME=env_var_name))
 
-    while True:
-        api_key = inquirer.secret(
+    try:
+        save_api_key_to_env(model_format, clean_api_key(inquirer.secret(
             message=t("PLEASE_INPUT_NEW_API_KEY_FROM_ZERO", ENV_VAR_NAME=env_var_name)
+        ).execute()), t)
+    except ValueError as e:
+        print(str(e))
+        retry = inquirer.confirm(
+            message=t("RETRY_API_KEY_INPUT"), default=True
         ).execute()
-        cleaned_api_key = clean_api_key(api_key)
-
-        if validate_api_key(cleaned_api_key, env_var_name, t):
-            save_api_key_to_env(model_format, cleaned_api_key, t)
-            break
-        else:
-            print(t("INVALID_API_KEY_FORMAT"))
-            retry = inquirer.confirm(
-                message=t("RETRY_API_KEY_INPUT"), default=True
-            ).execute()
-            if not retry:
-                print(t("API_KEY_INPUT_CANCELLED"))
-                sys.exit(1)
+        if not retry:
+            print(t("API_KEY_INPUT_CANCELLED"))
+            sys.exit(1)
 
 def get_search_engine():
     """Get user's preferred search engine and handle API key if needed"""
@@ -206,30 +223,6 @@ def get_search_engine():
     
     print(t("SEARCH_ENGINE_CONFIGURED", engine=engine_info['name']))
     return search_engine
-
-def _handle_api_key_input(env_var_name, message=None):
-    """Handle API key input and validation for a given environment variable"""
-    if message is None:
-        message = t("PLEASE_INPUT_NEW_API_KEY", ENV_VAR_NAME=env_var_name)
-    print(message)
-    
-    while True:
-        api_key = inquirer.secret(
-            message=t("PLEASE_INPUT_NEW_API_KEY_FROM_ZERO", ENV_VAR_NAME=env_var_name)
-        ).execute()
-        cleaned_api_key = clean_api_key(api_key)
-
-        if validate_api_key(cleaned_api_key, env_var_name, t):
-            save_api_key_to_env(env_var_name, cleaned_api_key, t)
-            break
-        else:
-            print(t("INVALID_API_KEY_FORMAT"))
-            retry = inquirer.confirm(
-                message=t("RETRY_API_KEY_INPUT"), default=True
-            ).execute()
-            if not retry:
-                print(t("API_KEY_INPUT_CANCELLED"))
-                sys.exit(1)
 
 def restart_program():
     """Restart the current program with the same arguments"""
