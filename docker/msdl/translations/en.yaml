@@ -58,6 +58,8 @@ en:
   CONTAINERS_STOPPED_AND_REMOVED: "Docker containers stopped and removed"
   CLI_DESCRIPTION: "MindSearch Docker Launcher - A tool to manage MindSearch docker containers"
   LANGUAGE_HELP: "Set the msdl tool interface language (e.g. en, zh_CN)"
+  CONFIG_LANGUAGE_HELP: "Show language configuration prompt"
   LANGUAGE_NOT_AVAILABLE: "Warning: Language '%{lang}' not available. Using English instead."
   SELECT_INTERFACE_LANGUAGE: "Select msdl tool interface language"
   SELECT_BACKEND_LANGUAGE: "Select MindSearch backend language (default is cn)"
+  LANGUAGE_CHANGED_RESTARTING: "Language changed, restarting msdl..."

@@ -2,6 +2,7 @@
 import signal
 import sys
 import argparse
+import os
 from pathlib import Path
 
 from InquirerPy import inquirer
@@ -93,20 +94,21 @@ def get_user_choices():
         }
         return [{"name": f"{lang_choices.get(lang, lang)}", "value": lang} for lang in available_langs]
 
-    # First ask for interface language
-    current_lang = get_env_variable("LAUNCHER_INTERACTION_LANGUAGE", "en")
-    lang_options = _get_language_options()
-    
-    language = inquirer.select(
-        message=t("SELECT_INTERFACE_LANGUAGE"),
-        choices=lang_options,
-        default=next((opt["value"] for opt in lang_options if opt["value"] == current_lang), lang_options[0]["value"])
-    ).execute()
-    
-    if language and language != current_lang:
-        set_language(language)
-        # Reinitialize i18n with new language
-        setup_i18n()
+    # Check if language is configured in .env
+    current_lang = get_env_variable("LAUNCHER_INTERACTION_LANGUAGE")
+    if not current_lang:
+        # Language not configured, ask user
+        lang_options = _get_language_options()
+        language = inquirer.select(
+            message=t("SELECT_INTERFACE_LANGUAGE"),
+            choices=lang_options,
+            default="en"
+        ).execute()
+        
+        if language:
+            set_language(language)
+            sys.stdout.flush()
+            restart_program()
 
     # Continue with backend language selection
     backend_language = inquirer.select(
@@ -190,12 +192,21 @@ def get_user_choices():
     return backend_language, model, model_format
 
 
+def restart_program():
+    """Restart the current program with the same arguments"""
+    print(t("LANGUAGE_CHANGED_RESTARTING"))
+    python = sys.executable
+    os.execl(python, python, *sys.argv)
+
+
 def parse_args():
     parser = argparse.ArgumentParser(description=t("CLI_DESCRIPTION"))
     parser.add_argument('--language', '-l', 
                       help=t("LANGUAGE_HELP"),
                       choices=get_available_languages(),
                       default=None)
+    parser.add_argument('--config-language', action='store_true',
+                      help=t("CONFIG_LANGUAGE_HELP"))
     return parser.parse_args()
 
 

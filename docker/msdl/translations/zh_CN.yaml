@@ -59,5 +59,7 @@ zh_CN:
   DOCKER_LIST_ERROR: "列出 Docker 容器时出错：%{error}"
   CONTAINERS_STOPPED_AND_REMOVED: "已停止并删除 Docker 容器"
   CLI_DESCRIPTION: "MindSearch Docker 启动器 - 用于管理 MindSearch docker 容器的工具"
-  LANGUAGE_HELP: "设置界面语言（例如：en, zh_CN）"
+  LANGUAGE_HELP: "设置 msdl 工具界面语言（例如：en, zh_CN）"
+  CONFIG_LANGUAGE_HELP: "显示语言配置提示"
   LANGUAGE_NOT_AVAILABLE: "警告：语言'%{lang}'不可用。使用英语作为替代。"
+  LANGUAGE_CHANGED_RESTARTING: "语言已更改，正在重启 msdl..."
