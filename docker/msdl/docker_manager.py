@@ -142,7 +142,7 @@ def run_docker_compose():
         sys.exit(1)
 
 
-def update_docker_compose_paths():
+def update_docker_compose_paths(project_root=PROJECT_ROOT):
     docker_compose_path = os.path.join(TEMP_DIR, "docker-compose.yaml")
     with open(docker_compose_path, "r") as file:
         compose_data = yaml.safe_load(file)
@@ -150,10 +150,10 @@ def update_docker_compose_paths():
         if "build" in service:
             if "context" in service["build"]:
                 if service["build"]["context"] == "..":
-                    service["build"]["context"] = PROJECT_ROOT
+                    service["build"]["context"] = project_root
                 else:
                     service["build"]["context"] = os.path.join(
-                        PROJECT_ROOT, service["build"]["context"]
+                        project_root, service["build"]["context"]
                     )
             if "dockerfile" in service["build"]:
                 dockerfile_name = os.path.basename(service["build"]["dockerfile"])
