@@ -1,6 +1,7 @@
 # msdl/__main__.py
 import signal
 import sys
+import argparse
 from pathlib import Path
 
 from InquirerPy import inquirer
@@ -21,7 +22,13 @@ from msdl.docker_manager import (
     stop_and_remove_containers,
     update_docker_compose_paths,
 )
-from msdl.i18n import setup_i18n, t
+from msdl.i18n import (
+    setup_i18n,
+    t,
+    get_available_languages,
+    set_language,
+    get_env_variable,
+)
 from msdl.utils import (
     clean_api_key,
     copy_templates_to_temp,
@@ -78,16 +85,38 @@ def copy_frontend_dockerfile():
 
 
 def get_user_choices():
-    backend_language_choices = [
-        {
-            "name": t("CHINESE"),
-            "value": "cn"
-        },
-        {
-            "name": t("ENGLISH"),
-            "value": "en"
-        },
-    ]
+    def _get_language_options():
+        available_langs = get_available_languages()
+        lang_choices = {
+            "en": "English",
+            "zh_CN": "中文"
+        }
+        return [{"name": f"{lang_choices.get(lang, lang)}", "value": lang} for lang in available_langs]
+
+    # First ask for interface language
+    current_lang = get_env_variable("LAUNCHER_INTERACTION_LANGUAGE", "en")
+    lang_options = _get_language_options()
+    
+    language = inquirer.select(
+        message=t("SELECT_INTERFACE_LANGUAGE"),
+        choices=lang_options,
+        default=next((opt["value"] for opt in lang_options if opt["value"] == current_lang), lang_options[0]["value"])
+    ).execute()
+    
+    if language and language != current_lang:
+        set_language(language)
+        # Reinitialize i18n with new language
+        setup_i18n()
+
+    # Continue with backend language selection
+    backend_language = inquirer.select(
+        message=t("SELECT_BACKEND_LANGUAGE"),
+        choices=[
+            {"name": t("CHINESE"), "value": "cn"},
+            {"name": t("ENGLISH"), "value": "en"},
+        ],
+        default="cn",
+    ).execute()
 
     model_deployment_type = [
         {
@@ -99,11 +128,6 @@ def get_user_choices():
             "value": LOCAL_LLM_DOCKERFILE
         },
     ]
-
-    backend_language = inquirer.select(
-        message=t("BACKEND_LANGUAGE_CHOICE"),
-        choices=backend_language_choices,
-    ).execute()
 
     model = inquirer.select(
         message=t("MODEL_DEPLOYMENT_TYPE"),
@@ -166,12 +190,27 @@ def get_user_choices():
     return backend_language, model, model_format
 
 
-def main():
-    # Set the display language of the msdl launcher (based on the system language)
-    setup_i18n()
+def parse_args():
+    parser = argparse.ArgumentParser(description=t("CLI_DESCRIPTION"))
+    parser.add_argument('--language', '-l', 
+                      help=t("LANGUAGE_HELP"),
+                      choices=get_available_languages(),
+                      default=None)
+    return parser.parse_args()
 
+
+def main():
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
+
+    # Initialize i18n before parsing args so help text is translated
+    setup_i18n()
+    
+    args = parse_args()
+    if args.language:
+        set_language(args.language)
+        # Reinitialize i18n with new language
+        setup_i18n()
 
     try:
         # Check if TEMP_DIR exists, if not, create it

@@ -1,10 +1,11 @@
-# msdl/translations/i18n_setup.py
+# msdl/translations/i18n.py
 
 import os
 import i18n
 import locale
 from dotenv import load_dotenv, set_key, find_dotenv
 from msdl.config import TRANSLATIONS_DIR, ENV_FILE_PATH
+from pathlib import Path
 
 
 def get_env_variable(var_name, default=None):
@@ -22,6 +23,25 @@ def get_system_language():
         return locale.getlocale()[0].split("_")[0]
     except:
         return "en"
+
+
+def get_available_languages():
+    """Get list of available language codes from translation files"""
+    translations_path = Path(TRANSLATIONS_DIR)
+    if not translations_path.exists():
+        return ["en"]
+    return [f.stem for f in translations_path.glob("*.yaml")]
+
+
+def set_language(language_code):
+    """Set the interaction language and persist it to .env file"""
+    available_langs = get_available_languages()
+    if language_code not in available_langs:
+        print(f"Warning: Language '{language_code}' not available. Using 'en' instead.")
+        language_code = "en"
+    
+    set_env_variable("LAUNCHER_INTERACTION_LANGUAGE", language_code)
+    i18n.set("locale", language_code)
 
 
 def setup_i18n():
