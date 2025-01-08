@@ -55,7 +55,7 @@ gpt4 = dict(
                             "https://api.openai.com/v1/chat/completions"),
 )
 
-url = "https://dashscope.aliyuncs.com/api/v1/services/aigc/text-generation/generation"
+url = "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions"
 qwen = dict(
     type=GPTAPI,
     model_type="qwen-max-longcontext",
