@@ -184,7 +184,7 @@ def get_search_engine():
     search_engine = inquirer.select(
         message=t("SELECT_SEARCH_ENGINE"),
         choices=[{
-            "name": f"{t(f'SEARCH_ENGINE_{info["key"]}')} ({t('NO_API_KEY_NEEDED') if not info['requires_key'] else t('API_KEY_REQUIRED')})",
+            "name": f"""{t(f'SEARCH_ENGINE_{info["key"]}')} ({t('NO_API_KEY_NEEDED') if not info['requires_key'] else t('API_KEY_REQUIRED')})""",
             "value": engine
         } for engine, info in SEARCH_ENGINES.items()],
     ).execute()
