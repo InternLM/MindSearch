@@ -60,6 +60,7 @@ python -m mindsearch.app --lang en --model_format internlm_server --search_engin
   - `BraveSearch` for Brave search web api engine.
   - `GoogleSearch` for Google Serper web search api engine.
   - `TencentSearch` for Tencent search api engine.
+  - `SearxngSearch` for searxng search api engine.
   
   Please set your Web Search engine API key as the `WEB_SEARCH_API_KEY` environment variable unless you are using `DuckDuckGo`, or `TencentSearch` that requires secret id as `TENCENT_SEARCH_SECRET_ID` and secret key as `TENCENT_SEARCH_SECRET_KEY`.
 - `--asy`: deploy asynchronous agents.
