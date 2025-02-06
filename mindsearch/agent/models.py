@@ -2,7 +2,6 @@ import os
 
 from dotenv import load_dotenv
 from lagent.llms import (
-  GPTStyleAPI,
     GPTAPI,
     INTERNLM2_META,
     HFTransformerCasualLM,
@@ -54,17 +53,6 @@ gpt4 = dict(
     key=os.environ.get("OPENAI_API_KEY", "YOUR OPENAI API KEY"),
     api_base=os.environ.get("OPENAI_API_BASE",
                             "https://api.openai.com/v1/chat/completions"),
-)
-api_base = 'http://192.168.26.213:13000/v1/chat/completions' # oneapi
-# model_name =  "Baichuan2-Turbo"
-model_name ="deepseek-r1-14b"
-gptstyle = dict(
-    type=GPTStyleAPI,
-    model_type=model_name,
-    # key=os.environ.get("OPENAI_STYLE_API_KEY", "sk-IXgCTwuoEwxL1CiBE4744688D8094521B70f4aDeE6830c5e"),
-    # api_base=os.environ.get("OPENAI_STYLE_API_BASE",api_base),
-    key="sk-CZOUavQGNzkkQjZr626908A0011040F8B743C526F315D6Ee",
-    api_base=api_base,
 )
 
 url = "https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions"
