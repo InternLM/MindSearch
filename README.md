@@ -2,7 +2,11 @@
 
 <div align="center">
 
-<img src="assets/logo.svg" style="width: 50%; height: auto;">
+<picture>
+  <source srcset="assets/logo.svg" media="(prefers-color-scheme: light)">
+  <source srcset="assets/logo-darkmode.svg" media="(prefers-color-scheme: dark)">
+  <img src="assets/logo.svg" alt="Logo" width="50%">
+</picture>
 
 [📃 Paper](https://arxiv.org/abs/2407.20183) | [💻 Demo](https://internlm-chat.intern-ai.org.cn/)
 
