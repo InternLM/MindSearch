@@ -21,6 +21,10 @@ English | [简体中文](README_zh-CN.md)
 
 ## 📅 Changelog
 
+## 📅 Changelog
+
+- 2025/10/20: 🎉 Our paper has been accepted by ICLR 2025! 👉 [[Conference Link](https://iclr.cc/virtual/2025/poster/27772)] 👈
+  -  Stay tuned for the latest updates and the full-paper poster!
 - 2024/11/05: 🥳 MindSearch is now deployed on Puyu! 👉 [Try it](https://internlm-chat.intern-ai.org.cn/) 👈
   -  Refactored the agent module based on [Lagent v0.5](https://github.com/InternLM/lagent) for better performance in concurrency.
   -  Improved the UI to embody the simultaneous multi-query search.
