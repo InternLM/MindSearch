@@ -65,6 +65,7 @@ python -m mindsearch.app --lang en --model_format internlm_server --search_engin
   - `BraveSearch` 为 Brave 搜索引擎。
   - `GoogleSearch` 为 Google Serper 搜索引擎。
   - `TencentSearch` 为 Tencent 搜索引擎。
+  - `SearxngSearch` 为 searxng 搜索引擎。
     
   请将 DuckDuckGo 和 Tencent 以外的网页搜索引擎 API 密钥设置为 `WEB_SEARCH_API_KEY` 环境变量。如果使用 DuckDuckGo，则无需设置；如果使用 Tencent，请设置 `TENCENT_SEARCH_SECRET_ID` 和 `TENCENT_SEARCH_SECRET_KEY`。
  
