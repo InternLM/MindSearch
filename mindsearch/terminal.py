@@ -23,6 +23,25 @@ from mindsearch.agent.mindsearch_prompt import (
 
 lang = "cn"
 date = datetime.now().strftime("The current date is %Y-%m-%d.")
+
+# llm = GPTAPI(
+#     model_type="internlm/internlm2_5-7b-chat",
+#     key=os.environ.get("SILICON_API_KEY", "YOUR SILICON API KEY"),
+#     api_base="https://api.siliconflow.cn/v1/chat/completions",
+#     meta_template=[
+#         dict(role="system", api_role="system"),
+#         dict(role="user", api_role="user"),
+#         dict(role="assistant", api_role="assistant"),
+#         dict(role="environment", api_role="system"),
+#     ],
+#     top_p=0.8,
+#     top_k=1,
+#     temperature=0,
+#     max_new_tokens=8192,
+#     repetition_penalty=1.02,
+#     stop_words=["<|im_end|>"],
+# )
+
 llm = LMDeployServer(
     path="internlm/internlm2_5-7b-chat",
     model_name="internlm2",
@@ -34,6 +53,9 @@ llm = LMDeployServer(
     repetition_penalty=1.02,
     stop_words=["<|im_end|>", "<|action_end|>"],
 )
+
+
+
 plugins = [WebBrowser(searcher_type="BingSearch", topk=6)]
 agent = MindSearchAgent(
     llm=llm,
